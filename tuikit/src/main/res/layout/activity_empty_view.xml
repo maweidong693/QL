@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    android:id="@+id/content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/photo_view_back"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="30dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:src="@drawable/title_bar_back" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ll_image"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <ImageView
+                android:src="@drawable/empty_image"
+                android:id="@+id/photo_view"
+                android:layout_width="120dp"
+                android:layout_height="120dp" />
+
+            <TextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/view_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:text="已过期或已被清理"
+                android:textColor="@color/text_color_gray"
+                android:textSize="17sp"
+                />
+
+
+        </LinearLayout>
+        <TextView
+            android:textIsSelectable="true"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:lineSpacingExtra="7dp"
+            android:textSize="28sp"
+            android:visibility="gone"
+            android:id="@+id/tv_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text=""
+            android:textColor="@color/black_font_color"
+
+            />
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

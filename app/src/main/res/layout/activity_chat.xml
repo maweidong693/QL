@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
+        android:id="@+id/chat_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/chatmsg_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:divider="@null" />
+
+        <include layout="@layout/view_keyboard_xhs" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_chat_more"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_200"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_chat_pic"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_more_picture"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_chat_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:drawablePadding="@dimen/dp_15"
+                android:text="照片"
+                app:layout_constraintEnd_toEndOf="@+id/iv_chat_pic"
+                app:layout_constraintStart_toStartOf="@+id/iv_chat_pic"
+                app:layout_constraintTop_toBottomOf="@+id/iv_chat_pic" />
+
+            <ImageView
+                android:id="@+id/iv_chat_take"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_marginStart="32dp"
+                android:src="@drawable/ic_more_camera"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_chat_pic"
+                app:layout_constraintStart_toEndOf="@+id/iv_chat_pic"
+                app:layout_constraintTop_toTopOf="@+id/iv_chat_pic" />
+
+            <TextView
+                android:id="@+id/tv_chat_take"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:drawablePadding="@dimen/dp_15"
+                android:text="拍照"
+                app:layout_constraintEnd_toEndOf="@+id/iv_chat_take"
+                app:layout_constraintStart_toStartOf="@+id/iv_chat_take"
+                app:layout_constraintTop_toBottomOf="@+id/iv_chat_take" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</LinearLayout>

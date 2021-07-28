@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_left"
+    android:layout_width="match_parent"
+    android:layout_height="47dp"
+    android:background="#FFFFFF"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_marginLeft="14.85dp"
+        android:id="@+id/aaa"
+        android:layout_width="@dimen/conversation_avatar_width"
+        android:layout_height="@dimen/conversation_avatar_height">
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:src="@drawable/pc"
+            android:id="@+id/conversation_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_toRightOf="@+id/aaa"
+        android:layout_width="match_parent"
+        android:paddingLeft="11.43dp"
+        android:paddingRight="18.11dp"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Web 洽聊已登录"
+            android:layout_centerVertical="true"
+            android:id="@+id/conversation_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="48dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/list_bottom_text_bg"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/view_line"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="@color/split_lint_color" />
+</RelativeLayout>

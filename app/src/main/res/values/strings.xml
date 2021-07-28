@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">QL</string>
+    <string name="netError">网络错误</string>
+    <string name="getCode">获取验证码</string>
+    <string name="login">登录</string>
+    <string name="input_mobile">请输入手机号</string>
+    <string name="input_password">请输入密码</string>
+    <string name="input_code">请输入验证码</string>
+    <string name="input_yhxy">请同意用户协议</string>
+    <string name="tab_conversation_tab_text">洽聊</string>
+    <string name="tab_contact_tab_text">通讯录</string>
+    <string name="tab_find_tab_text">发现</string>
+    <string name="tab_profile_tab_text">我的</string>
+
+    // "+"menu相关
+    <string name="add_friend">添加好友</string>
+    <string name="add_group">添加群聊</string>
+    <string name="start_conversation">发起会话</string>
+    <string name="create_group_chat">创建群聊</string>
+    <string name="create_chat_room">创建聊天室</string>
+    <string name="create_private_group">创建讨论组</string>
+    <string name="scan_it">扫一扫</string>
+    <string name="hint_add_user_id">请输入ID</string>
+    <string name="hint_add_user_id_or_phone">请输入ID或手机号</string>
+    <string name="hint_add_wording">请输入验证消息</string>
+    <string name="contact_add">添加</string>
+    <string name="user_id">对方ID</string>
+    <string name="add_wording">验证消息</string>
+
+    // 新朋友
+    <string name="request_agree">同意</string>
+    <string name="request_accepted">已接受</string>
+    <string name="request_waiting">等待验证</string>
+    <string name="no_friend_apply">暂无好友请求</string>
+
+    // "我"相关
+    <string name="profile">我</string>
+    <string name="id">洽聊号：%1$s</string>
+    <string name="phone">手机号：%1$s</string>
+    <string name="modify_user_icon">修改头像</string>
+    <string name="modify_signature">个性签名</string>
+    <string name="add_rule">加我为好友时</string>
+    <string name="view_range">允许朋友查看朋友圈的范围</string>
+    <string name="message_system_notification">新消息系统通知</string>
+    <string name="default_background">还原默认背景</string>
+    <string name="message_notification_in_chat">聊天界面中的新消息通知</string>
+    <string name="select_from_album">从相册中选择</string>
+    <string name="view_font_size">字体大小</string>
+    <string name="view_favorites">我的收藏</string>
+    <string name="friend_updates">好友动态</string>
+    <string name="privacy_setting">隐私设置</string>
+    <string name="general_setting">通用设置</string>
+    <string name="verification_a_friend">加我为朋友时需要验证</string>
+    <string name="personal_information">个人信息</string>
+    <string name="qr_code_business_card">二维码名片</string>
+    <string name="description_business_card">扫一扫上面的二维码图案，加我洽聊</string>
+    <string name="description_invitation_code">扫一扫上面的二维码图案，注册洽聊</string>
+    <string name="invitation_code">邀请码</string>
+    <string name="allow_type_allow_any">允许任何人</string>
+    <string name="allow_type_deny_any">拒绝任何人</string>
+    <string name="allow_type_need_confirm">需要验证</string>
+    <string name="exit">退出登录</string>
+    <string name="about_im">关于洽聊</string>
+    <string name="announcement_title">官方推荐</string>
+    <string name="anquan_center">安全中心</string>
+</resources>

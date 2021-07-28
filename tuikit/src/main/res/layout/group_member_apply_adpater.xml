@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/selectable_contact_item"
+    android:layout_width="match_parent"
+    android:layout_height="57.5dp"
+    android:background="#fcfcfc"
+    android:focusable="true"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:paddingLeft="17.3dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingRight="@dimen/page_margin">
+
+    <com.tencent.qcloud.tim.uikit.component.gatherimage.ShadeImageView
+        android:id="@+id/group_apply_member_icon"
+        android:layout_width="@dimen/contact_avatar_width"
+        android:layout_height="@dimen/contact_avatar_height"
+        android:scaleType="fitCenter"
+        android:src="@drawable/default_head" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:textSize="15sp"
+            android:id="@+id/group_apply_member_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textColor="@color/text_color_black" />
+
+        <TextView
+            android:textSize="12sp"
+            android:id="@+id/group_apply_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textColor="@color/text_color_gray" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/group_apply_accept"
+        android:layout_width="55dp"
+        android:layout_height="33dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/bg_positive_btn"
+        android:onClick="startConversation"
+        android:text="@string/accept"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/group_apply_refuse"
+        android:layout_width="55dp"
+        android:layout_height="33dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/bg_negative_btn"
+        android:onClick="startConversation"
+        android:text="@string/refuse"
+        android:textColor="#fb6155" />
+</LinearLayout>
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="73.78dp"
+        android:background="@color/split_lint_color" />
+
+</RelativeLayout>

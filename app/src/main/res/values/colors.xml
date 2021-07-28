@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="test_blue">#338BFF</color>
+    <color name="colorCloud">#006EFF</color>
+
+    <color name="praise_item_default">#333333</color>
+    <color name="praise_item_selector_default">#cccccc</color>
+    <color name="contact_letter_idx_bg">#33000000</color>
+    <color name="title_top_color">#efeff4</color>
+    <color name="hint">#eeeeee</color>
+    <color name="color_f6">#f6f6f6</color>
+    <color name="im_list_select_hover">#dbdbdb</color>
+    <color name="color_232323">#232323</color>
+    <color name="color_8290AF">#8290AF</color>
+    <color name="color_aeaeae">#aeaeae</color>
+    <color name="im_font_color_text_hint">#abb1b6</color>
+    <color name="im_social_dig_name_bg">#DDDDDD</color>
+    <color name="im_line_color">#dadada</color>
+    <color name="praise_item">#8290AF</color>
+    <color name="name_selector_color">#cccccc</color>
+    <color name="gray_dark">#e2e2e2</color>
+    <color name="bg_no_photo">#EEEEEE</color>
+    <color name="round_corner_progress_bar_progress_default">#7f7f7f</color>
+
+    <!-- 聊天发送/光标色值 -->
+    <color name="green">#70C160</color>
+
+    <color name="colorActivityBackground">#ffffff</color>
+    <color name="colorDivider">#737373</color>
+    <color name="textSecond">#737373</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorShade">#33000000</color>
+    <color name="split_line_grey_color_d9d9d9">#D9D9D9</color>
+    <color name="color_black_333333">#333333</color>
+    <color name="color_activity_blue_bg">#f7389fff</color>
+    <color name="color_b3b3b3">#b3b3b3</color>
+    <color name="common_color_c1_337cff">#587cf3</color>
+    <color name="common_color_c5_45494e">#45494e</color>
+    <color name="status_bar_color">#EDEDED</color>
+
+    <color name="tab_text_selected_color">#006EFF</color>
+    <color name="tab_text_normal_color">#888888</color>
+
+    <color name="dark_gray_bg">#F5F5F5</color>
+    <color name="blue">#3072F3</color>
+    <color name="jmui_jpush_blue">#2DD0CF</color>
+    <color name="menu_item_back_pres_color">#2DD0CF</color>
+    <color name="btn_send_textcolor">@color/white</color>
+    <color name="chat_text_color">#0B1816</color>
+</resources>
