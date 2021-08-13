@@ -74,9 +74,9 @@ public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.Vi
         if (isSingleSelectMode&&contactBean.isSelected()){
             mPreSelectedPosition = position;
         }
-        Map<String, byte[]> customInfo = contactBean.getCustomInfo();
-        byte[] mutes = customInfo.get("mute");
-        if (new String(mutes).equals("1")){
+        int isForbidden = contactBean.getIsForbidden();
+//        byte[] mutes = customInfo.get("mute");
+        if (isForbidden==1){
             holder.mBtnSwitch.setChecked(true);
         }else {
             holder.mBtnSwitch.setChecked(false);

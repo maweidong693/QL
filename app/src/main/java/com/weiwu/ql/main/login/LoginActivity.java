@@ -296,6 +296,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         if (data != null) {
             showToast(data.getMessage());
             SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
@@ -305,8 +306,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     public void registerResult(LoginData data) {
         if (data != null) {
             showToast(data.getMessage());
-            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
-            startActivity(new Intent(this, MainActivity.class));
+//            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
     }

@@ -2,9 +2,12 @@ package com.weiwu.ql;
 
 import android.app.Application;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.smtt.sdk.QbSdk;
+import com.weiwu.ql.greendao.db.DaoMaster;
+import com.weiwu.ql.greendao.db.DaoSession;
 import com.weiwu.ql.main.login.LoginActivity;
 import com.weiwu.ql.utils.SPUtils;
 import com.youth.banner.util.LogUtils;
@@ -41,6 +44,31 @@ public class MyApplication extends Application {
         TUIKit.init(this, GenerateTestUserSig.SDKAPPID, new ConfigHelper().getConfigs());
 //        initX5();
 
+        setDatabase();
+
+    }
+
+    /* 通过 DaoMaster 的内部类 DevOpenHelper，你可以得到一个便利的 SQLiteOpenHelper 对象。
+可能你已经注意到了，你并不需要去编写「CREATE TABLE」这样的 SQL 语句，因为 greenDAO 已经帮你做了。 注意：默认的 DaoMaster.DevOpenHelper 会在数据库升级时，删除所有的表，意味着这将导致数据的丢失。*/
+
+    private DaoMaster.DevOpenHelper mHelper;
+    private SQLiteDatabase db;
+    private DaoMaster mDaoMaster;
+    private DaoSession mDaoSession;
+
+    private void setDatabase() {
+        mHelper = new DaoMaster.DevOpenHelper(this, "notes-db", null);
+        db = mHelper.getWritableDatabase();
+        mDaoMaster = new DaoMaster(db);
+        mDaoSession = mDaoMaster.newSession();
+    }
+
+    public DaoSession getDaoSession() {
+        return mDaoSession;
+    }
+
+    public SQLiteDatabase getDb() {
+        return db;
     }
 
     private void initX5() {

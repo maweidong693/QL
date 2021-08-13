@@ -7,6 +7,7 @@ import com.tencent.imsdk.v2.V2TIMFriendInfo;
 import com.tencent.imsdk.v2.V2TIMGroupInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberFullInfo;
 import com.tencent.qcloud.tim.uikit.component.indexlib.IndexBar.bean.BaseIndexPinyinBean;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class ContactItemBean extends BaseIndexPinyinBean {
 
     public static final String INDEX_STRING_TOP = "↑";
-    private String id="";
+    private String id = "";
     private boolean isTop;//是否是最上面的 不需要被转化成拼音的
     private boolean isSelected;
     private boolean isBlackList;
@@ -27,6 +28,20 @@ public class ContactItemBean extends BaseIndexPinyinBean {
     private boolean isGroup;
     private boolean isFriend = true;
     private boolean isEnable = true;
+    private int isForbidden;
+
+    public int getIsForbidden() {
+        return isForbidden;
+    }
+
+    public void setIsForbidden(int isForbidden) {
+        this.isForbidden = isForbidden;
+    }
+
+    public ContactItemBean(String id, String nickname) {
+        this.id = id;
+        this.nickname = nickname;
+    }
 
     public long getSilenceSeconds() {
         return silenceSeconds;
@@ -165,33 +180,35 @@ public class ContactItemBean extends BaseIndexPinyinBean {
         this.avatarurl = avatarurl;
     }
 
-    public ContactItemBean covertTIMGroupBaseInfo(V2TIMGroupInfo group) {
+    public ContactItemBean covertTIMGroupBaseInfo(ContactListData.DataDTO.GroupsDTO group) {
         if (group == null) {
             return this;
         }
-        setId(group.getGroupID());
-        setRemark(group.getGroupName());
-        setAvatarurl(group.getFaceUrl());
+        setNickname(group.getName());
+        setId(group.getId());
+        setRemark(group.getName());
+        setAvatarurl("");
         setGroup(true);
         return this;
     }
 
-    public ContactItemBean covertTIMGroupMemberFullInfo(V2TIMGroupMemberFullInfo member) {
+    public ContactItemBean covertTIMGroupMemberFullInfo(GroupMemberInfo member) {
         if (member == null) {
             return this;
         }
-        setId(member.getUserID());
-        if(TextUtils.isEmpty(member.getNickName())){
+        setId(member.getAccount());
+        if (TextUtils.isEmpty(member.getNickname())) {
             setRemark(member.getNameCard());
             setNickname(member.getNameCard());
-        }else{
-            setRemark(member.getNickName());
-            setNickname(member.getNickName());
+        } else {
+            setRemark(member.getNickname());
+            setNickname(member.getNickname());
         }
-        setCustomInfo(member.getCustomInfo());
-        setSilenceSeconds(member.getMuteUntil());
-        setAvatarurl(member.getFaceUrl());
-        setGroup(false);
+//        setCustomInfo(member.getNickname());
+//        setSilenceSeconds(member.get());
+        setAvatarurl(member.getIconUrl());
+        setGroup(true);
+        setIsForbidden(member.getIsForbidden());
         return this;
     }
 }

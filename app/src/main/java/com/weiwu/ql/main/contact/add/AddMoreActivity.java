@@ -17,13 +17,19 @@ import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.FriendInfoData;
+import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
+import com.weiwu.ql.utils.SystemFacade;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.jsoup.helper.StringUtil.isNumeric;
 
 public class AddMoreActivity extends BaseActivity implements ContactContract.IAddFriendView {
 
@@ -84,41 +90,11 @@ public class AddMoreActivity extends BaseActivity implements ContactContract.IAd
             ToastUtil.toastShortMessage("不能添加自己");
             return;
         }
-        /*if (isNumeric(id)) {
-            //全是数字可能是手机,去服务器查
-            Map map = new HashMap();
-            map.put("tel", id);
-            YHttp.obtain().post(Constant.URL_GET_IMID, map, new HttpCallBack<BaseBean>() {
-                @Override
-                public void onSuccess(BaseBean baseBean) {
-                    if (baseBean.getData() == null) {
-                        return;
-                    }
-                    JSONObject object = JSON.parseObject(baseBean.getData().toString());
-                    if (object != null) {
-                        String uid = object.getString("im_id");
-                        if (!TextUtils.isEmpty(uid)) {
-                            if (TextUtils.equals(uid, UserInfo.getInstance().getUserId())) {
-                                ToastUtil.toastShortMessage("不能添加自己");
-                                return;
-                            }
-                            addFriend(uid);
-                        } else {
-                            ToastUtil.toastShortMessage(baseBean.getMsg());
-                        }
-                    } else {
-                        ToastUtil.toastShortMessage(baseBean.getMsg());
-                    }
-                }
-
-                @Override
-                public void onFailed(String error) {
-
-                }
-            });
-        } else {*/
-        addFriend(id);
-//        }
+        if (SystemFacade.isMobile(id)) {
+            mPresenter.findFriendId(id);
+        } else {
+            addFriend(id);
+        }
     }
 
     private void addFriend(String id) {
@@ -153,6 +129,16 @@ public class AddMoreActivity extends BaseActivity implements ContactContract.IAd
         if (data != null) {
             showToast(data.getMessage());
             finish();
+        }
+    }
+
+    @Override
+    public void findFriendIdReceive(FriendInfoData data) {
+        if (data.getData() != null && data.getData().size() > 0) {
+            long id = data.getData().get(0).getId();
+            addFriend(String.valueOf(id));
+        } else {
+            showToast("没有找到该用户！");
         }
     }
 

@@ -1,13 +1,8 @@
 package com.tencent.qcloud.tim.uikit.modules.group.info;
 
 import com.tencent.imsdk.v2.V2TIMConversation;
-import com.tencent.imsdk.v2.V2TIMGroupInfoResult;
-import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.qcloud.tim.uikit.modules.chat.base.ChatInfo;
-import com.tencent.qcloud.tim.uikit.modules.group.member.GroupMemberInfo;
-import com.tencent.qcloud.tim.uikit.utils.CustomInfo;
 
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -21,6 +16,24 @@ public class GroupInfo extends ChatInfo {
     private List<GroupMemberInfo> memberDetails;
     private int joinType;
     private String owner;
+    private boolean isManger;
+    private boolean isOwner;
+
+    public void setOwner(boolean owner) {
+        isOwner = owner;
+    }
+
+    public boolean isManger() {
+        return isManger;
+    }
+
+    public void setManger(boolean manger) {
+        isManger = manger;
+    }
+
+    public boolean isOwner() {
+        return isOwner;
+    }
 
     @Override
     public String toString() {
@@ -166,27 +179,13 @@ public class GroupInfo extends ChatInfo {
     }
 
     /**
-     * 返回是否是群主
-     *
-     * @return
-     */
-    public boolean isOwner() {
-        return V2TIMManager.getInstance().getLoginUser().equals(owner);
-    }
-    /**
      * 返回是否是群管理
      *
      * @return
      */
     public boolean isManager() {
-        try {
-            HashMap<String, Object> hashMap = CustomInfo.InfoStrToMap(getGroupIntroduction());
-            List<String> list = (List<String>) hashMap.get(CustomInfo.GROUP_MANAGEMENT);
-            return  list.contains(V2TIMManager.getInstance().getLoginUser());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false ;
+        
+        return isManger() ;
     }
     /**
      * 设置是否是群主
@@ -203,19 +202,22 @@ public class GroupInfo extends ChatInfo {
      * @param infoResult
      * @return
      */
-    public GroupInfo covertTIMGroupDetailInfo(V2TIMGroupInfoResult infoResult) {
-        if (infoResult.getResultCode() != 0) {
+    public GroupInfo covertTIMGroupDetailInfo(GroupInfoData infoResult) {
+        if (infoResult.getCode() != 200) {
             return this;
         }
-        setChatName(infoResult.getGroupInfo().getGroupName());
-        setGroupName(infoResult.getGroupInfo().getGroupName());
-        setId(infoResult.getGroupInfo().getGroupID());
-        setNotice(infoResult.getGroupInfo().getNotification());
-        setGroupIntroduction(infoResult.getGroupInfo().getIntroduction());
-        setMemberCount(infoResult.getGroupInfo().getMemberCount());
-        setGroupType(infoResult.getGroupInfo().getGroupType());
-        setOwner(infoResult.getGroupInfo().getOwner());
-        setJoinType(infoResult.getGroupInfo().getGroupAddOpt());
+        GroupInfoData.DataDTO data = infoResult.getData();
+        setChatName(data.getName());
+        setGroupName(data.getName());
+        setId(data.getId());
+        setNotice(data.getNotice());
+        setGroupIntroduction(data.getIntroduction());
+        setMemberCount(data.getMemberGroupResultVOList().size());
+        setGroupType("群聊");
+        setOwner(data.getCurrentMemberRoleName());
+        setManger(data.getCurrentMemberRole() == 110);
+        setOwner(data.getCurrentMemberRole() == 111);
+//        setJoinType(infoResult.getGroupInfo().getGroupAddOpt());
         return this;
     }
 }

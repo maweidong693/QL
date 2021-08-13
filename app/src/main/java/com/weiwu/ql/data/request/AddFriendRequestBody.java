@@ -10,6 +10,10 @@ public class AddFriendRequestBody {
     private String memberId;
     private String remarks;
 
+    public AddFriendRequestBody(String memberId) {
+        this.memberId = memberId;
+    }
+
     public String getMemberId() {
         return memberId;
     }

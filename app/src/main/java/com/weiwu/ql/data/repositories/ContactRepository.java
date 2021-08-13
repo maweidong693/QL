@@ -4,11 +4,14 @@ import com.tencent.common.http.ContactListData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.BaseRepository;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.bean.FriendInfoData;
 import com.weiwu.ql.data.bean.LoginData;
+import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.bean.NewFriendListData;
 import com.weiwu.ql.data.network.DataService;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
+import com.weiwu.ql.data.request.CreateGroupRequestBody;
 import com.weiwu.ql.data.request.NewFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
 
@@ -58,5 +61,20 @@ public class ContactRepository extends BaseRepository implements ContactContract
     @Override
     public void uploadPic(LifecycleProvider lifecycleProvider, MultipartBody.Part file, IBaseCallBack<LoginData> callBack) {
         observerNoMap(lifecycleProvider, DataService.getApiService().uploadPicture(file), callBack);
+    }
+
+    @Override
+    public void deleteFriend(LifecycleProvider provider, String memberId, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().deleteFriend(memberId), callBack);
+    }
+
+    @Override
+    public void createGroup(LifecycleProvider provider, CreateGroupRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().createGroup(body), callBack);
+    }
+
+    @Override
+    public void findFriendId(LifecycleProvider provider, String mobile, IBaseCallBack<FriendInfoData> callBack) {
+        observerNoMap(provider, DataService.getApiService().findFriendId(mobile), callBack);
     }
 }

@@ -142,23 +142,7 @@ public class MineFragment extends BaseFragment implements MineContract.IMineView
                         .setPositiveButton("确定", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                TUIKit.logout(new IUIKitCallBack() {
-
-                                    @Override
-                                    public void onSuccess(Object data) {
-                                        logout();
-                                    }
-
-                                    @Override
-                                    public void onError(String module, int errCode, String errMsg) {
-                                        ToastUtil.toastLongMessage("logout fail");
-                                        logout();
-                                    }
-
-                                    private void logout() {
-                                        MyApplication.loginAgain();
-                                    }
-                                });
+                                MyApplication.loginAgain();
                             }
                         })
                         .setNegativeButton("取消", new View.OnClickListener() {

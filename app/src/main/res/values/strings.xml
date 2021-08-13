@@ -27,11 +27,15 @@
     <string name="user_id">对方ID</string>
     <string name="add_wording">验证消息</string>
 
+    // 群信息相关
+    <string name="tips_empty_group_member">请选择群成员</string>
+    <string name="tips_empty_group_type">请选择加群方式</string>
+    <string name="no_friend_apply">暂无好友申请</string>
+
     // 新朋友
     <string name="request_agree">同意</string>
     <string name="request_accepted">已接受</string>
     <string name="request_waiting">等待验证</string>
-    <string name="no_friend_apply">暂无好友请求</string>
 
     // "我"相关
     <string name="profile">我</string>
@@ -63,4 +67,5 @@
     <string name="about_im">关于洽聊</string>
     <string name="announcement_title">官方推荐</string>
     <string name="anquan_center">安全中心</string>
+    <string name="btn_text_speak">按住说话</string>
 </resources>

@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tencent.imsdk.v2.V2TIMFriendInfo;
-import com.tencent.imsdk.v2.V2TIMGroupInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberFullInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberInfoResult;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -20,12 +19,11 @@ import com.tencent.qcloud.tim.uikit.component.CustomLinearLayoutManager;
 import com.tencent.qcloud.tim.uikit.component.indexlib.IndexBar.widget.IndexBar;
 import com.tencent.qcloud.tim.uikit.component.indexlib.suspension.SuspensionDecoration;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
-import com.tencent.qcloud.tim.uikit.modules.group.member.GroupMemberInfo;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.utils.BackgroundTasks;
 import com.tencent.qcloud.tim.uikit.utils.CustomInfo;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitLog;
 import com.tencent.qcloud.tim.uikit.utils.ThreadHelper;
-import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -309,7 +307,7 @@ public class MessageForwardListView extends LinearLayout {
     private void loadGroupListData() {
         TUIKitLog.i(TAG, "loadGroupListData");
 
-        V2TIMManager.getGroupManager().getJoinedGroupList(new V2TIMValueCallback<List<V2TIMGroupInfo>>() {
+        /*V2TIMManager.getGroupManager().getJoinedGroupList(new V2TIMValueCallback<List<V2TIMGroupInfo>>() {
             @Override
             public void onError(int code, String desc) {
                 TUIKitLog.e(TAG, "getGroupList err code = " + code + ", desc = " + desc);
@@ -336,11 +334,11 @@ public class MessageForwardListView extends LinearLayout {
                 }
                 setDataSource(mData);
             }
-        });
+        });*/
     }
 
     private void loadGroupMembers() {
-        V2TIMManager.getGroupManager().getGroupMemberList(mGroupInfo.getId(), V2TIMGroupMemberFullInfo.V2TIM_GROUP_MEMBER_FILTER_ALL, 0, new V2TIMValueCallback<V2TIMGroupMemberInfoResult>() {
+        /*V2TIMManager.getGroupManager().getGroupMemberList(mGroupInfo.getId(), V2TIMGroupMemberFullInfo.V2TIM_GROUP_MEMBER_FILTER_ALL, 0, new V2TIMValueCallback<V2TIMGroupMemberInfoResult>() {
             @Override
             public void onError(int code, String desc) {
                 TUIKitLog.e(TAG, "loadGroupMembers failed, code: " + code + "|desc: " + desc);
@@ -371,7 +369,7 @@ public class MessageForwardListView extends LinearLayout {
                 }
                 setDataSource(mData);
             }
-        });
+        });*/
     }
 
     public List<ContactItemBean> getGroupData() {

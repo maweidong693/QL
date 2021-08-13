@@ -3,7 +3,7 @@ package com.tencent.qcloud.tim.uikit.modules.group.apply;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 
 import android.util.AttributeSet;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.chat.GroupChatManagerKit;
@@ -77,7 +78,7 @@ public class GroupApplyManagerLayout extends LinearLayout implements IGroupMembe
     }
 
     @Override
-    public void setDataSource(GroupInfo dataSource) {
+    public void setDataSource(GroupInfo dataSource, ContactListData.DataDTO list) {
         mAdapter.setDataSource(dataSource);
         mAdapter.notifyDataSetChanged();
     }

@@ -11,7 +11,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.trello.rxlifecycle2.components.support.RxFragment;
 import com.weiwu.ql.R;
@@ -157,4 +159,24 @@ public abstract class BaseFragment extends RxFragment {
         return true;
     }
 
+    public void forward(Fragment fragment, boolean hide) {
+        forward(getId(), fragment, null, hide);
+    }
+
+    public void forward(int viewId, Fragment fragment, String name, boolean hide) {
+        FragmentTransaction trans = getFragmentManager().beginTransaction();
+        if (hide) {
+            trans.hide(this);
+            trans.add(viewId, fragment);
+        } else {
+            trans.replace(viewId, fragment);
+        }
+
+        trans.addToBackStack(name);
+        trans.commitAllowingStateLoss();
+    }
+
+    public void backward() {
+        getFragmentManager().popBackStack();
+    }
 }

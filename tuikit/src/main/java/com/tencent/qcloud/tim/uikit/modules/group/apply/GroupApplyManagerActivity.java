@@ -3,7 +3,7 @@ package com.tencent.qcloud.tim.uikit.modules.group.apply;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 
 import com.tencent.qcloud.tim.uikit.R;
@@ -26,7 +26,7 @@ public class GroupApplyManagerActivity extends Activity {
         mManagerLayout = findViewById(R.id.group_apply_manager_layout);
 
         mGroupInfo = (GroupInfo) getIntent().getExtras().getSerializable(TUIKitConstants.Group.GROUP_INFO);
-        mManagerLayout.setDataSource(mGroupInfo);
+        mManagerLayout.setDataSource(mGroupInfo, null);
     }
 
     @Override

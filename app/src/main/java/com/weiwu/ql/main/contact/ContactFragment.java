@@ -18,8 +18,10 @@ import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
+import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.main.contact.detail.FriendProfileActivity;
+import com.weiwu.ql.main.contact.group.GroupListActivity;
 import com.weiwu.ql.main.contact.new_friend.NewFriendActivity;
 import com.weiwu.ql.view.Menu;
 
@@ -38,7 +40,7 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     private ContactLayout mContactLayout;
     private Menu mMenu;
     private ContactContract.IContactPresenter mPresenter;
-    private List<ContactListData.DataDTO.FriendsDTO> friends = new ArrayList<>();
+    private ContactListData.DataDTO friends;
 
     @Override
     protected int getLayoutId() {
@@ -75,9 +77,9 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getActivity().startActivity(intent);
                 } else if (position == 1) {
-                    /*Intent intent = new Intent(getContext(), GroupListActivity.class);
+                    Intent intent = new Intent(getContext(), GroupListActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getActivity().startActivity(intent);*/
+                    getActivity().startActivity(intent);
                 } else if (position == 2) {
                     /*Intent intent = new Intent(getContext(), BlackListActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -94,8 +96,10 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     }
 
     private void refreshData() {
-        // 通讯录面板的默认UI和交互初始化
-        mContactLayout.initDefault(friends);
+        if (friends != null) {
+            // 通讯录面板的默认UI和交互初始化
+            mContactLayout.initDefault(friends);
+        }
     }
 
     @Override
@@ -107,9 +111,14 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     @Override
     public void contactReceive(ContactListData data) {
         if (data.getData() != null) {
-            friends = data.getData().getFriends();
+            friends = data.getData();
             mContactLayout.initDefault(friends);
         }
+    }
+
+    @Override
+    public void createGroupResult(HttpResult result) {
+
     }
 
     @Override

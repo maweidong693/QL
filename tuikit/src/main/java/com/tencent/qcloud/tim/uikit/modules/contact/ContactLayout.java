@@ -50,7 +50,7 @@ public class ContactLayout extends LinearLayout implements IContactLayout {
         mContactListView = findViewById(R.id.contact_listview);
     }
 
-    public void initDefault(List<ContactListData.DataDTO.FriendsDTO> list) {
+    public void initDefault(ContactListData.DataDTO list) {
         mContactListView.loadDataSource(ContactListView.DataSource.CONTACT_LIST, list);
     }
 

@@ -2,7 +2,6 @@ package com.tencent.qcloud.tim.uikit.modules.contact;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,32 +10,22 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.tencent.common.Constant;
 import com.tencent.common.http.ContactListData;
-import com.tencent.common.http.HttpCallBack;
-import com.tencent.common.http.YHttp;
-import com.tencent.imsdk.v2.V2TIMFriendInfo;
-import com.tencent.imsdk.v2.V2TIMGroupInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberFullInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberInfoResult;
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMValueCallback;
 import com.tencent.qcloud.tim.uikit.R;
-import com.tencent.qcloud.tim.uikit.base.IUIKitCallBack;
 import com.tencent.qcloud.tim.uikit.component.CustomLinearLayoutManager;
 import com.tencent.qcloud.tim.uikit.component.indexlib.IndexBar.widget.IndexBar;
 import com.tencent.qcloud.tim.uikit.component.indexlib.suspension.SuspensionDecoration;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
-import com.tencent.qcloud.tim.uikit.modules.group.member.GroupMemberInfo;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.utils.BackgroundTasks;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitLog;
-import com.tencent.qcloud.tim.uikit.utils.ThreadHelper;
-import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.tencent.imsdk.v2.V2TIMGroupAtInfo.AT_ALL_TAG;
 
@@ -63,7 +52,8 @@ public class ContactListView extends LinearLayout {
      * 显示指示器DialogText
      */
     private TextView mTvSideBarHint;
-    private List<ContactListData.DataDTO.FriendsDTO> mList = new ArrayList<>();
+    private List<ContactListData.DataDTO.FriendsDTO> mFriendsList = new ArrayList<>();
+    private List<ContactListData.DataDTO.GroupsDTO> mGroupsList = new ArrayList<>();
 
     public ContactListView(Context context) {
         super(context);
@@ -122,21 +112,29 @@ public class ContactListView extends LinearLayout {
         mAdapter.setOnItemClickListener(listener);
     }
 
-    public void loadDataSource(int dataSource, List<ContactListData.DataDTO.FriendsDTO> list) {
+    public void loadDataSource(int dataSource, ContactListData.DataDTO list) {
         mContactLoadingBar.setVisibility(VISIBLE);
         mData.clear();
         switch (dataSource) {
             case DataSource.FRIEND_LIST:
+                if (list.getFriends() != null) {
+                    mFriendsList = list.getFriends();
+                }
                 loadFriendListDataAsync();
                 break;
             case DataSource.BLACK_LIST:
                 loadBlackListData();
                 break;
             case DataSource.GROUP_LIST:
+                if (list.getGroups() != null) {
+                    mGroupsList = list.getGroups();
+                }
                 loadGroupListData();
                 break;
             case DataSource.CONTACT_LIST:
-                mList = list;
+                if (list.getFriends() != null) {
+                    mFriendsList = list.getFriends();
+                }
                 mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend))
                         .setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
                 mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group)).
@@ -190,7 +188,7 @@ public class ContactListView extends LinearLayout {
     }
 
     private void loadFriendListDataAsync() {
-        assembleFriendListData(mList);
+        assembleFriendListData(mFriendsList);
     }
 
 //    private void fillFriendListData(final List<V2TIMFriendInfo> timFriendInfoList) {
@@ -289,7 +287,17 @@ public class ContactListView extends LinearLayout {
     private void loadGroupListData() {
         TUIKitLog.i(TAG, "loadGroupListData");
 
-        V2TIMManager.getGroupManager().getJoinedGroupList(new V2TIMValueCallback<List<V2TIMGroupInfo>>() {
+        if (mGroupsList.size() == 0) {
+            TUIKitLog.i(TAG, "getGroupList success but no data");
+        }
+        mData.clear();
+        for (ContactListData.DataDTO.GroupsDTO info : mGroupsList) {
+            ContactItemBean bean = new ContactItemBean();
+            mData.add(bean.covertTIMGroupBaseInfo(info));
+        }
+        setDataSource(mData);
+
+        /*V2TIMManager.getGroupManager().getJoinedGroupList(new V2TIMValueCallback<List<V2TIMGroupInfo>>() {
             @Override
             public void onError(int code, String desc) {
                 TUIKitLog.e(TAG, "getGroupList err code = " + code + ", desc = " + desc);
@@ -304,17 +312,17 @@ public class ContactListView extends LinearLayout {
                     TUIKitLog.i(TAG, "getGroupList success but no data");
                 }
                 mData.clear();
-                for (V2TIMGroupInfo info : v2TIMGroupInfos) {
+                for (ContactListData.DataDTO.GroupsDTO info : v2TIMGroupInfos) {
                     ContactItemBean bean = new ContactItemBean();
                     mData.add(bean.covertTIMGroupBaseInfo(info));
                 }
                 setDataSource(mData);
             }
-        });
+        });*/
     }
 
     private void loadGroupMembers() {
-        V2TIMManager.getGroupManager().getGroupMemberList(mGroupInfo.getId(), V2TIMGroupMemberFullInfo.V2TIM_GROUP_MEMBER_FILTER_ALL, 0, new V2TIMValueCallback<V2TIMGroupMemberInfoResult>() {
+        /*V2TIMManager.getGroupManager().getGroupMemberList(mGroupInfo.getId(), V2TIMGroupMemberFullInfo.V2TIM_GROUP_MEMBER_FILTER_ALL, 0, new V2TIMValueCallback<V2TIMGroupMemberInfoResult>() {
             @Override
             public void onError(int code, String desc) {
                 TUIKitLog.e(TAG, "loadGroupMembers failed, code: " + code + "|desc: " + desc);
@@ -346,7 +354,7 @@ public class ContactListView extends LinearLayout {
 
                 setDataSource(mData);
             }
-        });
+        });*/
     }
 
     public List<ContactItemBean> getGroupData() {

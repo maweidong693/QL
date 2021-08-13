@@ -3,6 +3,8 @@ package com.weiwu.ql.main.contact;
 import com.tencent.common.http.ContactListData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.CreateGroupRequestBody;
 
 /**
  *  
@@ -25,6 +27,21 @@ public class ContactPresenter implements ContactContract.IContactPresenter {
             @Override
             public void onSuccess(ContactListData data) {
                 mView.contactReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void createGroup(CreateGroupRequestBody body) {
+        mSource.createGroup((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.createGroupResult(data);
             }
 
             @Override

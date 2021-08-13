@@ -103,45 +103,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         if (TextUtils.equals(holder.itemView.getContext().getResources().getString(R.string.new_friend), contactBean.getId())) {
             holder.avatar.setImageResource(R.drawable.group_new_friend);
 
-            /*V2TIMManager.getFriendshipManager().getFriendApplicationList(new V2TIMValueCallback<V2TIMFriendApplicationResult>() {
-                @Override
-                public void onError(int code, String desc) {
-                    ToastUtil.toastShortMessage("Error code = " + code + ", desc = " + desc);
-                }
-
-                @Override
-                public void onSuccess(V2TIMFriendApplicationResult v2TIMFriendApplicationResult) {
-                    if (v2TIMFriendApplicationResult.getFriendApplicationList() != null) {
-                        int pendingRequest = v2TIMFriendApplicationResult.getFriendApplicationList().size();
-                        if (pendingRequest == 0) {
-                            holder.unreadText.setVisibility(View.GONE);
-                        } else {
-                            holder.unreadText.setVisibility(View.VISIBLE);
-                            holder.unreadText.setText("" + pendingRequest);
-                        }
-                    }
-                }
-            });*/
-            /*Map map = new HashMap();
-            YHttp.obtain().post(Constant.URL_NEW_FRIEND_COUNT, map, new HttpCallBack<NewFriendCount>() {
-                @Override
-                public void onSuccess(NewFriendCount newFriendCount) {
-                    if (newFriendCount != null) {
-                        int count = newFriendCount.getData().getCount();
-                        if (count == 0) {
-                            holder.unreadText.setVisibility(View.GONE);
-                        } else {
-                            holder.unreadText.setVisibility(View.VISIBLE);
-                            holder.unreadText.setText(String.valueOf(count));
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailed(String error) {
-                    ToastUtil.toastShortMessage("desc = " + error);
-                }
-            });*/
         } else if (TextUtils.equals(holder.itemView.getContext().getResources().getString(R.string.group), contactBean.getId())) {
             holder.avatar.setImageResource(R.drawable.group_common_list);
         } else if (TextUtils.equals(holder.itemView.getContext().getResources().getString(R.string.blacklist), contactBean.getId())) {

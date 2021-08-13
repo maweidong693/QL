@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.base.BaseFragment;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
-import com.tencent.qcloud.tim.uikit.modules.message.MessageInfo;
-import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 
 
 public class MessageForwardFragment extends BaseFragment {

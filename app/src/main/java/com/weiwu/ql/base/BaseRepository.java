@@ -92,7 +92,6 @@ public class BaseRepository {
 
             @Override
             public void onNext(R r) {
-                Log.d(TAG, "onNext: ne");
                 if (BuildConfig.DEBUG) {
                     Logger.d("%s onNext = %s ", getClass().getSimpleName(), r.toString());
                 }
@@ -119,7 +118,6 @@ public class BaseRepository {
 
             }
         });
-
     }
 
     private static final String TAG = "BaseRepository";

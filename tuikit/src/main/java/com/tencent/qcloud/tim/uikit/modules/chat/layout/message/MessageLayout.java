@@ -1,37 +1,20 @@
 package com.tencent.qcloud.tim.uikit.modules.chat.layout.message;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tencent.common.Constant;
-import com.tencent.common.http.HttpCallBack;
-import com.tencent.common.http.YHandler;
-import com.tencent.common.http.YHttp;
-import com.tencent.imsdk.v2.V2TIMConversation;
-import com.tencent.imsdk.v2.V2TIMImageElem;
-import com.tencent.imsdk.v2.V2TIMMessage;
-import com.tencent.imsdk.v2.V2TIMSoundElem;
-import com.tencent.imsdk.v2.V2TIMTextElem;
-import com.tencent.imsdk.v2.V2TIMValueCallback;
-import com.tencent.imsdk.v2.V2TIMVideoElem;
 import com.tencent.qcloud.tim.uikit.component.PopupList;
 import com.tencent.qcloud.tim.uikit.component.action.PopActionClickListener;
 import com.tencent.qcloud.tim.uikit.component.action.PopMenuAction;
 import com.tencent.qcloud.tim.uikit.modules.chat.base.ChatInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
 import com.tencent.qcloud.tim.uikit.modules.message.MessageInfo;
-import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
-import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;

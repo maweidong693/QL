@@ -2,6 +2,8 @@ package com.weiwu.ql.main.contact.add;
 
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.bean.FriendInfoData;
+import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
@@ -27,6 +29,21 @@ public class AddFriendPresenter implements ContactContract.IAddFriendPresenter {
             @Override
             public void onSuccess(HttpResult data) {
                 mView.addFriendReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void findFriendId(String mobile) {
+        mSource.findFriendId((LifecycleProvider) mView, mobile, new IBaseCallBack<FriendInfoData>() {
+            @Override
+            public void onSuccess(FriendInfoData data) {
+                mView.findFriendIdReceive(data);
             }
 
             @Override

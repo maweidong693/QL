@@ -3,7 +3,6 @@ package com.tencent.qcloud.tim.uikit.modules.contact;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -16,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 import com.tencent.common.Constant;
 import com.tencent.common.http.BaseBean;
 import com.tencent.common.http.HttpCallBack;

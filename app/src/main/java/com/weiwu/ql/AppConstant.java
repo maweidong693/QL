@@ -21,4 +21,9 @@ public interface AppConstant {
     String MINE_INFO = "mineInfo";
     String RANKING_TYPE = "rankingType";
     String LOG_TYPE = "logType";
+    String VIDEO_URL = "videoUrl";
+    String IMG_OR_VIDEO = "imgOrVideo";
+    String CHAT_TYPE = "chatType";
+    String USER_ID = "userId";
+    String USER_NAME = "userName";
 }

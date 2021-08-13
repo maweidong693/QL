@@ -45,21 +45,29 @@
             android:visibility="gone" />
 
         <RelativeLayout
+            android:id="@+id/rl_send_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="3dp"
             android:autoLink="web"
             android:background="@drawable/jmui_msg_send_bg"
-            android:paddingLeft="10dp"
-            android:paddingRight="18dp">
+            >
 
             <ImageView
                 android:id="@+id/iv_receive_iv"
                 android:layout_width="@dimen/dp_150"
                 android:layout_height="@dimen/dp_180"
-                android:visibility="gone"
                 android:maxWidth="@dimen/dp_150"
-                android:maxHeight="@dimen/dp_180" />
+                android:maxHeight="@dimen/dp_180"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/iv_video_mine_play"
+                android:layout_width="@dimen/dp_30"
+                android:layout_height="@dimen/dp_30"
+                android:layout_centerInParent="true"
+                android:src="@drawable/picture_icon_video_play"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_content"
@@ -67,7 +75,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColorLink="#157BFB"
-                android:visibility="visible" />
+                android:visibility="visible"
+                android:paddingLeft="10dp"
+                android:paddingRight="18dp"/>
+
+            <TextView
+                android:id="@+id/tv_send_voice"
+                style="@style/jmui_msg_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/voice_msg_playing_3"
+                android:drawablePadding="@dimen/dp_10"
+                android:text="1“"
+                android:visibility="visible"
+                android:paddingLeft="10dp"
+                android:paddingRight="18dp"/>
         </RelativeLayout>
 
 

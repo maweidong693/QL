@@ -23,6 +23,7 @@ import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.main.contact.add.AddMoreActivity;
+import com.weiwu.ql.main.message.StartGroupChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class Menu {
                     Intent intent = new Intent(MyApplication.mApplicationContext, StartC2CChatActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mActivity.startActivity(intent);
-                }
+                }*/
 
                 if (TextUtils.equals(action.getActionName(), mActivity.getResources().getString(R.string.create_private_group))) {
                     Intent intent = new Intent(MyApplication.mApplicationContext, StartGroupChatActivity.class);
@@ -83,18 +84,19 @@ public class Menu {
                     intent.putExtra(TUIKitConstants.GroupType.TYPE, TUIKitConstants.GroupType.PRIVATE);
 //                    intent.putExtra(TUIKitConstants.GroupType.TYPE, TUIKitConstants.GroupType.PUBLIC);
                     mActivity.startActivity(intent);
+
                 }
                 if (TextUtils.equals(action.getActionName(), mActivity.getResources().getString(R.string.create_chat_room))) {
                     Intent intent = new Intent(MyApplication.mApplicationContext, StartGroupChatActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TUIKitConstants.GroupType.TYPE, TUIKitConstants.GroupType.CHAT_ROOM);
                     mActivity.startActivity(intent);
-                }*/
+                }
                 if (TextUtils.equals(action.getActionName(), mActivity.getResources().getString(R.string.scan_it))) {
                     if (PermissionUtils.checkPermission(mActivity, Manifest.permission.CAMERA)){
                         Intent intent = new Intent(mActivity, CaptureActivity.class);
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mActivity.startActivityForResult(intent, REQUEST_CODE_SCAN);
+//                        mActivity.startActivityForResult(intent, REQUEST_CODE_SCAN);
                     }
                 }
                 mMenuWindow.dismiss();

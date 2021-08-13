@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
@@ -16,16 +15,9 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.luck.picture.lib.config.PictureMimeType;
 import com.tencent.common.Constant;
 import com.tencent.common.http.HttpCallBack;
 import com.tencent.common.http.YHttp;
-import com.tencent.imsdk.v2.V2TIMFaceElem;
-import com.tencent.imsdk.v2.V2TIMManager;
-import com.tencent.imsdk.v2.V2TIMMessage;
-import com.tencent.imsdk.v2.V2TIMTextElem;
-import com.tencent.imsdk.v2.V2TIMVideoElem;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.base.IUIKitCallBack;
 import com.tencent.qcloud.tim.uikit.component.AudioPlayer;
@@ -35,25 +27,13 @@ import com.tencent.qcloud.tim.uikit.modules.chat.interfaces.IChatProvider;
 import com.tencent.qcloud.tim.uikit.modules.chat.layout.input.InputLayout;
 import com.tencent.qcloud.tim.uikit.modules.chat.layout.message.MessageLayout;
 import com.tencent.qcloud.tim.uikit.modules.chat.layout.message.MessageListAdapter;
-import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
-import com.tencent.qcloud.tim.uikit.modules.group.info.MessageForwardActivity;
 import com.tencent.qcloud.tim.uikit.modules.message.MessageInfo;
-import com.tencent.qcloud.tim.uikit.modules.message.MessageMute;
-import com.tencent.qcloud.tim.uikit.modules.message.MessageQuoteInfo;
 import com.tencent.qcloud.tim.uikit.utils.BackgroundTasks;
-import com.tencent.qcloud.tim.uikit.utils.FileUtil;
-import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.tencent.qcloud.tim.uikit.modules.message.MessageInfoUtil.checkMsgIsQuote;
 
 
 public abstract class AbsChatLayout extends ChatLayoutUI implements IChatLayout {

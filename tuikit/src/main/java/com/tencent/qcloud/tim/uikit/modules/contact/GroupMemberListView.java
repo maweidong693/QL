@@ -7,7 +7,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.tencent.imsdk.v2.V2TIMFriendInfo;
-import com.tencent.imsdk.v2.V2TIMGroupInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberFullInfo;
 import com.tencent.imsdk.v2.V2TIMGroupMemberInfoResult;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -17,12 +16,11 @@ import com.tencent.qcloud.tim.uikit.component.CustomLinearLayoutManager;
 import com.tencent.qcloud.tim.uikit.component.indexlib.IndexBar.widget.IndexBar;
 import com.tencent.qcloud.tim.uikit.component.indexlib.suspension.SuspensionDecoration;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
-import com.tencent.qcloud.tim.uikit.modules.group.member.GroupMemberInfo;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.utils.BackgroundTasks;
 import com.tencent.qcloud.tim.uikit.utils.CustomInfo;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitLog;
 import com.tencent.qcloud.tim.uikit.utils.ThreadHelper;
-import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,8 +101,9 @@ public class GroupMemberListView extends LinearLayout {
     public void setSingleSelectMode(boolean mode) {
         mAdapter.setSingleSelectMode(mode);
     }
-    public void setType(int type){
-        this.type = type ;
+
+    public void setType(int type) {
+        this.type = type;
         mAdapter.setType(type);
     }
 
@@ -116,7 +115,7 @@ public class GroupMemberListView extends LinearLayout {
         mAdapter.setOnItemClickListener(listener);
     }
 
-    public void loadDataSource(int dataSource) {
+    public void loadDataSource(int dataSource, GroupInfo data) {
         mContactLoadingBar.setVisibility(VISIBLE);
         mData.clear();
         switch (dataSource) {
@@ -139,6 +138,7 @@ public class GroupMemberListView extends LinearLayout {
                 loadFriendListDataAsync();
                 break;
             case DataSource.GROUP_MEMBER_LIST:
+                mGroupInfo = data;
                 loadGroupMembers();
                 break;
             default:
@@ -177,15 +177,17 @@ public class GroupMemberListView extends LinearLayout {
             });
         }
     }
-    private void updateStatus(List<ContactItemBean> mData ,List<String> beanList){
+
+    private void updateStatus(List<ContactItemBean> mData, List<String> beanList) {
         for (ContactItemBean info : mData) {
-            for (String  id  : beanList) {
+            for (String id : beanList) {
                 if (info.getId().equals(id)) {
                     info.setSelected(true);
                 }
             }
         }
     }
+
     private void loadFriendListDataAsync() {
         TUIKitLog.i(TAG, "loadFriendListDataAsync");
         ThreadHelper.INST.execute(new Runnable() {
@@ -306,7 +308,7 @@ public class GroupMemberListView extends LinearLayout {
     private void loadGroupListData() {
         TUIKitLog.i(TAG, "loadGroupListData");
 
-        V2TIMManager.getGroupManager().getJoinedGroupList(new V2TIMValueCallback<List<V2TIMGroupInfo>>() {
+        /*V2TIMManager.getGroupManager().getJoinedGroupList(new V2TIMValueCallback<List<V2TIMGroupInfo>>() {
             @Override
             public void onError(int code, String desc) {
                 TUIKitLog.e(TAG, "getGroupList err code = " + code + ", desc = " + desc);
@@ -327,11 +329,38 @@ public class GroupMemberListView extends LinearLayout {
                 }
                 setDataSource(mData);
             }
-        });
+        });*/
     }
 
     private void loadGroupMembers() {
-        V2TIMManager.getGroupManager().getGroupMemberList(mGroupInfo.getId(), V2TIMGroupMemberFullInfo.V2TIM_GROUP_MEMBER_FILTER_ALL, 0, new V2TIMValueCallback<V2TIMGroupMemberInfoResult>() {
+        List<GroupMemberInfo> memberDetails = mGroupInfo.getMemberDetails();
+        List<GroupMemberInfo> members = new ArrayList<>();
+        for (int i = 0; i < memberDetails.size(); i++) {
+            members.add(memberDetails.get(i));
+
+        }
+        mData.clear();
+        for (GroupMemberInfo info : members) {
+            ContactItemBean bean = new ContactItemBean();
+            mData.add(bean.covertTIMGroupMemberFullInfo(info));
+        }
+        if (type == 2) {
+//            String introduction = mGroupInfo.getGroupIntroduction();
+//            HashMap<String, Object> hashMap = CustomInfo.InfoStrToMap(introduction);
+//            List<String >  list = (List<String>) hashMap.get(CustomInfo.GROUP_MANAGEMENT);
+//            if (list!=null&&list.size()>0){
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < memberDetails.size(); i++) {
+                GroupMemberInfo memberInfo = memberDetails.get(i);
+                if (memberInfo.getMemberType() == 110) {
+                    list.add(memberInfo.getAccount());
+                }
+            }
+            updateStatus(mData, list);
+//            }
+        }
+        setDataSource(mData);
+       /* V2TIMManager.getGroupManager().getGroupMemberList(mGroupInfo.getId(), V2TIMGroupMemberFullInfo.V2TIM_GROUP_MEMBER_FILTER_ALL, 0, new V2TIMValueCallback<V2TIMGroupMemberInfoResult>() {
             @Override
             public void onError(int code, String desc) {
                 TUIKitLog.e(TAG, "loadGroupMembers failed, code: " + code + "|desc: " + desc);
@@ -362,7 +391,7 @@ public class GroupMemberListView extends LinearLayout {
                 }
                 setDataSource(mData);
             }
-        });
+        });*/
     }
 
     public List<ContactItemBean> getGroupData() {

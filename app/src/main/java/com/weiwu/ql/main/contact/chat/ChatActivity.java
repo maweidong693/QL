@@ -3,13 +3,11 @@ package com.weiwu.ql.main.contact.chat;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -18,48 +16,60 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.gyf.immersionbar.ImmersionBar;
+import com.gyf.immersionbar.OnKeyboardListener;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.tencent.qcloud.tim.uikit.base.ITitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.AppConstant;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.LoginData;
+import com.weiwu.ql.data.bean.MessageListData;
 import com.weiwu.ql.data.repositories.ContactRepository;
+import com.weiwu.ql.greendao.db.ChatMessageDao;
+import com.weiwu.ql.greendao.db.MessageListDataDao;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.chat.adapter.Adapter_ChatMessage;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
 import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
 import com.weiwu.ql.main.contact.chat.util.Util;
+import com.weiwu.ql.main.contact.group.GroupInfoActivity;
+import com.weiwu.ql.utils.AudioRecoderUtils;
 import com.weiwu.ql.utils.GlideEngine;
 import com.weiwu.ql.utils.SystemFacade;
+import com.weiwu.ql.view.VoicePopup;
+
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -81,7 +91,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private ListView listView;
     private Button btn_send;
     private List<ChatMessage> chatMessageList = new ArrayList<>();//消息列表
-    private Adapter_ChatMessage adapter_chatMessage;
+    private Adapter_ChatMessage mAdapter;
     private ChatMessageReceiver chatMessageReceiver;
     private ConstraintLayout mClChatMore;
     private ImageView mIvChatPic;
@@ -94,11 +104,27 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private ContactContract.IChatPresenter mPresenter;
     private List<LocalMedia> media = new ArrayList<>();
     private String msgType = "";
+    private ImageView voiceOrText;
+    private boolean isVoice = false;
+    private RelativeLayout rlInput;
+    private Button btVoice;
+    private VoicePopup mVoicePopup;
+    private AudioRecoderUtils mAudioRecoderUtils;
+    private double mPosX;
+    private double mPosY;
+    private double mCurPosX;
+    private double mCurPosY;
+    private TextView mVoiceHint;
+    private ChatMessageDao mChatMessageDao;
+    private QueryBuilder<ChatMessage> qb;
+    private String mReceiverType;
+    private MessageListDataDao messageListDataDao;
+    private QueryBuilder<MessageListData> messageListQb;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        jWebSClientService.onDestroy();
+//        jWebSClientService.onDestroy();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -133,26 +159,43 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    private static final String TAG = "ChatActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        getSupportActionBar().hide();
         setContentView(R.layout.activity_chat);
+        ImmersionBar.with(this).keyboardEnable(true)  //解决软键盘与底部输入框冲突问题，默认为false，还有一个重载方法，可以指定软键盘mode
+                .keyboardMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)  //单独指定软键盘模式
+                .setOnKeyboardListener(new OnKeyboardListener() {    //软键盘监听回调，keyboardEnable为true才会回调此方法
+                    @Override
+                    public void onKeyboardChange(boolean isPopup, int keyboardHeight) {
+                        listView.setSelection(mAdapter.getCount() - 1);
+                        if (isPopup) {
+                            mClChatMore.setVisibility(View.GONE);
+                        }
+                    }
+                })
+                .init();
         Intent intent = getIntent();
         if (intent != null) {
             mFriendInfo = (ContactItemBean) intent.getSerializableExtra(TUIKitConstants.ProfileType.CONTENT);
+            mReceiverType = intent.getStringExtra(AppConstant.CHAT_TYPE);
         }
+
         mContext = ChatActivity.this;
         setPresenter(new ChatPresenter(ContactRepository.getInstance()));
         findViewById();
         initView();
         //启动服务
-        startJWebSClientService();
+//        startJWebSClientService();
         //绑定服务
         bindService();
         //注册广播
         doRegisterReceiver();
         //检测通知是否开启
-        checkNotification(mContext);
+//        checkNotification(mContext);
     }
 
     /**
@@ -163,9 +206,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
     }
 
-    /**
+    /* *//**
      * 启动服务（websocket客户端服务）
-     */
+     *//*
     private void startJWebSClientService() {
         Intent intent = new Intent(mContext, JWebSocketClientService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -175,7 +218,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             startService(intent);
         }
 //        startService(intent);
-    }
+    }*/
 
     /**
      * 动态注册广播
@@ -190,19 +233,152 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private void findViewById() {
         mTitleBar = findViewById(R.id.chat_titlebar);
         mTitleBar.setTitle(mFriendInfo.getNickname(), TitleBarLayout.POSITION.LEFT);
-        mTitleBar.getRightGroup().setVisibility(View.GONE);
+        mTitleBar.setRightIcon(R.drawable.more);
+        mTitleBar.getRightIcon().setImageResource(R.drawable.more);
+
         mTitleBar.setOnLeftClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+        if (mReceiverType.equals("group")) {
+            mTitleBar.getRightGroup().setVisibility(View.VISIBLE);
+            mTitleBar.setOnRightClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ChatActivity.this, GroupInfoActivity.class);
+                    intent.putExtra(TUIKitConstants.Group.GROUP_ID, mFriendInfo.getId());
+                    startActivityForResult(intent, 1000);
+                    startActivity(intent);
+//                    finish();
+                }
+            });
+        } else {
+            mTitleBar.getRightGroup().setVisibility(View.GONE);
+        }
         listView = findViewById(R.id.chatmsg_listView);
         btn_send = findViewById(R.id.btn_send);
         et_content = findViewById(R.id.et_content);
         btMore = findViewById(R.id.btn_multimedia);
+        voiceOrText = findViewById(R.id.btn_voice_or_text);
+        btVoice = findViewById(R.id.btn_voice);
+        rlInput = findViewById(R.id.rl_input);
+        voiceOrText.setOnClickListener(this);
         btn_send.setOnClickListener(this);
         btMore.setOnClickListener(this);
+
+        mClChatMore = (ConstraintLayout) findViewById(R.id.cl_chat_more);
+        mIvChatPic = (ImageView) findViewById(R.id.iv_chat_pic);
+        mTvChatPic = (TextView) findViewById(R.id.tv_chat_pic);
+        mIvChatTake = (ImageView) findViewById(R.id.iv_chat_take);
+        mTvChatTake = (TextView) findViewById(R.id.tv_chat_take);
+        mIvChatPic.setOnClickListener(this);
+        mTvChatPic.setOnClickListener(this);
+        mIvChatTake.setOnClickListener(this);
+        mTvChatTake.setOnClickListener(this);
+        mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+
+        mVoicePopup = new VoicePopup(this);
+        mVoiceHint = mVoicePopup.findViewById(R.id.tv_in_voice_hint);
+        mAudioRecoderUtils = new AudioRecoderUtils(this);
+        //录音回调
+        mAudioRecoderUtils.setOnAudioStatusUpdateListener(new AudioRecoderUtils.OnAudioStatusUpdateListener() {
+
+            //录音中....db为声音分贝，time为录音时长
+            @Override
+            public void onUpdate(double db, long time) {
+                /*//根据分贝值来设置录音时话筒图标的上下波动，下面有讲解
+                mImageView.getDrawable().setLevel((int) (3000 + 6000 * db / 100));
+                mTextView.setText(TimeUtils.long2String(time));*/
+            }
+
+            //录音结束，filePath为保存路径
+            @Override
+            public void onStop(String filePath) {
+//                Toast.makeText(ChatActivity.this, "录音保存在：" + filePath, Toast.LENGTH_SHORT).show();
+                msgType = "voi";
+                File file = new File(filePath);
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+                mPresenter.uploadPic(body);
+            }
+
+            @Override
+            public void onShort(String msg) {
+
+            }
+        });
+        //Button的touch监听
+        btVoice.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()) {
+
+                    case MotionEvent.ACTION_DOWN:
+
+                        mPosX = event.getX();
+                        mPosY = event.getY();
+
+                        mVoicePopup.showPopupWindow();
+
+                        btVoice.setText("松开保存");
+                        mAudioRecoderUtils.startRecord();
+
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+
+                        if (mCurPosY - mPosY < 0
+                                && (Math.abs(mCurPosY - mPosY) > 60)) {
+                            mAudioRecoderUtils.cancelRecord();    //取消录音（不保存录音文件）
+                        } else {
+                            mAudioRecoderUtils.stopRecord();        //结束录音（保存录音文件）
+                        }
+//                        mAudioRecoderUtils.cancelRecord();    //取消录音（不保存录音文件）
+                        mVoiceHint.setText("正在说话中");
+                        mVoicePopup.dismiss();
+                        btVoice.setText("按住说话");
+
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        mCurPosX = event.getX();
+                        mCurPosY = event.getY();
+                        if (mCurPosY - mPosY < 0
+                                && (Math.abs(mCurPosY - mPosY) > 60)) {
+                            mVoiceHint.setText("上滑取消发送");
+                        } else {
+                            mVoiceHint.setText("正在说话中");
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
+        initVoice();
+
+        mChatMessageDao = MyApplication.instance().getDaoSession().getChatMessageDao();
+        messageListDataDao = MyApplication.instance().getDaoSession().getMessageListDataDao();
+        messageListQb = messageListDataDao.queryBuilder();
+        qb = mChatMessageDao.queryBuilder();
+        qb.whereOr(ChatMessageDao.Properties.ReceiverId.eq(mFriendInfo.getId()), ChatMessageDao.Properties.MemberId.eq(mFriendInfo.getId()));
+        qb.orderAsc(ChatMessageDao.Properties.MessageId);
+        chatMessageList = qb.list();
+        initChatMsgListView();
+    }
+
+    private void initVoice() {
+        mClChatMore.setVisibility(View.GONE);
+
+        if (isVoice) {
+            rlInput.setVisibility(View.GONE);
+            btVoice.setVisibility(View.VISIBLE);
+        } else {
+            rlInput.setVisibility(View.VISIBLE);
+            btVoice.setVisibility(View.GONE);
+        }
     }
 
     private void initView() {
@@ -227,16 +403,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
             }
         });
-        mClChatMore = (ConstraintLayout) findViewById(R.id.cl_chat_more);
-        mIvChatPic = (ImageView) findViewById(R.id.iv_chat_pic);
-        mTvChatPic = (TextView) findViewById(R.id.tv_chat_pic);
-        mIvChatTake = (ImageView) findViewById(R.id.iv_chat_take);
-        mTvChatTake = (TextView) findViewById(R.id.tv_chat_take);
-        mIvChatPic.setOnClickListener(this);
-        mTvChatPic.setOnClickListener(this);
-        mIvChatTake.setOnClickListener(this);
-        mTvChatTake.setOnClickListener(this);
-        mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+
 
     }
 
@@ -251,13 +418,29 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 if (client != null && client.isOpen()) {
-                    ChatMessage message = new ChatMessage("message", "member", "msg", mFriendInfo.getId(), content, "");
+                    msgType = "msg";
+                    ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), content, "", 0);
+//                    ChatMessage message = new ChatMessage("message", "member", "msg", mFriendInfo.getId(), content, "");
                     String s = new Gson().toJson(message);
                     jWebSClientService.sendMsg(s);
                     message.setIsMeSend(1);
                     chatMessageList.add(message);
                     initChatMsgListView();
+                    MyApplication.instance().getDaoSession().getChatMessageDao().insert(message);
                     et_content.setText("");
+                    MessageListData messageListData;
+                    if (message.getReceiverType().equals("member")) {
+                        messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), message.getTextMsg(), "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
+                    } else {
+                        messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), message.getTextMsg(), "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
+                    }
+//                    messageListQb.where(MessageListDataDao.Properties.MId.eq(messageListData.getMId()));
+                    /*if (qb.buildCount().count() > 0 ? true : false) {
+                        messageListDataDao.update(messageListData);
+                    } else {
+                    }*/
+                    messageListDataDao.insertOrReplace(messageListData);
+
                 } else {
                     Util.showToast(mContext, "连接已断开，请稍等或重启App哟");
                 }
@@ -272,15 +455,42 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.tv_chat_pic:
                 checkPermissionAndCamera();
                 break;
+
+            case R.id.btn_voice_or_text:
+                if (isVoice) {
+                    isVoice = false;
+                } else {
+                    isVoice = true;
+                }
+                initVoice();
+                break;
+
+            case R.id.btn_voice:
+
+                break;
             default:
                 break;
         }
     }
 
     private void initChatMsgListView() {
-        adapter_chatMessage = new Adapter_ChatMessage(mContext, chatMessageList);
-        listView.setAdapter(adapter_chatMessage);
+        mAdapter = new Adapter_ChatMessage(mContext, chatMessageList);
+        listView.setAdapter(mAdapter);
         listView.setSelection(chatMessageList.size());
+        mAdapter.setVideoClickListener(new Adapter_ChatMessage.IVideoClickListener() {
+            @Override
+            public void mVideClick(ChatMessage message) {
+                String msgType = message.getMsgType();
+                if (msgType.equals("img") || msgType.equals("video")) {
+                    Intent imgOrVideoIntent = new Intent(ChatActivity.this, ImgOrVideoActivity.class);
+                    imgOrVideoIntent.putExtra(AppConstant.VIDEO_URL, message.getUrl());
+                    imgOrVideoIntent.putExtra(AppConstant.IMG_OR_VIDEO, msgType);
+                    startActivity(imgOrVideoIntent);
+                } else if (msgType.equals("voi")) {
+
+                }
+            }
+        });
     }
 
 
@@ -289,7 +499,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
      *
      * @param context
      */
-    private void checkNotification(final Context context) {
+    /*private void checkNotification(final Context context) {
         if (!isNotificationEnabled(context)) {
             new AlertDialog.Builder(context).setTitle("温馨提示")
                     .setMessage("你还未开启系统通知，将影响消息的接收，要去开启吗？")
@@ -305,7 +515,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }).show();
         }
-    }
+    }*/
 
     /**
      * 如果没有开启通知，跳转至设置界面
@@ -419,8 +629,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 .forResult(AppConstant.BANK_CARD_PIC_REQUEST);
     }
 
-    private static final String TAG = "aaabbb";
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -436,7 +644,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 } else if (mimeType.contains("video")) {
                     msgType = "video";
                 }
-                Log.d(TAG, "onActivityResult: " + mimeType);
                 String mBankPicPath = "";
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     mBankPicPath = media.get(i).getAndroidQToPath();
@@ -450,18 +657,39 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             }
 
         }
+        if (resultCode == 1002) {
+            messageListDataDao.deleteByKey(mFriendInfo.getId());
+            finish();
+        }
     }
 
     @Override
     public void uploadPicResult(LoginData data) {
         if (data != null) {
             if (client != null && client.isOpen()) {
-                ChatMessage message = new ChatMessage("message", "member", msgType, mFriendInfo.getId(), "", data.getData());
+                ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), "", data.getData(), 0);
                 String s = new Gson().toJson(message);
                 jWebSClientService.sendMsg(s);
                 message.setIsMeSend(1);
                 chatMessageList.add(message);
                 initChatMsgListView();
+                MyApplication.instance().getDaoSession().getChatMessageDao().insert(message);
+
+                MessageListData messageListData;
+                String content = "";
+                if (msgType.equals("img")) {
+                    content = "[图片]";
+                } else if (msgType.equals("video")) {
+                    content = "[视频]";
+                } else if (msgType.equals("voi")) {
+                    content = "[语音]";
+                }
+                if (message.getReceiverType().equals("member")) {
+                    messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), content, "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
+                } else {
+                    messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), content, "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
+                }
+                messageListDataDao.insertOrReplace(messageListData);
                 mProgressDialog.dismiss();
             } else {
                 Util.showToast(mContext, "连接已断开，请稍等或重启App哟");

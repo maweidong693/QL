@@ -2,33 +2,23 @@ package com.tencent.qcloud.tim.uikit.modules.group.member;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
-import com.tencent.imsdk.v2.V2TIMCallback;
-import com.tencent.imsdk.v2.V2TIMGroupInfo;
-import com.tencent.imsdk.v2.V2TIMManager;
-import com.tencent.imsdk.v2.V2TIMUserFullInfo;
-import com.tencent.imsdk.v2.V2TIMValueCallback;
-import com.tencent.liteav.login.UserModel;
+import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.base.BaseFragment;
-import com.tencent.qcloud.tim.uikit.base.ITitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
-import com.tencent.qcloud.tim.uikit.modules.contact.GroupMemberListView;
 import com.tencent.qcloud.tim.uikit.modules.contact.MessageForwardListView;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
-import com.tencent.qcloud.tim.uikit.modules.group.info.InfoData;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.interfaces.IGroupMemberLayout;
 import com.tencent.qcloud.tim.uikit.modules.message.MessageInfo;
 import com.tencent.qcloud.tim.uikit.utils.CustomInfo;
-import com.tencent.qcloud.tim.uikit.utils.TUIKitLog;
-import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -172,5 +162,10 @@ public class MessageForwardLayout extends LinearLayout implements IGroupMemberLa
 
     public void setMsgSource(MessageInfo msg) {
         this.msg = msg ;
+    }
+
+    @Override
+    public void setDataSource(GroupInfo dataSource, ContactListData.DataDTO list) {
+
     }
 }

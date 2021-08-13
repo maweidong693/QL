@@ -3,7 +3,6 @@
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -23,6 +22,7 @@ import com.luck.picture.lib.listener.OnResultCallbackListener;
 import com.tencent.common.Constant;
 import com.tencent.common.dialog.DialogMaker;
 import com.tencent.common.http.BaseBean;
+import com.tencent.common.http.ContactListData;
 import com.tencent.common.http.HttpCallBack;
 import com.tencent.common.http.YHttp;
 import com.tencent.imsdk.v2.V2TIMCallback;
@@ -35,9 +35,7 @@ import com.tencent.qcloud.tim.uikit.component.SelectionActivity;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.dialog.TUIKitDialog;
 import com.tencent.qcloud.tim.uikit.component.picture.imageEngine.GlideEngine;
-import com.tencent.qcloud.tim.uikit.modules.group.apply.GroupInvitationFragment;
 import com.tencent.qcloud.tim.uikit.modules.group.interfaces.IGroupMemberLayout;
-import com.tencent.qcloud.tim.uikit.modules.group.member.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.member.IGroupMemberRouter;
 import com.tencent.qcloud.tim.uikit.utils.CustomInfo;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
@@ -374,35 +372,6 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
 
     public void setGroupId(String groupId) {
         Map auditCount =new HashMap();
-        auditCount.put("group_id",groupId);
-        YHttp.obtain().post(Constant.URL_AUDIT_COUNT, auditCount, new HttpCallBack<BaseBean>() {
-            @Override
-            public void onSuccess(BaseBean baseBean) {
-                if (baseBean.getData() != null) {
-                    try {
-                        JSONObject jsonObject = JSON.parseObject(baseBean.getData().toString(), JSONObject.class);
-                        int count = jsonObject.getIntValue("count");
-                        if (count>0){
-                            mGroupInvitation.setUnreadCount(count+"");
-                        }else {
-                            mGroupInvitation.setUnreadclear();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    mGroupInvitation.setUnreadclear();
-                }
-            }
-
-            @Override
-            public void onFailed(String error) {
-
-            }
-        });
-
-        Map map = new HashMap();
-        map.put("GroupId", groupId);
         /*YHttp.obtain().post(Constant.URL_GET_GROUP_USER_SORT, map, new HttpCallBack<BaseBean>() {
             @Override
             public void onSuccess(BaseBean baseBean) {
@@ -593,7 +562,7 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
     }
 
     @Override
-    public void setDataSource(GroupInfo dataSource) {
+    public void setDataSource(GroupInfo dataSource, ContactListData.DataDTO list) {
 
     }
 

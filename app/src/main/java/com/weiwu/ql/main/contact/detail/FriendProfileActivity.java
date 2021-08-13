@@ -14,13 +14,19 @@ import com.tencent.qcloud.tim.uikit.component.LineControllerView;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.AppConstant;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.repositories.ContactRepository;
+import com.weiwu.ql.data.request.AddFriendRequestBody;
+import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
 
 import java.io.Serializable;
 
-public class FriendProfileActivity extends BaseActivity implements View.OnClickListener {
+public class FriendProfileActivity extends BaseActivity implements View.OnClickListener, ContactContract.IFriendDetailView {
 
     private TitleBarLayout mTitleBar;
     private CircleImageView mHeadImageView;
@@ -35,11 +41,13 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
     private TextView mDeleteView;
     private TextView mChatView;
     private ContactItemBean mFriendInfo;
+    private ContactContract.IFriendDetailPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_profile);
+        setPresenter(new FriendProfilePresenter(ContactRepository.getInstance()));
         Intent intent = getIntent();
         if (intent != null) {
             mFriendInfo = (ContactItemBean) intent.getSerializableExtra(TUIKitConstants.ProfileType.CONTENT);
@@ -90,8 +98,39 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
             case R.id.btnChat:
                 Intent chatIntent = new Intent(this, ChatActivity.class);
                 chatIntent.putExtra(TUIKitConstants.ProfileType.CONTENT, mFriendInfo);
+                chatIntent.putExtra(AppConstant.CHAT_TYPE, "member");
                 startActivity(chatIntent);
                 break;
+            case R.id.btnDel:
+                mPresenter.deleteFriend(mFriendInfo.getId());
+                break;
         }
+    }
+
+    @Override
+    public void deleteFriendResult(HttpResult result) {
+        if (result.getCode() == 200) {
+            showToast("删除成功");
+            finish();
+        }
+    }
+
+    @Override
+    public void onFail(String msg, int code) {
+        showToast(msg);
+        if (code == 10000) {
+            MyApplication.loginAgain();
+        }
+    }
+
+    @Override
+    public void setPresenter(ContactContract.IFriendDetailPresenter presenter) {
+        mPresenter = presenter;
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    public Activity getActivityObject() {
+        return this;
     }
 }

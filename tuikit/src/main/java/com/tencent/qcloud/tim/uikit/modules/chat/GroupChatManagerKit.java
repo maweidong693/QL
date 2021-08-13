@@ -17,7 +17,7 @@ import com.tencent.qcloud.tim.uikit.modules.conversation.ConversationManagerKit;
 import com.tencent.qcloud.tim.uikit.modules.group.apply.GroupApplyInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoProvider;
-import com.tencent.qcloud.tim.uikit.modules.group.member.GroupMemberInfo;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.modules.message.MessageCustom;
 import com.tencent.qcloud.tim.uikit.modules.message.MessageInfo;
 import com.tencent.qcloud.tim.uikit.modules.message.MessageInfoUtil;
@@ -174,14 +174,14 @@ public class GroupChatManagerKit extends ChatManagerKit {
             List<V2TIMGroupMemberInfo> memberInfos = groupTips.getMemberList();
             if (memberInfos.size() > 0) {
                 for (V2TIMGroupMemberInfo v2TIMGroupMemberInfo : memberInfos) {
-                    GroupMemberInfo member = new GroupMemberInfo();
+                    /*GroupMemberInfo member = new GroupMemberInfo();
                     member.covertTIMGroupMemberInfo(v2TIMGroupMemberInfo);
-                    mCurrentGroupMembers.add(member);
+                    mCurrentGroupMembers.add(member);*/
                 }
             } else {
-                GroupMemberInfo member = new GroupMemberInfo();
+                /*GroupMemberInfo member = new GroupMemberInfo();
                 member.covertTIMGroupMemberInfo(groupTips.getOpMember());
-                mCurrentGroupMembers.add(member);
+                mCurrentGroupMembers.add(member);*/
             }
             mCurrentChatInfo.setMemberDetails(mCurrentGroupMembers);
         } else if (msgInfo.getMsgType() == MessageInfo.MSG_TYPE_GROUP_QUITE || msgInfo.getMsgType() == MessageInfo.MSG_TYPE_GROUP_KICK) {

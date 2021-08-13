@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.content.BroadcastReceiver;
@@ -28,6 +29,8 @@ import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.qcloud.tim.uikit.base.BaseActvity;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.repositories.MineRepository;
 import com.weiwu.ql.main.contact.ContactFragment;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
@@ -35,13 +38,16 @@ import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
 import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
 import com.weiwu.ql.main.find.FindFragment;
 import com.weiwu.ql.main.message.MessageFragment;
+import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.main.mine.MineFragment;
+import com.weiwu.ql.main.mine.MinePresenter;
 import com.weiwu.ql.utils.Logger;
+import com.weiwu.ql.utils.SPUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MineContract.IMineView {
 
     private TextView mConversationBtn;
     private TextView mContactBtn;
@@ -52,14 +58,17 @@ public class MainActivity extends BaseActivity {
     private View mLastTab;
     private String TAG = "MainActivity";
     private Context mContext;
+    private MineContract.IMinePresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setPresenter(new MinePresenter(MineRepository.getInstance()));
         ImmersionBar.with(this).statusBarDarkFont(true).init();
         mContext = MainActivity.this;
         initView();
+        mPresenter.getMineInfo();
     }
 
     private void initView() {
@@ -76,7 +85,7 @@ public class MainActivity extends BaseActivity {
         mContactBtn = findViewById(R.id.contact);
         mFindBtn = findViewById(R.id.find);
         mProfileSelfBtn = findViewById(R.id.mine);
-//        getFragmentManager().beginTransaction().replace(R.id.empty_view, new ConversationFragment()).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.empty_view, new MessageFragment()).commitAllowingStateLoss();
         if (mLastTab == null) {
             mLastTab = findViewById(R.id.conversation_btn_group);
         } else {
@@ -86,14 +95,20 @@ public class MainActivity extends BaseActivity {
             tabClick(tmp);
             mLastTab = tmp;
         }
-        /*//启动服务
+        //启动服务
         startJWebSClientService();
         //绑定服务
         bindService();
         //注册广播
         doRegisterReceiver();
         //检测通知是否开启
-        checkNotification(mContext);*/
+        checkNotification(mContext);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        jWebSClientService.onDestroy();
     }
 
     private JWebSocketClient client;
@@ -137,6 +152,33 @@ public class MainActivity extends BaseActivity {
 //        startService(intent);
     }
 
+    @Override
+    public void mineInfoReceive(MineInfoData data) {
+        MineInfoData.DataDTO dto = data.getData();
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getId());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNickName());
+
+    }
+
+    @Override
+    public void onFail(String msg, int code) {
+        showToast(msg);
+        if (code == 10000) {
+            MyApplication.loginAgain();
+        }
+    }
+
+    @Override
+    public void setPresenter(MineContract.IMinePresenter presenter) {
+        mPresenter = presenter;
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    public Activity getActivityObject() {
+        return this;
+    }
+
     private class ChatMessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -145,6 +187,7 @@ public class MainActivity extends BaseActivity {
             receiveMessage.setIsMeSend(0);
         }
     }
+
     private ChatMessageReceiver chatMessageReceiver;
 
 
