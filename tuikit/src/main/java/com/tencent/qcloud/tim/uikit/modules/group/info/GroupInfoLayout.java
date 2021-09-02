@@ -31,7 +31,6 @@ import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.base.IUIKitCallBack;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
-import com.tencent.qcloud.tim.uikit.component.SelectionActivity;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.dialog.TUIKitDialog;
 import com.tencent.qcloud.tim.uikit.component.picture.imageEngine.GlideEngine;
@@ -212,13 +211,13 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.modify_group_name));
             bundle.putString(TUIKitConstants.Selection.INIT_CONTENT, mGroupNameView.getContent());
             bundle.putInt(TUIKitConstants.Selection.LIMIT, 20);
-            SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
+            /*SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(final Object text) {
                     mPresenter.modifyGroupName(text.toString());
                     mGroupNameView.setContent(text.toString());
                 }
-            });
+            });*/
         } else if (v.getId() == R.id.group_icon) {
             choosePhoto();
 //            String groupUrl = String.format("https://picsum.photos/id/%d/200/200", new Random().nextInt(1000));
@@ -227,13 +226,13 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.modify_group_notice));
             bundle.putString(TUIKitConstants.Selection.INIT_CONTENT, mGroupNotice.getContent());
             bundle.putInt(TUIKitConstants.Selection.LIMIT, 200);
-            SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
+            /*SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(final Object text) {
                     mPresenter.modifyGroupNotice(text.toString());
                     mGroupNotice.setContent(text.toString());
                 }
-            });
+            });*/
         }else if (v.getId()==R.id.group_invitation){
             if (mMemberPreviewListener != null) {
                 mMemberPreviewListener.forwardGroupInvitation(mGroupInfo);
@@ -258,13 +257,13 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.modify_nick_name_in_goup));
             bundle.putString(TUIKitConstants.Selection.INIT_CONTENT, mNickView.getContent());
             bundle.putInt(TUIKitConstants.Selection.LIMIT, 20);
-            SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
+            /*SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(final Object text) {
                     mPresenter.modifyMyGroupNickname(text.toString());
                     mNickView.setContent(text.toString());
                 }
-            });
+            });*/
         } else if (v.getId() == R.id.join_type_bar) {
             if (mGroupTypeView.getContent().equals("聊天室")) {
                 ToastUtil.toastLongMessage("加入聊天室为自动审批，暂不支持修改");
@@ -274,14 +273,14 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.group_join_type));
             bundle.putStringArrayList(TUIKitConstants.Selection.LIST, mJoinTypes);
             bundle.putInt(TUIKitConstants.Selection.DEFAULT_SELECT_ITEM_INDEX, mGroupInfo.getJoinType());
-            SelectionActivity.startListSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
+            /*SelectionActivity.startListSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(final Object text) {
                     mPresenter.modifyGroupInfo((Integer) text, TUIKitConstants.Group.MODIFY_GROUP_JOIN_TYPE);
                     mJoinTypeView.setContent(mJoinTypes.get((Integer) text));
 
                 }
-            });
+            });*/
         }
 //        else if (v.getId() == R.id.is_add_friend) {
 //            Bundle bundle = new Bundle();

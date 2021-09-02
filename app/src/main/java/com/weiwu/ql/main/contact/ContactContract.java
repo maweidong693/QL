@@ -1,6 +1,7 @@
 package com.weiwu.ql.main.contact;
 
 import com.tencent.common.http.ContactListData;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.base.IBasePresenter;
@@ -69,11 +70,26 @@ public interface ContactContract {
     interface IChatView extends IBaseView<IChatPresenter> {
         void uploadPicResult(LoginData data);
 
+        void groupInfoReceive(GroupInfoData data);
+
         void onFail(String msg, int code);
     }
 
     interface IChatPresenter extends IBasePresenter<IChatView> {
         void uploadPic(MultipartBody.Part file);
+
+        void getGroupInfo(String groupId);
+    }
+
+    interface IMessageView extends IBaseView<IMessagePresenter> {
+        void groupInfoReceive(GroupInfoData data);
+
+        void onFail(String msg, int code);
+    }
+
+    interface IMessagePresenter extends IBasePresenter<IMessageView> {
+
+        void getGroupInfo(String groupId);
     }
 
     interface IFriendDetailView extends IBaseView<IFriendDetailPresenter> {
@@ -102,5 +118,7 @@ public interface ContactContract {
         void createGroup(LifecycleProvider provider, CreateGroupRequestBody body, IBaseCallBack<HttpResult> callBack);
 
         void findFriendId(LifecycleProvider provider, String mobile, IBaseCallBack<FriendInfoData> callBack);
+
+        void getGroupInfo(LifecycleProvider provider, String groupId, IBaseCallBack<GroupInfoData> callBack);
     }
 }

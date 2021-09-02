@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
+        android:id="@+id/an_quan_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.tencent.qcloud.tim.uikit.component.LineControllerView
+        android:id="@+id/view_update_password"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/dp_10"
+        app:canNav="true"
+        app:isBottom="true"
+        app:name="@string/updatePassword" />
+
+</LinearLayout>

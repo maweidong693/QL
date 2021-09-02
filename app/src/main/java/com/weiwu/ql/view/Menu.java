@@ -65,6 +65,7 @@ public class Menu {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TUIKitConstants.GroupType.GROUP, true);
                     mActivity.startActivity(intent);
+
                 }
                 /*if (TextUtils.equals(action.getActionName(), mActivity.getResources().getString(R.string.start_conversation))) {
                     Intent intent = new Intent(MyApplication.mApplicationContext, StartC2CChatActivity.class);
@@ -84,6 +85,7 @@ public class Menu {
                     intent.putExtra(TUIKitConstants.GroupType.TYPE, TUIKitConstants.GroupType.PRIVATE);
 //                    intent.putExtra(TUIKitConstants.GroupType.TYPE, TUIKitConstants.GroupType.PUBLIC);
                     mActivity.startActivity(intent);
+//                    mActivity.finish();
 
                 }
                 if (TextUtils.equals(action.getActionName(), mActivity.getResources().getString(R.string.create_chat_room))) {
@@ -96,7 +98,7 @@ public class Menu {
                     if (PermissionUtils.checkPermission(mActivity, Manifest.permission.CAMERA)){
                         Intent intent = new Intent(mActivity, CaptureActivity.class);
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        mActivity.startActivityForResult(intent, REQUEST_CODE_SCAN);
+                        mActivity.startActivityForResult(intent, REQUEST_CODE_SCAN);
                     }
                 }
                 mMenuWindow.dismiss();

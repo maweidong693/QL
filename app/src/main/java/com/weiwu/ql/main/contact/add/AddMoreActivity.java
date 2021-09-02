@@ -145,8 +145,8 @@ public class AddMoreActivity extends BaseActivity implements ContactContract.IAd
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 

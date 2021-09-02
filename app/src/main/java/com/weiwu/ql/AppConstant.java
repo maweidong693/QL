@@ -26,4 +26,8 @@ public interface AppConstant {
     String CHAT_TYPE = "chatType";
     String USER_ID = "userId";
     String USER_NAME = "userName";
+    String DISTRIBUTE_LIST = "distributeList";
+    String ORDER_INFO = "orderId";
+    String ORDER_TYPE = "orderType";
+    String USER_TYPE = "userType";
 }

@@ -6,7 +6,8 @@
     <TextView
         android:id="@+id/tv_sendtime"
         style="@style/jmui_chat_text_date_style"
-        android:text="2019-02-19 15:59" />
+        android:text="2019-02-19 15:59"
+        android:visibility="gone" />
 
 
     <RelativeLayout
@@ -29,7 +30,8 @@
                 style="@style/jmui_chat_display_name_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/jmui_avatar_iv" />
+                android:layout_toRightOf="@id/jmui_avatar_iv"
+                android:visibility="visible" />
 
             <RelativeLayout
                 android:id="@+id/rl_receive_msg"
@@ -41,8 +43,7 @@
                 android:layout_marginRight="3dp"
                 android:layout_toRightOf="@id/jmui_avatar_iv"
                 android:autoLink="web"
-                android:background="@drawable/jmui_msg_receive_bg"
-                >
+                android:background="@drawable/jmui_msg_receive_bg">
 
                 <ImageView
                     android:id="@+id/iv_receive_iv"
@@ -66,9 +67,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoLink="web"
-                    android:textColor="#363333"
                     android:paddingLeft="15dp"
                     android:paddingRight="10dp"
+                    android:textColor="#363333"
                     android:textColorLink="#157BFB"
                     android:visibility="visible" />
 
@@ -79,12 +80,31 @@
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/voice_msg_playing_3"
                     android:drawablePadding="@dimen/dp_10"
-                    android:text="1“"
                     android:paddingLeft="15dp"
                     android:paddingRight="10dp"
+                    android:text="1“"
                     android:visibility="gone" />
 
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_receive_quote"
+                style="@style/jmui_msg_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:background="@drawable/bg_quote"
+                android:ellipsize="end"
+                android:maxWidth="@dimen/dp_180"
+                android:paddingLeft="15dp"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingRight="10dp"
+                android:paddingBottom="@dimen/dp_2"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorLink="#157BFB"
+                android:textSize="@dimen/dp_12"
+                android:visibility="gone" />
 
 
         </LinearLayout>

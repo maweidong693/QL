@@ -18,12 +18,18 @@ import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
+import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
+import com.weiwu.ql.main.contact.black.BlackListActivity;
 import com.weiwu.ql.main.contact.detail.FriendProfileActivity;
 import com.weiwu.ql.main.contact.group.GroupListActivity;
 import com.weiwu.ql.main.contact.new_friend.NewFriendActivity;
 import com.weiwu.ql.view.Menu;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +57,25 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     public void onViewCreated(View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setPresenter(new ContactPresenter(ContactRepository.getInstance()));
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         initView(view);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent msg) {
+        if (msg.code==101) {
+            mPresenter.getContactList();
+        }
     }
 
     private void initView(View view) {
@@ -81,14 +105,15 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getActivity().startActivity(intent);
                 } else if (position == 2) {
-                    /*Intent intent = new Intent(getContext(), BlackListActivity.class);
+                    Intent intent = new Intent(getContext(), BlackListActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getActivity().startActivity(intent);*/
+                    getActivity().startActivity(intent);
                 } else {
                     Intent intent = new Intent(getContext(), FriendProfileActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contact);
                     getActivity().startActivity(intent);
+//                    getActivity().finish();
 
                 }
             }
@@ -105,7 +130,7 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     @Override
     public void onResume() {
         super.onResume();
-        refreshData();
+//        refreshData();
     }
 
     @Override
@@ -124,8 +149,8 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/status_bar_color"
+    xmlns:tool="http://schemas.android.com/tools"
+    >
+
+
+    <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
+        android:id="@+id/web_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_marginBottom="30dp"
+        android:layout_above="@+id/center"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <ImageView
+            android:id="@+id/img_type"
+            tool:src="@drawable/web_login"
+            android:layout_marginBottom="30dp"
+            android:layout_width="200dp"
+            android:layout_height="120dp"/>
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:textSize="22sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tool:text="Web 洽聊登录确认"
+            />
+
+    </LinearLayout>
+
+    <Space
+        android:id="@+id/center"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_marginBottom="130dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btn_login"
+            android:textAllCaps="false"
+            android:layout_width="200dp"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginBottom="9dp"
+            android:background="@drawable/wzt_btn_bg"
+            android:enabled="true"
+            android:text="登录"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/btn_cancel_login"
+            android:layout_width="200dp"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginBottom="9dp"
+            android:enabled="true"
+            android:text="取消登录"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

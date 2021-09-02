@@ -11,6 +11,7 @@ import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
@@ -62,11 +63,15 @@ public class GroupMemberDeleteFragment extends BaseFragment implements GroupCont
         mMemberDelLayout.setDeleteSelectItemListener(new GroupMemberDeleteLayout.IDeleteSelectItemListener() {
             @Override
             public void select(List<GroupMemberInfo> list) {
-                List<String> members = new ArrayList<>();
-                for (int i = 0; i < list.size(); i++) {
-                    members.add(list.get(i).getAccount());
+                if (list != null && list.size() > 0) {
+                    List<String> members = new ArrayList<>();
+                    for (int i = 0; i < list.size(); i++) {
+                        members.add(list.get(i).getAccount());
+                    }
+                    mPresenter.deleteMembers(new InviteOrDeleteRequestBody(mGroupInfo.getId(), members));
+                }else {
+                    showToast("请选择成员！");
                 }
-                mPresenter.deleteMembers(new InviteOrDeleteRequestBody(mGroupInfo.getId(), members));
             }
         });
     }
@@ -89,7 +94,10 @@ public class GroupMemberDeleteFragment extends BaseFragment implements GroupCont
 
     @Override
     public void onFail(String msg, int code) {
-
+        showToast(msg);
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
+        }
     }
 
     @Override

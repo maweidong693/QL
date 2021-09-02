@@ -17,18 +17,59 @@ public class ChatMessage {
     private String receiverId;    // 接收会员ID
     private String textMsg;     // 文本消息
     private String url;
-    private String quoteMessage;
+    private String quoteMessageInfo;
     private String sendTime;
     private int isTop;
     private int isMeSend;//0是对方发送 1是自己发送
+    @Transient
+    private int isTemporary;
+    private String noticeInfo;
 
+    private String memberId;    //发送人ID
+    private String memberNickname;      //发送人昵称
+
+    @Transient
+    private functionArgData functionArg;
+    @Transient
+    private ChatMessage quoteMessage;
+    @Transient
+    private NoticeData notice;
     @Transient
     private String message;
     @Transient
     private int code;
 
-    private String memberId;    //发送人ID
-    private String memberNickname;      //发送人昵称
+    public int getIsTemporary() {
+        return isTemporary;
+    }
+
+    public void setIsTemporary(int isTemporary) {
+        this.isTemporary = isTemporary;
+    }
+
+    public functionArgData getFunctionArg() {
+        return functionArg;
+    }
+
+    public void setFunctionArg(functionArgData functionArg) {
+        this.functionArg = functionArg;
+    }
+
+    public ChatMessage getQuoteMessage() {
+        return quoteMessage;
+    }
+
+    public void setQuoteMessage(ChatMessage quoteMessage) {
+        this.quoteMessage = quoteMessage;
+    }
+
+    public NoticeData getNotice() {
+        return notice;
+    }
+
+    public void setNotice(NoticeData notice) {
+        this.notice = notice;
+    }
 
     public String getMessage() {
         return message;
@@ -46,7 +87,7 @@ public class ChatMessage {
         this.code = code;
     }
 
-    public ChatMessage(String messageId, String type, String receiverType, String msgType, String receiverId, String textMsg, String url, int isTop) {
+    /*public ChatMessage(String messageId, String type, String receiverType, String msgType, String receiverId, String textMsg, String url, int isTop, ChatMessage quoteMessage) {
         this.messageId = messageId;
         this.type = type;
         this.receiverType = receiverType;
@@ -55,11 +96,10 @@ public class ChatMessage {
         this.textMsg = textMsg;
         this.url = url;
         this.isTop = isTop;
-    }
+        this.quoteMessage = quoteMessage;
+    }*/
 
-    @Generated(hash = 2137092757)
-    public ChatMessage(String messageId, String type, String receiverType, String msgType, String receiverId, String textMsg, String url,
-            String quoteMessage, String sendTime, int isTop, int isMeSend, String memberId, String memberNickname) {
+    public ChatMessage(String messageId, String sendTime, String type, String receiverType, String msgType, String receiverId, String textMsg, String url, int isTop, int isTemporary) {
         this.messageId = messageId;
         this.type = type;
         this.receiverType = receiverType;
@@ -67,10 +107,28 @@ public class ChatMessage {
         this.receiverId = receiverId;
         this.textMsg = textMsg;
         this.url = url;
-        this.quoteMessage = quoteMessage;
+        this.isTop = isTop;
+        this.sendTime = sendTime;
+        this.isTemporary = isTemporary;
+    }
+
+    @Generated(hash = 29147650)
+    public ChatMessage(String messageId, String type, String receiverType,
+                       String msgType, String receiverId, String textMsg, String url,
+                       String quoteMessageInfo, String sendTime, int isTop, int isMeSend,
+                       String noticeInfo, String memberId, String memberNickname) {
+        this.messageId = messageId;
+        this.type = type;
+        this.receiverType = receiverType;
+        this.msgType = msgType;
+        this.receiverId = receiverId;
+        this.textMsg = textMsg;
+        this.url = url;
+        this.quoteMessageInfo = quoteMessageInfo;
         this.sendTime = sendTime;
         this.isTop = isTop;
         this.isMeSend = isMeSend;
+        this.noticeInfo = noticeInfo;
         this.memberId = memberId;
         this.memberNickname = memberNickname;
     }
@@ -135,12 +193,20 @@ public class ChatMessage {
         this.url = url;
     }
 
-    public String getQuoteMessage() {
-        return this.quoteMessage;
+    public String getQuoteMessageInfo() {
+        return this.quoteMessageInfo;
     }
 
-    public void setQuoteMessage(String quoteMessage) {
-        this.quoteMessage = quoteMessage;
+    public void setQuoteMessageInfo(String quoteMessageInfo) {
+        this.quoteMessageInfo = quoteMessageInfo;
+    }
+
+    public String getSendTime() {
+        return this.sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
     }
 
     public int getIsTop() {
@@ -159,6 +225,14 @@ public class ChatMessage {
         this.isMeSend = isMeSend;
     }
 
+    public String getNoticeInfo() {
+        return this.noticeInfo;
+    }
+
+    public void setNoticeInfo(String noticeInfo) {
+        this.noticeInfo = noticeInfo;
+    }
+
     public String getMemberId() {
         return this.memberId;
     }
@@ -175,12 +249,4 @@ public class ChatMessage {
         this.memberNickname = memberNickname;
     }
 
-    public String getSendTime() {
-        return this.sendTime;
-    }
-
-    public void setSendTime(String sendTime) {
-        this.sendTime = sendTime;
-    }
-    
 }

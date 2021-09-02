@@ -161,4 +161,17 @@ public class GlideEngine implements ImageEngine {
         return true;
     }
 
+    private static GlideEngine instance;
+
+    public static GlideEngine createGlideEngine() {
+        if (null == instance) {
+            synchronized (GlideEngine.class) {
+                if (null == instance) {
+                    instance = new GlideEngine();
+                }
+            }
+        }
+        return instance;
+    }
+
 }

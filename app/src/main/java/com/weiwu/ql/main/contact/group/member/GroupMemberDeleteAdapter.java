@@ -14,7 +14,9 @@ import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.qcloud.tim.uikit.component.picture.imageEngine.impl.GlideEngine;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.utils.BackgroundTasks;
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.R;
+import com.weiwu.ql.utils.SPUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +89,12 @@ public class GroupMemberDeleteAdapter extends BaseAdapter {
 
     public void setDataSource(List<GroupMemberInfo> members) {
         if (members != null) {
+            for (int i = 0; i < members.size(); i++) {
+                GroupMemberInfo groupMemberInfo = members.get(i);
+                if (groupMemberInfo.getAccount().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
+                    members.remove(groupMemberInfo);
+                }
+            }
             this.mGroupMembers = members;
             BackgroundTasks.getInstance().runOnUiThread(new Runnable() {
                 @Override

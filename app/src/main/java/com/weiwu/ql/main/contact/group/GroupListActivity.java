@@ -104,8 +104,8 @@ public class GroupListActivity extends BaseActivity implements ContactContract.I
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 

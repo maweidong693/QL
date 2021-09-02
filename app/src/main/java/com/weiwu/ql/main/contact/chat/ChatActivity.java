@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,23 +21,33 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
@@ -47,26 +58,36 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.FunctionData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.MessageListData;
+import com.weiwu.ql.data.bean.OrderData;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.greendao.db.ChatMessageDao;
+import com.weiwu.ql.greendao.db.DaoMaster;
+import com.weiwu.ql.greendao.db.DaoSession;
 import com.weiwu.ql.greendao.db.MessageListDataDao;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.chat.adapter.Adapter_ChatMessage;
+import com.weiwu.ql.main.contact.chat.adapter.ChatMessageAdapter;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
 import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
+import com.weiwu.ql.main.contact.chat.modle.NoticeOrderData;
 import com.weiwu.ql.main.contact.chat.util.Util;
 import com.weiwu.ql.main.contact.group.GroupInfoActivity;
+import com.weiwu.ql.main.find.OrderDetailActivity;
 import com.weiwu.ql.utils.AudioRecoderUtils;
 import com.weiwu.ql.utils.GlideEngine;
+import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.utils.SystemFacade;
+import com.weiwu.ql.view.MessageLongPopup;
 import com.weiwu.ql.view.VoicePopup;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -77,21 +98,24 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.rockerhieu.emojicon.EmojiconGridFragment;
+import io.github.rockerhieu.emojicon.EmojiconsFragment;
+import io.github.rockerhieu.emojicon.emoji.Emojicon;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
-public class ChatActivity extends BaseActivity implements View.OnClickListener, ContactContract.IChatView {
+public class ChatActivity extends BaseActivity implements View.OnClickListener, ContactContract.IChatView, EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener {
 
     private Context mContext;
     private JWebSocketClient client;
     private JWebSocketClientService.JWebSocketClientBinder binder;
     private JWebSocketClientService jWebSClientService;
     private EditText et_content;
-    private ListView listView;
+    private RecyclerView listView;
     private Button btn_send;
     private List<ChatMessage> chatMessageList = new ArrayList<>();//消息列表
-    private Adapter_ChatMessage mAdapter;
+    private ChatMessageAdapter mAdapter;
     private ChatMessageReceiver chatMessageReceiver;
     private ConstraintLayout mClChatMore;
     private ImageView mIvChatPic;
@@ -119,7 +143,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private QueryBuilder<ChatMessage> qb;
     private String mReceiverType;
     private MessageListDataDao messageListDataDao;
-    private QueryBuilder<MessageListData> messageListQb;
+    private Button btMute;
+    private TextView tv_quote;
+    private ChatMessage mQuoteMessage;
+    private DaoSession daoSession;
+    private ImageView bt_face;
 
     @Override
     protected void onDestroy() {
@@ -144,6 +172,25 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private ContactItemBean mFriendInfo;
     private TitleBarLayout mTitleBar;
 
+    @Override
+    public void onEmojiconClicked(Emojicon emojicon) {
+        EmojiconsFragment.input(et_content, emojicon);
+    }
+
+    @Override
+    public void onEmojiconBackspaceClicked(View v) {
+        EmojiconsFragment.backspace(et_content);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (hasClick) {
+            findViewById(R.id.emojicons).setVisibility(View.GONE);
+            hasClick = !hasClick;
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     private class ChatMessageReceiver extends BroadcastReceiver {
 
@@ -151,15 +198,28 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
             ChatMessage receiveMessage = new Gson().fromJson(message, ChatMessage.class);
-            if (mFriendInfo.getId().equals(receiveMessage.getMemberId())) {
-                receiveMessage.setIsMeSend(0);
-                chatMessageList.add(receiveMessage);
-                initChatMsgListView();
+            if (receiveMessage.getType().equals("notice")) {
+                if (mReceiverType.equals("group")) {
+                    mPresenter.getGroupInfo(mFriendInfo.getId());
+                }
+            }
+
+            if (mReceiverType.equals("member") && mFriendInfo.getId().equals(receiveMessage.getMemberId())) {
+                setChatMessage();
+            } else if (mReceiverType.equals("group") && mFriendInfo.getId().equals(receiveMessage.getReceiverId())) {
+                setChatMessage();
             }
         }
     }
 
     private static final String TAG = "ChatActivity";
+
+    private void setEmojiconFragment(boolean useSystemDefault) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.emojicons, EmojiconsFragment.newInstance(useSystemDefault))
+                .commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +231,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 .setOnKeyboardListener(new OnKeyboardListener() {    //软键盘监听回调，keyboardEnable为true才会回调此方法
                     @Override
                     public void onKeyboardChange(boolean isPopup, int keyboardHeight) {
-                        listView.setSelection(mAdapter.getCount() - 1);
+//                        listView.setSelection(mAdapter.getCount() - 1);
+                        listView.smoothScrollToPosition(mAdapter.getItemCount());
                         if (isPopup) {
                             mClChatMore.setVisibility(View.GONE);
                         }
@@ -184,10 +245,20 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             mReceiverType = intent.getStringExtra(AppConstant.CHAT_TYPE);
         }
 
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
+        SQLiteDatabase database = helper.getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(database);
+        daoSession = daoMaster.newSession();
+        daoSession.clear();
+
         mContext = ChatActivity.this;
         setPresenter(new ChatPresenter(ContactRepository.getInstance()));
         findViewById();
         initView();
+        setEmojiconFragment(false);
+        if (mReceiverType.equals("group")) {
+            mPresenter.getGroupInfo(mFriendInfo.getId());
+        }
         //启动服务
 //        startJWebSClientService();
         //绑定服务
@@ -250,7 +321,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                     Intent intent = new Intent(ChatActivity.this, GroupInfoActivity.class);
                     intent.putExtra(TUIKitConstants.Group.GROUP_ID, mFriendInfo.getId());
                     startActivityForResult(intent, 1000);
-                    startActivity(intent);
+//                    startActivity(intent);
 //                    finish();
                 }
             });
@@ -258,15 +329,94 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             mTitleBar.getRightGroup().setVisibility(View.GONE);
         }
         listView = findViewById(R.id.chatmsg_listView);
+        listView.setOnClickListener(this);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new ChatMessageAdapter();
+        listView.setAdapter(mAdapter);
+        mAdapter.setMessageLongClickListener(new ChatMessageAdapter.IMessageLongClickListener() {
+            @Override
+            public void mLongClick(ChatMessage message, View view) {
+                mQuoteMessage = message;
+                if (TextUtils.isEmpty(mQuoteMessage.getMemberNickname())) {
+                    mQuoteMessage.setMemberNickname(SPUtils.getValue(AppConstant.USER, AppConstant.USER_NAME));
+
+                }
+                PopupMenu popupMenu = new PopupMenu(ChatActivity.this, view);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_message, popupMenu.getMenu());
+                Menu menu = popupMenu.getMenu();
+                MenuItem withdrawMenuItem = menu.getItem(1);
+                if (message.getIsMeSend() == 0) {
+                    withdrawMenuItem.setVisible(false);
+                } else
+                    withdrawMenuItem.setVisible(message.getIsMeSend() == 1 && System.currentTimeMillis() - Long.parseLong(message.getSendTime()) < 20000);
+                popupMenu.show();
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.tv_message_quote) {
+                            tv_quote.setVisibility(View.VISIBLE);
+                            String quoteContent = "";
+                            if (mQuoteMessage.getMsgType().equals("img")) {
+                                quoteContent = "[图片]";
+                            } else if (mQuoteMessage.getMsgType().equals("video")) {
+                                quoteContent = "[视频]";
+
+                            } else {
+                                quoteContent = SystemFacade.base64ToString(mQuoteMessage.getTextMsg());
+                            }
+                            tv_quote.setText(mQuoteMessage.getMemberNickname() + ":" + quoteContent);
+                            /*chatData.remove(pos);
+                            chatAdapter.notifyItemRemoved(pos);*/
+                        } else if (item.getItemId() == R.id.tv_message_withdraw) {
+                            FunctionData.FunctionArgDTO functionArgDTO = new FunctionData.FunctionArgDTO(901, "撤回");
+                            FunctionData function = new FunctionData("function", mReceiverType, mFriendInfo.getId(), message.getMessageId(), functionArgDTO);
+                            String s = new Gson().toJson(function);
+                            jWebSClientService.sendMsg(s);
+                            mChatMessageDao.deleteByKey(message.getMessageId());
+                            setChatMessage();
+                        }
+                        return false;
+                    }
+                });
+//                Log.d(TAG, "mLongClick: " + message.getTextMsg() + "--------" + x + "-----" + y);
+            }
+        });
+//        registerForContextMenu(listView);
+
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemLongClick: " + position);
+                return true;
+            }
+        });*/
+
+        mAdapter.setOrderNoticeClickListener(new ChatMessageAdapter.IOrderNoticeClickListener() {
+            @Override
+            public void mOrderClick(NoticeOrderData data) {
+                OrderData.DataDTO.ListDTO dto = new OrderData.DataDTO.ListDTO();
+                dto.setId(data.getId());
+                Intent intent = new Intent(ChatActivity.this, OrderDetailActivity.class);
+                intent.putExtra(AppConstant.ORDER_INFO, dto);
+                startActivity(intent);
+            }
+        });
+
         btn_send = findViewById(R.id.btn_send);
         et_content = findViewById(R.id.et_content);
+        tv_quote = findViewById(R.id.tv_input_quote);
+        bt_face = findViewById(R.id.btn_face);
         btMore = findViewById(R.id.btn_multimedia);
         voiceOrText = findViewById(R.id.btn_voice_or_text);
         btVoice = findViewById(R.id.btn_voice);
+        btMute = findViewById(R.id.bt_mute);
         rlInput = findViewById(R.id.rl_input);
         voiceOrText.setOnClickListener(this);
         btn_send.setOnClickListener(this);
         btMore.setOnClickListener(this);
+        bt_face.setOnClickListener(this);
+        et_content.setOnClickListener(this);
 
         mClChatMore = (ConstraintLayout) findViewById(R.id.cl_chat_more);
         mIvChatPic = (ImageView) findViewById(R.id.iv_chat_pic);
@@ -359,14 +509,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         });
         initVoice();
 
-        mChatMessageDao = MyApplication.instance().getDaoSession().getChatMessageDao();
-        messageListDataDao = MyApplication.instance().getDaoSession().getMessageListDataDao();
-        messageListQb = messageListDataDao.queryBuilder();
-        qb = mChatMessageDao.queryBuilder();
-        qb.whereOr(ChatMessageDao.Properties.ReceiverId.eq(mFriendInfo.getId()), ChatMessageDao.Properties.MemberId.eq(mFriendInfo.getId()));
-        qb.orderAsc(ChatMessageDao.Properties.MessageId);
-        chatMessageList = qb.list();
-        initChatMsgListView();
+//        setChatMessage();
     }
 
     private void initVoice() {
@@ -408,25 +551,71 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        setChatMessage();
+    }
+
+    private boolean hasClick;
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.chatmsg_listView:
+                findViewById(R.id.emojicons).setVisibility(View.GONE);
+                hasClick = !hasClick;
+                break;
+            case R.id.btn_face: // 表情按钮
+                if (hasClick) {
+                    findViewById(R.id.emojicons).setVisibility(View.GONE);
+                } else {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0); //强制隐藏键盘
+                    mClChatMore.setVisibility(View.GONE);
+                    findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                }
+                hasClick = !hasClick;
+                break;
+            /*case R.id.bt_fs: // 发送按钮
+                Toast.makeText(this, mTxtEmojicon.getText(), Toast.LENGTH_SHORT).show();
+                tvShow.setText(mTxtEmojicon.getText() + "" + mEditEmojicon.getText());
+                mTxtEmojicon.setText(mTxtEmojicon.getText() + "" + mEditEmojicon.getText());
+
+                mEditEmojicon.setText("");
+                break;*/
+            case R.id.et_content: // 输入框
+                findViewById(R.id.emojicons).setVisibility(View.GONE);
+                hasClick = !hasClick;
+                break;
+
             case R.id.btn_send:
-                String content = et_content.getText().toString();
+                String content = SystemFacade.toBase64(et_content.getText().toString());
                 if (content.length() <= 0) {
                     Util.showToast(mContext, "消息不能为空哟");
                     return;
                 }
 
                 if (client != null && client.isOpen()) {
-                    msgType = "msg";
-                    ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), content, "", 0);
+                    if (tv_quote.getVisibility() == View.VISIBLE) {
+                        msgType = "quote";
+                    } else {
+                        msgType = "msg";
+                    }
+
+                    ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), content, "", 0, 0);
+                    if (tv_quote.getVisibility() == View.VISIBLE) {
+                        message.setQuoteMessage(mQuoteMessage);
+                        String s = new Gson().toJson(mQuoteMessage);
+                        message.setQuoteMessageInfo(s);
+                    }
 //                    ChatMessage message = new ChatMessage("message", "member", "msg", mFriendInfo.getId(), content, "");
                     String s = new Gson().toJson(message);
                     jWebSClientService.sendMsg(s);
                     message.setIsMeSend(1);
+                    tv_quote.setVisibility(View.GONE);
                     chatMessageList.add(message);
                     initChatMsgListView();
-                    MyApplication.instance().getDaoSession().getChatMessageDao().insert(message);
+                    daoSession.getChatMessageDao().insert(message);
                     et_content.setText("");
                     MessageListData messageListData;
                     if (message.getReceiverType().equals("member")) {
@@ -448,6 +637,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
             case R.id.btn_multimedia:
                 mClChatMore.setVisibility(View.VISIBLE);
+                findViewById(R.id.emojicons).setVisibility(View.GONE);
+                hasClick = !hasClick;
                 SystemFacade.hideSoftKeyboard(this);
                 break;
 
@@ -473,10 +664,25 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    public void setChatMessage() {
+        mChatMessageDao = daoSession.getChatMessageDao();
+        messageListDataDao = daoSession.getMessageListDataDao();
+//        messageListQb = messageListDataDao.queryBuilder();
+        qb = mChatMessageDao.queryBuilder();
+        qb.where(ChatMessageDao.Properties.ReceiverType.eq(mReceiverType));
+        qb.whereOr(ChatMessageDao.Properties.ReceiverId.eq(mFriendInfo.getId()), ChatMessageDao.Properties.MemberId.eq(mFriendInfo.getId()));
+//        qb.orderAsc(ChatMessageDao.Properties.SendTime).offset(1).limit(15);
+        chatMessageList = qb.list();
+        Log.d(TAG, "setChatMessage: " + chatMessageList.size());
+        initChatMsgListView();
+
+    }
+
     private void initChatMsgListView() {
-        mAdapter = new Adapter_ChatMessage(mContext, chatMessageList);
-        listView.setAdapter(mAdapter);
-        listView.setSelection(chatMessageList.size());
+
+        mAdapter.setList(chatMessageList);
+//        mAdapter = new Adapter_ChatMessage(mContext, chatMessageList);
+        listView.smoothScrollToPosition(chatMessageList.size());
         mAdapter.setVideoClickListener(new Adapter_ChatMessage.IVideoClickListener() {
             @Override
             public void mVideClick(ChatMessage message) {
@@ -491,6 +697,16 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         });
+
+
+        /*mAdapter.setMessageLongListener(new Adapter_ChatMessage.IMessageLongListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void mLongListener(ChatMessage message, float x, float y) {
+                Log.d(TAG, "mLongListener: " + x + "--------" + y);
+                listView.showContextMenu(x,y);
+            }
+        });*/
     }
 
 
@@ -658,7 +874,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
         }
         if (resultCode == 1002) {
+
             messageListDataDao.deleteByKey(mFriendInfo.getId());
+            mChatMessageDao.deleteByKey(mFriendInfo.getId());
             finish();
         }
     }
@@ -667,13 +885,13 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     public void uploadPicResult(LoginData data) {
         if (data != null) {
             if (client != null && client.isOpen()) {
-                ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), "", data.getData(), 0);
+                ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), "", data.getData(), 0, 0);
                 String s = new Gson().toJson(message);
                 jWebSClientService.sendMsg(s);
                 message.setIsMeSend(1);
                 chatMessageList.add(message);
                 initChatMsgListView();
-                MyApplication.instance().getDaoSession().getChatMessageDao().insert(message);
+                daoSession.getChatMessageDao().insert(message);
 
                 MessageListData messageListData;
                 String content = "";
@@ -698,9 +916,25 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    public void groupInfoReceive(GroupInfoData data) {
+        if (data != null) {
+            int isForbidden = data.getData().getIsForbidden();
+            mTitleBar.setTitle(data.getData().getName(), TitleBarLayout.POSITION.LEFT);
+            if (isForbidden == 1) {
+                btMute.setVisibility(View.VISIBLE);
+            } else {
+                btMute.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
     public void onFail(String msg, int code) {
         mProgressDialog.cancel();
         showToast(msg);
+        if (code == 10001) {
+            MyApplication.loginAgain();
+        }
     }
 
     @Override

@@ -14,6 +14,7 @@
 
     <color name="test_blue">#338BFF</color>
     <color name="colorCloud">#006EFF</color>
+    <color name="acBg">#F4F5FA</color>
 
     <color name="praise_item_default">#333333</color>
     <color name="praise_item_selector_default">#cccccc</color>

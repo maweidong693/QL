@@ -20,9 +20,9 @@ public class GroupInfoActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.group_manager_base, fragment).commitAllowingStateLoss();
     }
 
-    @Override
+    /*@Override
     public void finish() {
         super.finish();
 //        setResult(1001);
-    }
+    }*/
 }

@@ -66,6 +66,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
@@ -684,6 +685,13 @@ public class SystemFacade {
         return new String(Base64.encode(text.getBytes(), Base64.NO_WRAP));
     }
 
+    public static String base64ToString(String base64) {
+
+        /*byte[] decode = Base64Util.decode(base64);
+        String s = Arrays.toString(decode);*/
+        return new String(Base64.decode(base64.getBytes(), Base64.NO_WRAP));
+    }
+
     public static boolean isMobile(String mobile) {
         String regex = "^(\\+?0?86\\-?)?1[3456789]\\d{9}$";
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
@@ -919,13 +927,13 @@ public class SystemFacade {
 
             for (Enumeration<NetworkInterface> en = NetworkInterface
 
-                    .getNetworkInterfaces(); en.hasMoreElements();) {
+                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
 
                 NetworkInterface intf = en.nextElement();
 
                 for (Enumeration<InetAddress> ipAddr = intf.getInetAddresses(); ipAddr
 
-                        .hasMoreElements();) {
+                        .hasMoreElements(); ) {
 
                     InetAddress inetAddress = ipAddr.nextElement();
                     // ipv4地址

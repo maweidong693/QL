@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatmsg_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -69,6 +69,13 @@
             app:layout_constraintTop_toBottomOf="@+id/iv_chat_take" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--表情面板-->
+    <FrameLayout
+        android:id="@+id/emojicons"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:visibility="gone" />
 
 
 </LinearLayout>

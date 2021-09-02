@@ -43,7 +43,34 @@ public class MineInfoData {
         private String createdTime;
         private String updatedTime;
         private String avator;
+        private String personalSignature;
+        private String momentImg;
         private int sex;
+        private int role;
+
+        public int getRole() {
+            return role;
+        }
+
+        public void setRole(int role) {
+            this.role = role;
+        }
+
+        public String getMomentImg() {
+            return momentImg;
+        }
+
+        public void setMomentImg(String momentImg) {
+            this.momentImg = momentImg;
+        }
+
+        public String getPersonalSignature() {
+            return personalSignature;
+        }
+
+        public void setPersonalSignature(String personalSignature) {
+            this.personalSignature = personalSignature;
+        }
 
         public String getAvator() {
             return avator;

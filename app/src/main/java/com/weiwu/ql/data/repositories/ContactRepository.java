@@ -1,6 +1,7 @@
 package com.weiwu.ql.data.repositories;
 
 import com.tencent.common.http.ContactListData;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.BaseRepository;
 import com.weiwu.ql.base.IBaseCallBack;
@@ -76,5 +77,10 @@ public class ContactRepository extends BaseRepository implements ContactContract
     @Override
     public void findFriendId(LifecycleProvider provider, String mobile, IBaseCallBack<FriendInfoData> callBack) {
         observerNoMap(provider, DataService.getApiService().findFriendId(mobile), callBack);
+    }
+
+    @Override
+    public void getGroupInfo(LifecycleProvider provider, String groupId, IBaseCallBack<GroupInfoData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getGroupInfo(groupId), callBack);
     }
 }

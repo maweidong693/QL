@@ -17,4 +17,8 @@ public interface IGroupMemberRouter {
     void forwardGroupMuteManager(GroupInfo info);
 
     void forwardGroupInvitation(GroupInfo info);
+
+    void allMute(GroupInfo info, boolean isMute);
+
+    void setExamine(GroupInfo info, boolean isExamine);
 }

@@ -34,7 +34,6 @@ import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.qcloud.tim.uikit.base.IUIKitCallBack;
 import com.tencent.qcloud.tim.uikit.component.CircleImageView;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
-import com.tencent.qcloud.tim.uikit.component.SelectionActivity;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.dialog.TUIKitDialog;
 import com.tencent.qcloud.tim.uikit.component.picture.imageEngine.impl.GlideEngine;
@@ -565,7 +564,7 @@ public class FriendProfileLayout extends LinearLayout implements View.OnClickLis
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.profile_remark_edit));
             bundle.putString(TUIKitConstants.Selection.INIT_CONTENT, mRemarkView.getContent());
             bundle.putInt(TUIKitConstants.Selection.LIMIT, 20);
-            SelectionActivity.startTextSelection(TUIKit.getAppContext(), bundle, new SelectionActivity.OnResultReturnListener() {
+            /*SelectionActivity.startTextSelection(TUIKit.getAppContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(Object text) {
                     mRemarkView.setContent(text.toString());
@@ -574,7 +573,7 @@ public class FriendProfileLayout extends LinearLayout implements View.OnClickLis
                     }
                     modifyRemark(text.toString());
                 }
-            });
+            });*/
         }
     }
 

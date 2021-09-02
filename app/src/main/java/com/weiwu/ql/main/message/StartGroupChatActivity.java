@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
-import com.tencent.qcloud.tim.uikit.component.SelectionActivity;
+import com.weiwu.ql.main.contact.group.info.SelectionActivity;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactListView;
@@ -95,6 +95,7 @@ public class StartGroupChatActivity extends BaseActivity implements ContactContr
                 if (selected) {
                     GroupMemberInfo memberInfo = new GroupMemberInfo();
                     memberInfo.setAccount(contact.getId());
+                    memberInfo.setNickname(contact.getNickname());
                     mMembers.add(memberInfo);
                 } else {
                     for (int i = mMembers.size() - 1; i >= 0; i--) {
@@ -222,8 +223,8 @@ public class StartGroupChatActivity extends BaseActivity implements ContactContr
     public void onFail(String msg, int code) {
         mCreating = false;
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 

@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- dialog -->
+    <dimen name="very_samll_text_size">9sp</dimen>
+    <dimen name="thick_line_size">2px</dimen>
+    <dimen name="space_line2">12dp</dimen>
+    <dimen name="sp_stander">16.5sp</dimen>
+    <dimen name="space_line">6dp</dimen>
+    <dimen name="dark_line_size">3px</dimen>
+    <dimen name="avatar_max_size">60dp</dimen>
+    <dimen name="article_post_et_h">100dp</dimen>
+    <dimen name="article_post_delete">50dp</dimen>
+    <dimen name="article_img_margin_top">10dp</dimen>
+    <dimen name="article_img_dimens">80dp</dimen>
+    <dimen name="swipe_progress_bar_height">8dp</dimen>
+    <dimen name="default_background_stroke_width">3dp</dimen>
+    <dimen name="default_stroke_width">7dp</dimen>
+
     <dimen name="dp_m_60">-60dp</dimen>
     <dimen name="dp_m_30">-30dp</dimen>
     <dimen name="dp_m_20">-20dp</dimen>

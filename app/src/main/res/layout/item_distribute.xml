@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/dp_10"
+    android:layout_marginTop="@dimen/dp_12"
+    android:layout_marginEnd="@dimen/dp_10"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/iv_distribute_avator"
+        android:layout_width="@dimen/dp_32"
+        android:layout_height="@dimen/dp_32"
+        android:layout_marginStart="@dimen/dp_13"
+        android:layout_marginTop="@dimen/dp_17"
+        android:layout_marginBottom="@dimen/dp_17"
+        android:src="@drawable/icon" />
+
+    <TextView
+        android:id="@+id/tv_distribute_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_toEndOf="@id/iv_distribute_avator"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dp_14" />
+
+    <EditText
+        android:id="@+id/et_distribute_money"
+        android:layout_width="@dimen/dp_87"
+        android:layout_height="@dimen/dp_23"
+        android:background="@drawable/bg_edittext"
+        android:hint="请输入金额"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:maxLength="6"
+        android:textColorHint="#B2B2B2"
+        android:textSize="@dimen/dp_11"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/dp_12"
+        android:gravity="center"/>
+
+
+</RelativeLayout>

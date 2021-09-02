@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,11 +22,14 @@ import com.gyf.immersionbar.ImmersionBar;
 import com.qiniu.android.utils.StringUtils;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MainActivity;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.LoginData;
+import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.repositories.MineRepository;
 import com.weiwu.ql.data.request.LoginRequestBody;
+import com.weiwu.ql.greendao.db.DaoMaster;
 import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.utils.TimeCountUtil;
@@ -212,7 +216,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     return;
                 }
                 if (register) {
-                    mPresenter.register(new LoginRequestBody(etMobile.getText().toString(), etMobile.getText().toString(), etPassword.getText().toString(), 1));
+                    mPresenter.register(new LoginRequestBody(etMobile.getText().toString(), null, etPassword.getText().toString(), 1));
                 } else {
                     mPresenter.login(new LoginRequestBody(etMobile.getText().toString(), etPassword.getText().toString()));
                 }
@@ -292,11 +296,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
-    public void loginResult(LoginData data) {
-        if (data != null) {
+    public void loginResult(LoginReceive data) {
+        if (data.getData() != null) {
             showToast(data.getMessage());
-            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
-            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData().getToken());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, data.getData().getMemberInfo().getId());
+           /* DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
+            SQLiteDatabase database = helper.getWritableDatabase();
+            DaoMaster daoMaster = new DaoMaster(database);
+            MyApplication.getInstance().setDaoSession(daoMaster.newSession());*/
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }

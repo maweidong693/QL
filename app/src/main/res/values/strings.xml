@@ -68,4 +68,9 @@
     <string name="announcement_title">官方推荐</string>
     <string name="anquan_center">安全中心</string>
     <string name="btn_text_speak">按住说话</string>
+    <string name="request">请求中...</string>
+    <string name="updatePassword">修改密码</string>
+    <string name="view_wallet">钱包</string>
+    <string name="coinName">币种</string>
+    <string name="coinAddress">币种地址</string>
 </resources>

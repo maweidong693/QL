@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_60">
+
+    <RelativeLayout
+        android:id="@+id/ll_order"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/v_order_t"
+            layout="@layout/view_line"
+            android:layout_width="@dimen/dp_2"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/iv_order_record" />
+
+        <ImageView
+            android:id="@+id/iv_order_record"
+            android:layout_width="20.5dp"
+            android:layout_height="20.5dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_order_detail_record" />
+
+        <include
+            android:id="@+id/v_order_b"
+            layout="@layout/view_line"
+            android:layout_width="@dimen/dp_2"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/iv_order_record"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_order_detail_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="订单已完成"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dp_14"
+        app:layout_constraintBottom_toTopOf="@+id/tv_order_detail_time"
+        app:layout_constraintStart_toEndOf="@+id/ll_order"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_order_detail_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="2021-08-31 12:00:00"
+        android:textColor="#888888"
+        android:textSize="@dimen/dp_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_order_detail_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_order_detail_title" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

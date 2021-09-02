@@ -18,6 +18,24 @@ public class GroupInfo extends ChatInfo {
     private String owner;
     private boolean isManger;
     private boolean isOwner;
+    private int isExamine;
+    private int isAllForbidden;
+
+    public int getIsExamine() {
+        return isExamine;
+    }
+
+    public void setIsExamine(int isExamine) {
+        this.isExamine = isExamine;
+    }
+
+    public int getIsAllForbidden() {
+        return isAllForbidden;
+    }
+
+    public void setIsAllForbidden(int isAllForbidden) {
+        this.isAllForbidden = isAllForbidden;
+    }
 
     public void setOwner(boolean owner) {
         isOwner = owner;
@@ -217,6 +235,8 @@ public class GroupInfo extends ChatInfo {
         setOwner(data.getCurrentMemberRoleName());
         setManger(data.getCurrentMemberRole() == 110);
         setOwner(data.getCurrentMemberRole() == 111);
+        setIsExamine(data.getIsExamine());
+        setIsAllForbidden(data.getIsAllForbidden());
 //        setJoinType(infoResult.getGroupInfo().getGroupAddOpt());
         return this;
     }

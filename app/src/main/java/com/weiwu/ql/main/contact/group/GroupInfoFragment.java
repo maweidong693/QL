@@ -2,17 +2,21 @@ package com.weiwu.ql.main.contact.group;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
+import com.weiwu.ql.AppConstant;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.base.BaseFragment;
 import com.tencent.qcloud.tim.uikit.modules.group.info.InfoData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
+import com.weiwu.ql.data.request.UpdateGroupRequestBody;
+import com.weiwu.ql.main.contact.group.info.invites.GroupInvitationFragment;
 import com.weiwu.ql.main.contact.group.member.GroupMemberDeleteFragment;
 import com.weiwu.ql.main.contact.group.member.GroupMemberInviteFragment;
 import com.weiwu.ql.main.contact.group.member.GroupMemberManagerFragment;
@@ -22,6 +26,7 @@ import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.R;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.weiwu.ql.data.repositories.GroupRepository;
+import com.weiwu.ql.utils.SPUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,11 +128,40 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
 
             @Override
             public void forwardGroupInvitation(GroupInfo info) {
-                /*GroupInvitationFragment fragment = new GroupInvitationFragment();
+                GroupInvitationFragment fragment = new GroupInvitationFragment();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(TUIKitConstants.Group.GROUP_INFO, info);
                 fragment.setArguments(bundle);
-                forward(fragment, false);*/
+                forward(fragment, false);
+            }
+
+            @Override
+            public void allMute(GroupInfo info, boolean isMute) {
+                List<GroupMemberInfo> memberDetails = info.getMemberDetails();
+                List<String> membersId = new ArrayList<>();
+                for (int i = 0; i < memberDetails.size(); i++) {
+                    String account = memberDetails.get(i).getAccount();
+                    if (!SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(account)) {
+                        membersId.add(account);
+                    }
+                }
+                if (isMute) {
+                    mPresenter.allMute(new InviteOrDeleteRequestBody(info.getId(), membersId));
+                } else {
+                    mPresenter.cancelMute(new InviteOrDeleteRequestBody(info.getId(), membersId));
+                }
+            }
+
+            @Override
+            public void setExamine(GroupInfo info, boolean isExamine) {
+                UpdateGroupRequestBody body = new UpdateGroupRequestBody();
+                body.setId(info.getId());
+                if (isExamine) {
+                    body.setIsExamine("1");
+                } else {
+                    body.setIsExamine("0");
+                }
+                mPresenter.updateGroupInfo(body);
             }
         });
 
@@ -161,6 +195,11 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
     }
 
     @Override
+    public void allMuteReceive(HttpResult data) {
+        showToast(data.getMessage());
+    }
+
+    @Override
     public void onSuccess(HttpResult data) {
         showToast(data.getMessage());
         getActivity().setResult(1002);
@@ -169,7 +208,10 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
 
     @Override
     public void onFail(String msg, int code) {
-
+        showToast(msg);
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
+        }
     }
 
     @Override

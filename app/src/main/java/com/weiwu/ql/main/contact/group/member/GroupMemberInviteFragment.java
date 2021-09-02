@@ -10,6 +10,7 @@ import android.view.View;
 import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
@@ -65,7 +66,11 @@ public class GroupMemberInviteFragment extends BaseFragment implements GroupCont
         mInviteLayout.setAddSelectItemListener(new GroupMemberInviteLayout.IAddSelectItemListener() {
             @Override
             public void select(List<String> list) {
-                mPresenter.addMembers(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
+                if (list != null && list.size() > 0) {
+                    mPresenter.addMembers(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
+                }else {
+                    showToast("请选择要邀请的成员！");
+                }
             }
         });
     }
@@ -89,6 +94,9 @@ public class GroupMemberInviteFragment extends BaseFragment implements GroupCont
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
+        }
     }
 
     @Override

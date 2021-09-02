@@ -40,7 +40,16 @@ public class ContactListData {
 
     public static class DataDTO {
         private List<FriendsDTO> friends;
+        private List<FriendsDTO> blockFriends;
         private List<GroupsDTO> groups;
+
+        public List<FriendsDTO> getBlockFriends() {
+            return blockFriends;
+        }
+
+        public void setBlockFriends(List<FriendsDTO> blockFriends) {
+            this.blockFriends = blockFriends;
+        }
 
         public List<FriendsDTO> getFriends() {
             return friends;
@@ -66,7 +75,7 @@ public class ContactListData {
             private String createdTime;
             private String updatedTime;
             private String remark;
-            private String faceUrl;
+            private String avator;
             private int sex;
 
             public String getRemark() {
@@ -77,12 +86,12 @@ public class ContactListData {
                 this.remark = remark;
             }
 
-            public String getFaceUrl() {
-                return faceUrl;
+            public String getAvator() {
+                return avator;
             }
 
-            public void setFaceUrl(String faceUrl) {
-                this.faceUrl = faceUrl;
+            public void setAvator(String avator) {
+                this.avator = avator;
             }
 
             public String getId() {

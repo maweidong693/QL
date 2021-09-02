@@ -18,11 +18,15 @@ import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
+import com.weiwu.ql.utils.SPUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 
@@ -51,6 +55,7 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
         Intent intent = getIntent();
         if (intent != null) {
             mFriendInfo = (ContactItemBean) intent.getSerializableExtra(TUIKitConstants.ProfileType.CONTENT);
+
         }
         initView();
     }
@@ -90,6 +95,13 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
         }
         mNickNameView.setText(mFriendInfo.getNickname());
         mIDView.setContent(mFriendInfo.getId());
+        if (mFriendInfo.getId().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
+            mRemarkView.setVisibility(View.GONE);
+            mAuthorityView.setVisibility(View.GONE);
+            mAddBlackView.setVisibility(View.GONE);
+            mChatView.setVisibility(View.GONE);
+            mDeleteView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -100,6 +112,7 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
                 chatIntent.putExtra(TUIKitConstants.ProfileType.CONTENT, mFriendInfo);
                 chatIntent.putExtra(AppConstant.CHAT_TYPE, "member");
                 startActivity(chatIntent);
+//                finish();
                 break;
             case R.id.btnDel:
                 mPresenter.deleteFriend(mFriendInfo.getId());
@@ -111,6 +124,7 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
     public void deleteFriendResult(HttpResult result) {
         if (result.getCode() == 200) {
             showToast("删除成功");
+            EventBus.getDefault().post(new MessageEvent("刷新好友列表", 101));
             finish();
         }
     }
@@ -118,8 +132,8 @@ public class FriendProfileActivity extends BaseActivity implements View.OnClickL
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 

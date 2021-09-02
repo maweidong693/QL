@@ -6,10 +6,14 @@ import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.BaseRepository;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
+import com.weiwu.ql.data.bean.CheckInvitesData;
 import com.weiwu.ql.data.network.DataService;
 import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.CheckInvitesRequestBody;
 import com.weiwu.ql.data.request.GroupOwnerRequestBody;
 import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
+import com.weiwu.ql.data.request.UpdateGroupRequestBody;
+import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
 
 import java.util.List;
@@ -56,8 +60,8 @@ public class GroupRepository extends BaseRepository implements GroupContract.Gro
     }
 
     @Override
-    public void changGroupOwner(LifecycleProvider provider, GroupOwnerRequestBody body, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().changeGroupOwner(body), callBack);
+    public void changGroupOwner(LifecycleProvider provider, String groupId, String memberId, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().changeGroupOwner(groupId, memberId), callBack);
     }
 
     @Override
@@ -83,6 +87,26 @@ public class GroupRepository extends BaseRepository implements GroupContract.Gro
     @Override
     public void cancelForbiddenMember(LifecycleProvider provider, InviteOrDeleteRequestBody body, IBaseCallBack<HttpResult> callBack) {
         observerNoMap(provider, DataService.getApiService().cancelForbiddenMember(body), callBack);
+    }
+
+    @Override
+    public void updateGroupInfo(LifecycleProvider provider, UpdateGroupRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().updateGroupInfo(body), callBack);
+    }
+
+    @Override
+    public void updateMineInfo(LifecycleProvider provider, UpdateMineInfoRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().updateMineInfo(body), callBack);
+    }
+
+    @Override
+    public void getAllGroupInvites(LifecycleProvider provider, String groupId, IBaseCallBack<CheckInvitesData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getAllInvites(groupId), callBack);
+    }
+
+    @Override
+    public void checkInvites(LifecycleProvider provider, String inviteId, String flag, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().checkInvites(inviteId, flag), callBack);
     }
 
     @Override

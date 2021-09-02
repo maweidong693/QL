@@ -9,6 +9,7 @@ import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.InfoData;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
@@ -70,7 +71,11 @@ public class GroupMemberTransferFragment extends BaseFragment implements GroupCo
             @Override
             public void select(List<String> list) {
                 if (type == 1) {
-                    mPresenter.changGroupOwner(new GroupOwnerRequestBody(mGroupInfo.getId(), list.get(0)));
+                    if (list != null && list.size() > 0) {
+                        mPresenter.changGroupOwner(mGroupInfo.getId(), list.get(0));
+                    }else {
+                        showToast("请选择成员！");
+                    }
                 } else if (type == 2) {
                     mPresenter.changeGroupManger(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
                 }
@@ -87,6 +92,9 @@ public class GroupMemberTransferFragment extends BaseFragment implements GroupCo
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
+        }
 
     }
 

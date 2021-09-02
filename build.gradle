@@ -8,8 +8,19 @@ buildscript {
         jcenter()
         maven { url 'https://jitpack.io' }
         maven { url "https://s01.oss.sonatype.org/content/groups/public" }
+
+        // hms
+        maven { url 'http://developer.huawei.com/repo/'}
+        // fcm
+        maven { url "https://maven.google.com" }
     }
     dependencies {
+
+        // fcm
+        classpath 'com.google.gms:google-services:4.3.4'
+        // hms
+        classpath 'com.huawei.agconnect:agcp:1.4.1.300'
+
         classpath "com.android.tools.build:gradle:4.2.0"
 
         // GreenDao插件
@@ -40,6 +51,11 @@ allprojects {
         maven { url "https://s01.oss.sonatype.org/content/groups/public" }
         google()
         jcenter() // Warning: this repository is going to shut down soon
+
+        //hms
+        maven {url 'http://developer.huawei.com/repo/'}
+        //fcm
+        maven { url "https://maven.google.com" }
     }
 }
 

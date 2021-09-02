@@ -3,6 +3,7 @@ package com.weiwu.ql.main.login;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.bean.LoginData;
+import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.request.LoginRequestBody;
 import com.weiwu.ql.main.mine.MineContract;
 
@@ -23,9 +24,9 @@ public class LoginPresenter implements MineContract.ILoginPresenter {
 
     @Override
     public void login(LoginRequestBody body) {
-        mSource.login((LifecycleProvider) mView, body, new IBaseCallBack<LoginData>() {
+        mSource.login((LifecycleProvider) mView, body, new IBaseCallBack<LoginReceive>() {
             @Override
-            public void onSuccess(LoginData data) {
+            public void onSuccess(LoginReceive data) {
                 mView.loginResult(data);
             }
 

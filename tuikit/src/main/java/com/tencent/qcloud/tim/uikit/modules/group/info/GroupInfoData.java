@@ -52,6 +52,33 @@ public class GroupInfoData {
         private String avator;
         private String notice;
         private String introduction;
+        private int isForbidden;
+        private int isAllForbidden;
+        private int isExamine;
+
+        public int getIsAllForbidden() {
+            return isAllForbidden;
+        }
+
+        public void setIsAllForbidden(int isAllForbidden) {
+            this.isAllForbidden = isAllForbidden;
+        }
+
+        public int getIsExamine() {
+            return isExamine;
+        }
+
+        public void setIsExamine(int isExamine) {
+            this.isExamine = isExamine;
+        }
+
+        public int getIsForbidden() {
+            return isForbidden;
+        }
+
+        public void setIsForbidden(int isForbidden) {
+            this.isForbidden = isForbidden;
+        }
 
         public String getIntroduction() {
             return introduction;

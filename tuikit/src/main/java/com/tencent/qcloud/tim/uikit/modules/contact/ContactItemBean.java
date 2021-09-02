@@ -3,12 +3,8 @@ package com.tencent.qcloud.tim.uikit.modules.contact;
 import android.text.TextUtils;
 
 import com.tencent.common.http.ContactListData;
-import com.tencent.imsdk.v2.V2TIMFriendInfo;
-import com.tencent.imsdk.v2.V2TIMGroupInfo;
-import com.tencent.imsdk.v2.V2TIMGroupMemberFullInfo;
 import com.tencent.qcloud.tim.uikit.component.indexlib.IndexBar.bean.BaseIndexPinyinBean;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
-import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -144,7 +140,7 @@ public class ContactItemBean extends BaseIndexPinyinBean {
         setId(friendInfo.getId());
         setRemark(friendInfo.getRemark());
         setNickname(friendInfo.getNickName());
-        setAvatarurl(friendInfo.getFaceUrl());
+        setAvatarurl(friendInfo.getAvator());
         return this;
     }
 

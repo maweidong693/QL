@@ -1,4 +1,4 @@
-package com.tencent.qcloud.tim.uikit.component;
+package com.weiwu.ql.main.contact.group.info;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,21 +17,36 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.tencent.common.UserInfo;
-import com.tencent.qcloud.tim.uikit.R;
+import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
+import com.weiwu.ql.MyApplication;
+import com.weiwu.ql.R;
+import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.MessageEvent;
+import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.repositories.GroupRepository;
+import com.weiwu.ql.data.request.UpdateGroupRequestBody;
+import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
+import com.weiwu.ql.main.contact.group.GroupContract;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SelectionActivity extends Activity {
+public class SelectionActivity extends BaseActivity implements GroupContract.IUpdateGroupInfoView {
 
     private static OnResultReturnListener sOnResultReturnListener;
 
     private RadioGroup radioGroup;
     private EditText input;
     private int mSelectionType;
+    private GroupContract.IUpdateGroupInfoPresenter mPresenter;
+    private String id;
+    private String mName;
+    private int limit;
 
     public static void startTextSelection(Context context, Bundle bundle, OnResultReturnListener listener) {
         bundle.putInt(TUIKitConstants.Selection.TYPE, TUIKitConstants.Selection.TYPE_TEXT);
@@ -65,17 +80,19 @@ public class SelectionActivity extends Activity {
             getWindow().getDecorView().setSystemUiVisibility(vis);
         }
         setContentView(R.layout.selection_activity);
+        setPresenter(new UpdateGroupPresenter(GroupRepository.getInstance()));
         final TitleBarLayout titleBar = findViewById(R.id.edit_title_bar);
         radioGroup = findViewById(R.id.content_list_rg);
         input = findViewById(R.id.edit_content_et);
 
         Bundle bundle = getIntent().getBundleExtra(TUIKitConstants.Selection.CONTENT);
+        id = bundle.getString(TUIKitConstants.Selection.ID);
         final String title = bundle.getString(TUIKitConstants.Selection.TITLE);
         switch (bundle.getInt(TUIKitConstants.Selection.TYPE)) {
             case TUIKitConstants.Selection.TYPE_TEXT:
                 radioGroup.setVisibility(View.GONE);
                 String defaultString = bundle.getString(TUIKitConstants.Selection.INIT_CONTENT);
-                int limit = bundle.getInt(TUIKitConstants.Selection.LIMIT);
+                limit = bundle.getInt(TUIKitConstants.Selection.LIMIT);
                 if (!TextUtils.isEmpty(defaultString)) {
                     input.setText(defaultString);
                     input.setSelection(defaultString.length());
@@ -83,7 +100,7 @@ public class SelectionActivity extends Activity {
                 if (limit > 0) {
                     input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(limit)});
                 }
-                if (title.equals(getResources().getString(R.string.modify_nick_name))||title.equals(getResources().getString(R.string.modify_nick_name_in_goup))) {
+                if (title.equals(getResources().getString(R.string.modify_nick_name)) || title.equals(getResources().getString(R.string.modify_nick_name_in_goup))) {
                     input.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,7 +115,7 @@ public class SelectionActivity extends Activity {
                             Pattern p = Pattern.compile(regEx);
                             Matcher m = p.matcher(editable);
                             String str = m.replaceAll("").trim();    //删掉不是字母或数字的字符
-                            if(!editable.equals(str)){
+                            if (!editable.equals(str)) {
                                 input.setText(str);  //设置EditText的字符
                                 input.setSelection(str.length()); //因为删除了字符，要重写设置新的光标所在位置
                             }
@@ -124,7 +141,7 @@ public class SelectionActivity extends Activity {
                     radioButton.setId(i);
                     radioButton.setTextSize(18);
                     radioButton.setTextColor(getResources().getColor(R.color.black));
-                    radioButton.setPadding(0,5,0,5);
+                    radioButton.setPadding(0, 5, 0, 5);
                     radioButton.setLayoutDirection(android.view.View.LAYOUT_DIRECTION_RTL);
                     radioButton.setTextDirection(android.view.View.TEXT_DIRECTION_LTR);
                     radioGroup.addView(radioButton, i, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -163,43 +180,76 @@ public class SelectionActivity extends Activity {
                     ToastUtil.toastLongMessage("没有输入昵称，请重新填写");
                     return;
                 }
-                if (title.equals(getResources().getString(R.string.modify_nick_name))||title.equals(getResources().getString(R.string.modify_nick_name_in_goup))) {
-                    if (TextUtils.isEmpty(input.getText().toString().trim())){
+                if (title.equals(getResources().getString(R.string.modify_nick_name)) || title.equals(getResources().getString(R.string.modify_nick_name_in_goup))) {
+                    if (TextUtils.isEmpty(input.getText().toString().trim())) {
                         ToastUtil.toastLongMessage("没有输入昵称，请重新填写");
                         return;
                     }
-                    if (stringFilter(input.getText().toString())){
+                    /*if (stringFilter(input.getText().toString())) {
                         ToastUtil.toastLongMessage("昵称非法，请重新填写");
                         return;
-                    }
+                    }*/
                 }
 
                 if (sOnResultReturnListener != null) {
-                    sOnResultReturnListener.onReturn(input.getText().toString());
+                    mName = input.getText().toString();
+                    if (limit == 200) {
+                        mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, mName, null, null, null, null));
+                    } else {
+                        mPresenter.updateMineInfo(new UpdateMineInfoRequestBody(null, 0, null, input.getText().toString(), null, null));
+                    }
                 }
                 break;
             case TUIKitConstants.Selection.TYPE_LIST:
                 if (sOnResultReturnListener != null) {
+                    mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, input.getText().toString(), null, null, null, null));
                     sOnResultReturnListener.onReturn(radioGroup.getCheckedRadioButtonId());
                 }
                 break;
         }
         finish();
     }
-    public  boolean stringFilter(String str) {
+
+    public boolean stringFilter(String str) {
         String userId = UserInfo.getInstance().getUserId();
-        String s  = str.toLowerCase();
-        if (s.contains(userId)){
-               return true;
-           }
+        String s = str.toLowerCase();
+        if (s.contains(userId)) {
+            return true;
+        }
         return false;
 
 
-        }
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
         sOnResultReturnListener = null;
+    }
+
+    @Override
+    public void onSuccess(HttpResult data) {
+        EventBus.getDefault().post(new MessageEvent("刷新个人信息", 111));
+        sOnResultReturnListener.onReturn(mName);
+    }
+
+    @Override
+    public void onFail(String msg, int code) {
+        showToast(msg);
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
+        }
+    }
+
+    @Override
+    public void setPresenter(GroupContract.IUpdateGroupInfoPresenter presenter) {
+        mPresenter = presenter;
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    public Activity getActivityObject() {
+        return this;
     }
 
     public interface OnResultReturnListener {

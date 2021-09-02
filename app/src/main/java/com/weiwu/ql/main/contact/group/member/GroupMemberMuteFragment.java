@@ -11,11 +11,14 @@ import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.InfoData;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.AppConstant;
+import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
 import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
+import com.weiwu.ql.utils.SPUtils;
 
 import androidx.annotation.Nullable;
 
@@ -85,7 +88,9 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
                 GroupMemberInfo memberInfo = new GroupMemberInfo();
                 GroupMemberData.DataDTO dataDTO = data.getData().get(i);
                 memberInfo.covertTIMGroupMemberInfo(dataDTO);
-                members.add(memberInfo);
+                if (!dataDTO.getId().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
+                    members.add(memberInfo);
+                }
             }
             mGroupInfo.setMemberDetails(members);
             mInviteLayout.setDataSource(mGroupInfo);
@@ -100,6 +105,9 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
+        }
     }
 
     @Override

@@ -20,8 +20,8 @@ public class ConfigHelper {
     public TUIKitConfigs getConfigs() {
         GeneralConfig config = new GeneralConfig();
         // 显示对方是否已读的view将会展示
-        config.setShowRead(true);
-        config.setAppCacheDir(MyApplication.instance().getFilesDir().getPath());
+        config.setShowRead(false);
+//        config.setAppCacheDir(MyApplication.getInstance().getFilesDir().getPath());
         if (new File(Environment.getExternalStorageDirectory() + "/111222333").exists()) {
             config.setTestEnv(true);
         }

@@ -1,6 +1,5 @@
 package com.weiwu.ql;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.TargetApi;
@@ -26,26 +25,32 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
-import com.tencent.qcloud.tim.uikit.base.BaseActvity;
-import com.trello.rxlifecycle2.components.support.RxFragment;
+import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.CodeData;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.MineRepository;
+import com.weiwu.ql.data.request.AddFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactFragment;
-import com.weiwu.ql.main.contact.chat.ChatActivity;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
 import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
 import com.weiwu.ql.main.find.FindFragment;
+import com.weiwu.ql.main.message.DBCore;
 import com.weiwu.ql.main.message.MessageFragment;
 import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.main.mine.MineFragment;
 import com.weiwu.ql.main.mine.MinePresenter;
+import com.weiwu.ql.utils.IntentUtil;
 import com.weiwu.ql.utils.Logger;
 import com.weiwu.ql.utils.SPUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
+import static com.weiwu.ql.view.Menu.REQUEST_CODE_SCAN;
 
 public class MainActivity extends BaseActivity implements MineContract.IMineView {
 
@@ -65,10 +70,9 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setPresenter(new MinePresenter(MineRepository.getInstance()));
+        mPresenter.getMineInfo();
         ImmersionBar.with(this).statusBarDarkFont(true).init();
         mContext = MainActivity.this;
-        initView();
-        mPresenter.getMineInfo();
     }
 
     private void initView() {
@@ -108,7 +112,9 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy: aaaccc===");
         jWebSClientService.onDestroy();
+        client.close();
     }
 
     private JWebSocketClient client;
@@ -157,14 +163,27 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
         MineInfoData.DataDTO dto = data.getData();
         SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getId());
         SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNickName());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TYPE, String.valueOf(dto.getRole()));
+//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
+//        SQLiteDatabase database = helper.getWritableDatabase();
+//        DaoMaster daoMaster = new DaoMaster(database);
+//        MyApplication.getInstance().setDaoSession(daoMaster.newSession());
+        DBCore.init(this);
 
+        initView();
+
+    }
+
+    @Override
+    public void addFriendReceive(HttpResult data) {
+        showToast("好友请求发送成功！");
     }
 
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 
@@ -336,5 +355,58 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 扫描二维码/条码回传
+        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(CodeUtils.RESULT_STRING);
+                Log.d(TAG, "onActivityResult: " + content);
+                if (content.length() > 10) {
+                    CodeData codeData = new Gson().fromJson(content, CodeData.class);
+                    String type = codeData.getType();
+                    if (type.equals("web-login")) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("type", "login");
+                        bundle.putString("content", codeData.getId());
+                        IntentUtil.redirectToNextActivity(this, WebLoginConfirmActivity.class, bundle);
+//                        mPresenter.webLogin(new WebLoginRequestBody(SPUtils.getValue(AppConstant.USER, AppConstant.USER_TOKEN), codeData.getId()));
+                    } else if (type.equals("add-friend")) {
+                        mPresenter.addFriend(new AddFriendRequestBody(codeData.getId()));
+                    }
+                } else {
+                    ToastUtil.toastLongMessage("无效的二维码");
+                }
+                
+                /*String[] split = content.split("#");
+                if (split.length >= 2) {
+                    String type = split[0];
+                    switch (type) {
+                        case "1"://加好友
+//                            addFriend(split[1]);
+                            break;
+                        case "2"://web登录
+                            Bundle bundle = new Bundle();
+                            bundle.putString("type", "login");
+                            bundle.putString("content", split[1]);
+                            IntentUtil.redirectToNextActivity(this, WebLoginConfirmActivity.class, bundle);
+                            break;
+
+                        default:
+                            ToastUtil.toastLongMessage("无效的二维码");
+                            break;
+
+                    }
+                } else {
+                    ToastUtil.toastLongMessage("无效的二维码");
+//                    addFriend(split[0]);
+                }*/
+
+            }
+        }
     }
 }

@@ -19,9 +19,13 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.google.gson.Gson;
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.R;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
+import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
 import com.weiwu.ql.main.contact.chat.util.Util;
+import com.weiwu.ql.utils.SPUtils;
 
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -42,17 +46,17 @@ public class JWebSocketClientService extends Service {
     private Notification getNotification() {
         Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("测试服务")
-                .setContentText("我正在运行");
+                .setContentTitle("洽聊")
+                .setContentText("正在运行");
         //设置Notification的ChannelID,否则不能正常显示
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId(NOTIFICATION_ID);
         }
         Notification notification = builder.build();
         return notification;
     }
 
-    //灰色保活
+    /*//灰色保活
     public static class GrayInnerService extends Service {
 
         @Override
@@ -67,7 +71,7 @@ public class JWebSocketClientService extends Service {
         public IBinder onBind(Intent intent) {
             return null;
         }
-    }
+    }*/
 
     PowerManager.WakeLock wakeLock;//锁屏唤醒
 
@@ -100,11 +104,11 @@ public class JWebSocketClientService extends Service {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //创建NotificationChannel
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(NOTIFICATION_ID, NOTIFICATION_NAME, NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
-        startForeground(1,getNotification());
+        startForeground(1, getNotification());
     }
 
     @Override
@@ -149,7 +153,7 @@ public class JWebSocketClientService extends Service {
      * 初始化websocket连接
      */
     private void initSocketClient() {
-        URI uri = URI.create(Util.ws);
+        URI uri = URI.create("ws://47.108.192.155:8801/ws;" + SPUtils.getValue(AppConstant.USER, AppConstant.USER_TOKEN));
         client = new JWebSocketClient(uri) {
             @Override
             public void onMessage(String message) {
@@ -252,6 +256,7 @@ public class JWebSocketClientService extends Service {
      * @param content
      */
     private void sendNotification(String content) {
+        ChatMessage chatMessage = new Gson().fromJson(content, ChatMessage.class);
         Intent intent = new Intent();
         intent.setClass(this, ChatActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -261,8 +266,8 @@ public class JWebSocketClientService extends Service {
                 // 设置该通知优先级
                 .setPriority(Notification.PRIORITY_MAX)
                 .setSmallIcon(R.drawable.icon)
-                .setContentTitle("服务器")
-                .setContentText(content)
+                .setContentTitle(chatMessage.getMemberNickname())
+                .setContentText("收到一条新消息")
                 .setVisibility(VISIBILITY_PUBLIC)
                 .setWhen(System.currentTimeMillis())
                 // 向通知添加声音、闪灯和振动效果
@@ -280,7 +285,7 @@ public class JWebSocketClientService extends Service {
         }
         Notification notification = builder.build();
 //        notifyManager.notify(1, notification);//id要保证唯一
-        startForeground(1,notification);
+        startForeground(1, notification);
     }
 
 

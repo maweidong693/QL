@@ -31,10 +31,11 @@
                 android:padding="@dimen/page_margin">
 
                 <ImageView
-                    android:scaleType="fitXY"
                     android:id="@+id/self_icon"
                     android:layout_width="80dp"
-                    android:layout_height="80dp" />
+                    android:layout_height="80dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -44,48 +45,50 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_marginBottom="8dp"
-                        android:layout_alignParentBottom="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="8dp"
                         android:orientation="vertical">
 
 
                         <TextView
-                            android:textIsSelectable="true"
                             android:id="@+id/self_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14sp"
                             android:textColor="@color/black"
-                            tools:text="手机号：sadfa45"
-                            />
-                        <TextView
-                            android:layout_marginTop="13dp"
                             android:textIsSelectable="true"
+                            android:textSize="14sp"
+                            tools:text="手机号：sadfa45" />
+
+                        <TextView
                             android:id="@+id/self_account"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="13dp"
+                            android:text=""
+                            android:textIsSelectable="true"
                             android:textSize="12sp"
-                            tools:text="洽聊号：sadfa45"
-                            android:text="" />
+                            tools:text="洽聊号：sadfa45" />
 
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginRight="10dp"
-                        android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginRight="10dp"
                         android:layout_marginBottom="8dp"
-                        >
+                        android:orientation="horizontal">
+
                         <ImageView
-                            android:layout_marginRight="15dp"
                             android:id="@+id/my_qr_code"
-                            android:src="@drawable/qr_code1"
                             android:layout_width="13dp"
-                            android:layout_height="13dp"/>
+                            android:layout_height="13dp"
+                            android:layout_marginRight="15dp"
+                            android:src="@drawable/qr_code1" />
+
                         <ImageView
                             android:id="@+id/rightArrow"
                             android:layout_width="wrap_content"
@@ -105,64 +108,63 @@
                 android:orientation="vertical">
 
                 <RelativeLayout
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:id="@+id/rl_find"
-                    android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    >
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:background="@color/white"
+                    android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_marginLeft="16dp"
+                        android:id="@+id/item_img"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_centerVertical="true"
-                        android:id="@+id/item_img"
-                        android:src="@drawable/my_icon_chat"
-                        ></ImageView>
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/my_icon_chat"></ImageView>
 
                     <TextView
-                        android:layout_toRightOf="@+id/item_img"
                         android:id="@+id/name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="17dp"
                         android:layout_centerVertical="true"
-                        android:textColor="@color/black"
+                        android:layout_marginLeft="17dp"
+                        android:layout_toRightOf="@+id/item_img"
                         android:text="@string/friend_updates"
+                        android:textColor="@color/black"
                         android:textSize="16sp" />
 
                     <com.tencent.qcloud.tim.uikit.component.UnreadCountTextView
-                        android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/name"
                         android:id="@+id/msg_circle_total_unread"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:layout_marginLeft="6dp"
+                        android:layout_toRightOf="@+id/name"
                         android:gravity="center"
                         android:includeFontPadding="false"
                         android:minWidth="18.4dp"
                         android:minHeight="18.4dp"
-                        android:textColor="#fff"
                         android:text="222"
+                        android:textColor="#fff"
                         android:textSize="13.6sp"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
+
                     <ImageView
-                        android:layout_marginRight="20dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentRight="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/arrow_right"
-                        ></ImageView>
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/arrow_right"></ImageView>
+
                     <View
-                        android:layout_toRightOf="@+id/item_img"
-                        android:layout_marginLeft="17dp"
-                        android:layout_alignParentBottom="true"
                         android:id="@+id/bottomLine"
                         android:layout_width="match_parent"
                         android:layout_height="1px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="17dp"
+                        android:layout_toRightOf="@+id/item_img"
                         android:background="@color/line" />
 
                 </RelativeLayout>
@@ -172,41 +174,54 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:canNav="true"
-                    app:src="@drawable/my_icon_personal"
-                    app:name="@string/view_favorites" />
+                    app:name="@string/view_favorites"
+                    app:src="@drawable/my_icon_personal" />
+
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
+                    android:id="@+id/view_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
+                    app:canNav="true"
+                    app:isBottom="true"
+                    app:name="@string/view_wallet"
+                    app:src="@mipmap/ic_wallet" />
+
+                <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_privacy_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_10"
                     app:canNav="true"
                     app:isBottom="true"
-                    app:src="@drawable/my_icon_notice"
-                    app:name="@string/privacy_setting" />
+                    app:name="@string/privacy_setting"
+                    app:src="@drawable/my_icon_notice" />
+
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_general_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:canNav="true"
                     app:isBottom="true"
-                    app:src="@drawable/my_icon_set"
-                    app:name="@string/general_setting" />
+                    app:name="@string/general_setting"
+                    app:src="@drawable/my_icon_set" />
+
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_general_anquan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:canNav="true"
                     app:isBottom="true"
-                    app:src="@drawable/ic_anquan"
-                    app:name="@string/anquan_center" />
+                    app:name="@string/anquan_center"
+                    app:src="@drawable/ic_anquan" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/clear_cache"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:canNav="true"
-                    app:src="@drawable/my_icon_help"
-                    app:name="@string/clear_cache" />
+                    app:name="@string/clear_cache"
+                    app:src="@drawable/my_icon_help" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/about_im"
@@ -214,19 +229,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     app:canNav="true"
-                    app:src="@drawable/my_icon_about"
-                    app:name="@string/about_im" />
+                    app:name="@string/about_im"
+                    app:src="@drawable/my_icon_about" />
 
                 <Button
                     android:id="@+id/logout_btn"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
-                    android:layout_marginLeft="@dimen/btn_margin_left"
-                    android:layout_marginRight="@dimen/btn_margin_right"
-                    android:layout_marginBottom="@dimen/btn_margin_bottom"
-                    android:layout_marginTop="10dp"
                     android:layout_height="@dimen/btn_height_large"
                     android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="@dimen/btn_margin_left"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="@dimen/btn_margin_right"
+                    android:layout_marginBottom="@dimen/btn_margin_bottom"
                     android:background="@color/bg_negative_btn"
                     android:text="@string/exit"
                     android:textColor="@color/negative_text" />

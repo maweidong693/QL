@@ -18,12 +18,15 @@ import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.bean.NewFriendListData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.data.request.NewFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.add.AddMoreActivity;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,10 +98,10 @@ public class NewFriendActivity extends BaseActivity implements ContactContract.I
     public void getNewFriendListReceive(NewFriendListData data) {
         if (data.getData() == null) {
 //            if (data.getData().size() == 0) {
-                mEmptyView.setText(getResources().getString(R.string.no_friend_apply));
-                mNewFriendLv.setVisibility(View.GONE);
-                mEmptyView.setVisibility(View.VISIBLE);
-                return;
+            mEmptyView.setText(getResources().getString(R.string.no_friend_apply));
+            mNewFriendLv.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+            return;
 //            }
         }
         mNewFriendLv.setVisibility(View.VISIBLE);
@@ -124,14 +127,15 @@ public class NewFriendActivity extends BaseActivity implements ContactContract.I
         } else {
             showToast(data.getMessage());
         }
+        EventBus.getDefault().post(new MessageEvent("刷新好友列表", 101));
         initPendency();
     }
 
     @Override
     public void onFail(String msg, int code) {
         showToast(msg);
-        if (code == 10000) {
-            MyApplication.loginAgain();
+        if (code == 10001) {
+            MyApplication.getInstance().loginAgain();
         }
     }
 

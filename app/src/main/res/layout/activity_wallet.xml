@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".main.mine.wallet.WalletActivity">
+
+    <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
+        android:id="@+id/wallet_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_wallet_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="@dimen/dp_20"
+            android:text="身份钱包"
+            android:textColor="#888888"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/tv_wallet_manger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_wallet_hint"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:drawableEnd="@mipmap/ic_wallet_manger"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:text="管理"
+            android:textColor="#888888"
+            android:textSize="@dimen/dp_14" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_wallet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/rl_add_wallet"
+            android:layout_below="@id/tv_wallet_hint" />
+
+        <RelativeLayout
+            android:id="@+id/rl_add_wallet"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_80"
+            android:layout_alignParentBottom="true">
+
+            <Button
+                android:id="@+id/bt_add_wallet"
+                android:layout_width="@dimen/dp_180"
+                android:layout_height="@dimen/dp_35"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_forget_password_btn"
+                android:text="添加钱包"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dp_14" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

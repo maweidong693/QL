@@ -31,7 +31,7 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".component.SelectionActivity"
+            android:name="com.weiwu.ql.main.contact.group.info.SelectionActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".modules.group.apply.GroupApplyManagerActivity"

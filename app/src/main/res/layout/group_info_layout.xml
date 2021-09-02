@@ -33,34 +33,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginRight="20dp"
                 android:numColumns="6" />
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:id="@+id/group_type_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:name="@string/group_type" />
+                android:visibility="gone"
+                app:name="@string/group_type"
+                tools:visibility="visible" />
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                android:visibility="gone"
                 android:id="@+id/group_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/page_margin"
+                android:visibility="gone"
                 app:name="@string/group_id" />
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:id="@+id/group_name"
-                app:isBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:name="@string/group_name" />
+                android:visibility="gone"
+                app:isBottom="true"
+                app:name="@string/group_name"
+                tools:visibility="visible" />
+
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/self_nickname_bar"
                 android:layout_width="match_parent"
@@ -69,123 +70,131 @@
                 app:name="@string/in_group_nick_name" />
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:id="@+id/group_icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/page_margin"
+                android:visibility="gone"
                 app:canNav="true"
                 app:isBottom="true"
-                app:name="@string/group_icon" />
+                app:name="@string/group_icon"
+                tools:visibility="visible" />
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/group_notice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:isBottom="true"
                 app:canNav="true"
+                app:isBottom="true"
                 app:name="@string/group_notice" />
+
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:id="@+id/group_invitation"
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/page_margin"
                 android:layout_height="wrap_content"
-                app:isBottom="true"
-                app:canNav="true"
-                app:name="@string/group_apply_members" />
-            <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
+                android:layout_marginTop="@dimen/page_margin"
                 android:visibility="gone"
+                app:canNav="true"
+                app:isBottom="true"
+                app:name="@string/group_apply_members"
+                tools:visibility="visible" />
+
+            <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/group_owner_transfer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:isBottom="true"
-                app:canNav="true"
-                app:name="@string/group_owner_transfer" />
-            <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
                 android:visibility="gone"
+                app:canNav="true"
+                app:isBottom="true"
+                app:name="@string/group_owner_transfer"
+                tools:visibility="visible" />
+
+            <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/group_manager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:isBottom="true"
-                app:canNav="true"
-                app:name="@string/group_manager" />
-            <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
                 android:visibility="gone"
+                app:canNav="true"
+                app:isBottom="true"
+                app:name="@string/group_manager"
+                tools:visibility="visible" />
+
+            <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/group_mute_manager"
                 android:layout_width="match_parent"
-                app:isBottom="true"
-                app:canNav="true"
                 android:layout_height="wrap_content"
-                app:name="@string/group_mute_manager" />
+                android:visibility="gone"
+                app:canNav="true"
+                app:isBottom="true"
+                app:name="@string/group_mute_manager"
+                tools:visibility="visible" />
 
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/join_type_bar"
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/page_margin"
-                app:name="@string/join_group_type" />
-            <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
                 android:visibility="gone"
+                app:name="@string/join_group_type"
+                tools:visibility="visible" />
+
+            <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/is_without_review"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/page_margin"
+                android:visibility="gone"
                 app:isBottom="true"
                 app:isSwitch="true"
-                app:name="@string/without_review" />
+                app:name="@string/without_review"
+                tools:visibility="visible" />
+
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:id="@+id/is_add_friend"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:isBottom="true"
                 app:isSwitch="true"
-                app:name="@string/add_friend_type" />
+                app:name="@string/add_friend_type"
+                tools:visibility="visible" />
+
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
-                android:visibility="gone"
                 android:id="@+id/is_mute"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:isSwitch="true"
-                app:name="@string/set_mute" />
-            <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                tools:visibility="visible"
                 android:visibility="gone"
+                app:isSwitch="true"
+                app:name="@string/set_mute"
+                tools:visibility="visible" />
+
+            <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/set_chat_background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:canNav="true"
-                app:name="@string/set_chat_background" />
+                app:name="@string/set_chat_background"
+                tools:visibility="visible" />
 
             <com.tencent.qcloud.tim.uikit.component.LineControllerView
                 android:id="@+id/chat_to_top_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/page_margin"
-                app:name="@string/chat_to_top"
-                app:isSwitch="true"/>
+                app:isSwitch="true"
+                app:name="@string/chat_to_top" />
 
             <Button
                 android:id="@+id/group_dissolve_button"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginBottom="20dp"
                 android:layout_marginLeft="@dimen/page_margin"
-                android:layout_marginRight="@dimen/page_margin"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="@dimen/page_margin"
+                android:layout_marginBottom="20dp"
                 android:background="#ffffff"
                 android:textColor="#fb6155" />
 

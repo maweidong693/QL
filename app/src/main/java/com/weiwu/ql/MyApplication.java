@@ -3,9 +3,13 @@ package com.weiwu.ql;
 import android.app.Application;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.smtt.sdk.QbSdk;
+import com.uuzuche.lib_zxing.ZApplication;
+import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.greendao.db.DaoMaster;
 import com.weiwu.ql.greendao.db.DaoSession;
 import com.weiwu.ql.main.login.LoginActivity;
@@ -18,13 +22,20 @@ import com.youth.banner.util.LogUtils;
  * email : maweidong693@163.com
  * date : 2021/4/25 09:34 
  */
-public class MyApplication extends Application {
+public class MyApplication extends ZApplication {
 
     public static Application mApplicationContext;
 
-    private static MyApplication instance;
+    public volatile static MyApplication instance;
 
-    public static MyApplication instance() {
+    public static MyApplication getInstance() {
+        if (instance == null) {
+            synchronized (ContactRepository.class) {
+                if (instance == null) {
+                    instance = new MyApplication();
+                }
+            }
+        }
         return instance;
     }
 
@@ -33,7 +44,6 @@ public class MyApplication extends Application {
         super.onCreate();
         mApplicationContext = this;
 
-        instance = this;
         /**
          * TUIKit的初始化函数
          *
@@ -44,32 +54,32 @@ public class MyApplication extends Application {
         TUIKit.init(this, GenerateTestUserSig.SDKAPPID, new ConfigHelper().getConfigs());
 //        initX5();
 
-        setDatabase();
+//        setDatabase();
 
     }
 
     /* 通过 DaoMaster 的内部类 DevOpenHelper，你可以得到一个便利的 SQLiteOpenHelper 对象。
 可能你已经注意到了，你并不需要去编写「CREATE TABLE」这样的 SQL 语句，因为 greenDAO 已经帮你做了。 注意：默认的 DaoMaster.DevOpenHelper 会在数据库升级时，删除所有的表，意味着这将导致数据的丢失。*/
 
-    private DaoMaster.DevOpenHelper mHelper;
-    private SQLiteDatabase db;
-    private DaoMaster mDaoMaster;
-    private DaoSession mDaoSession;
+//    public static volatile DaoSession mDaoSession;
+    private static final String TAG = "MyApplication";
 
-    private void setDatabase() {
-        mHelper = new DaoMaster.DevOpenHelper(this, "notes-db", null);
+//    public void setDaoSession(DaoSession daoSession) {
+//        mDaoSession = daoSession;
+//        mDaoSession.clear();
+//    }
+
+
+    /*public void setDatabase() {
+        mHelper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID), null);
         db = mHelper.getWritableDatabase();
         mDaoMaster = new DaoMaster(db);
         mDaoSession = mDaoMaster.newSession();
-    }
+    }*/
 
-    public DaoSession getDaoSession() {
-        return mDaoSession;
-    }
-
-    public SQLiteDatabase getDb() {
-        return db;
-    }
+//    public DaoSession getDaoSession() {
+//        return mDaoSession;
+//    }
 
     private void initX5() {
         //非wifi情况下，主动下载x5内核
@@ -98,9 +108,12 @@ public class MyApplication extends Application {
         if (System.currentTimeMillis() - lastJump > 2000) {
             boolean b = SPUtils.clearValue(AppConstant.USER);
             lastJump = System.currentTimeMillis();
-            Intent intent = new Intent(mApplicationContext, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApplicationContext.startActivity(intent);
+            AppUtils.relaunchApp(true);
+//            Intent intent = new Intent(mApplicationContext, LoginActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//            mApplicationContext.startActivity(intent);
+//            instance = null;
+//            mDaoSession = null;
         }
     }
 }

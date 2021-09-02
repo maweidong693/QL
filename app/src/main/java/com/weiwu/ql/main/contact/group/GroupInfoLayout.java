@@ -23,7 +23,7 @@ import com.luck.picture.lib.listener.OnResultCallbackListener;
 import com.tencent.common.dialog.DialogMaker;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
-import com.tencent.qcloud.tim.uikit.component.SelectionActivity;
+import com.weiwu.ql.main.contact.group.info.SelectionActivity;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.dialog.TUIKitDialog;
 import com.tencent.qcloud.tim.uikit.component.picture.imageEngine.GlideEngine;
@@ -200,7 +200,8 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             Bundle bundle = new Bundle();
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.modify_group_name));
             bundle.putString(TUIKitConstants.Selection.INIT_CONTENT, mGroupNameView.getContent());
-            bundle.putInt(TUIKitConstants.Selection.LIMIT, 20);
+            bundle.putInt(TUIKitConstants.Selection.LIMIT, 200);
+            bundle.putString(TUIKitConstants.Selection.ID, mGroupInfo.getId());
             SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(final Object text) {
@@ -209,13 +210,14 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
                 }
             });
         } else if (v.getId() == R.id.group_icon) {
-            choosePhoto();
+//            choosePhoto();
             //            String groupUrl = String.format("https://picsum.photos/id/%d/200/200", new Random().nextInt(1000));
         } else if (v.getId() == R.id.group_notice) {
             Bundle bundle = new Bundle();
             bundle.putString(TUIKitConstants.Selection.TITLE, getResources().getString(R.string.modify_group_notice));
             bundle.putString(TUIKitConstants.Selection.INIT_CONTENT, mGroupNotice.getContent());
             bundle.putInt(TUIKitConstants.Selection.LIMIT, 200);
+            bundle.putString(TUIKitConstants.Selection.ID, mGroupInfo.getId());
             SelectionActivity.startTextSelection((Activity) getContext(), bundle, new SelectionActivity.OnResultReturnListener() {
                 @Override
                 public void onReturn(final Object text) {
@@ -355,18 +357,16 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
         mJoinTypeView.setContent(mJoinTypes.get(info.getJoinType()));
 //           mNickView.setContent(mPresenter.getNickName());
         mTopSwitchView.setChecked(mGroupInfo.isTopChat());
-        String groupIntroduction = mGroupInfo.getGroupIntroduction();
-        HashMap<String, Object> hashMap = CustomInfo.InfoStrToMap(groupIntroduction);
-        String addFriend = (String) hashMap.get(CustomInfo.IS_FRIEND);
-        String mute = (String) hashMap.get(CustomInfo.IS_MUTE);
-        String addOpt = (String) hashMap.get(CustomInfo.GROUP_ADD_OPT);
+//        String addFriend = (String) hashMap.get(CustomInfo.IS_FRIEND);
+        int mute = info.getIsAllForbidden();
+        int addOpt = info.getIsExamine();
         //        mMuteGroupMemberSwitchView.setChecked(mute.equals("1"));
         //        isAddFriendView.setContent(mAddFriends.get(Integer.parseInt(addFriend)));
-        if (TextUtils.isEmpty(addOpt)) {
-            isWithoutReview.setChecked(false);
+        isWithoutReview.setChecked(addOpt == 1);
+        /*if (TextUtils.isEmpty(addOpt)) {
         } else {
             isWithoutReview.setChecked(TextUtils.equals("0", addOpt) ? false : true);
-        }
+        }*/
         isWithoutReview.setCheckListener((buttonView, isChecked) -> {
             if (!buttonView.isPressed()) {
                 return;
@@ -374,14 +374,11 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             if (mGroupInfo == null) {
                 return;
             }
-            HashMap<String, Object> FriendMap = CustomInfo.InfoStrToMap(mGroupInfo.getGroupIntroduction());
-            FriendMap.put(CustomInfo.GROUP_ADD_OPT, isChecked ? "1" : "0");
-            FriendMap.put(CustomInfo.LAST_EDIT, CustomInfo.GROUP_ADD_OPT);
-            String s = CustomInfo.InfoMapToStr(FriendMap);
+            mMemberPreviewListener.setExamine(info, isChecked);
 //               mPresenter.modifyGroupCustomInfo(s, TUIKitConstants.Group.MODIFY_GROUP_INTRODUCTION_);
 
         });
-        isAddFriendView.setChecked(addFriend.equals("0") ? true : false);
+        /*isAddFriendView.setChecked(addFriend.equals("0") ? true : false);
         isAddFriendView.setCheckListener((buttonView, isChecked) -> {
             if (!buttonView.isPressed()) {
                 return;
@@ -395,8 +392,8 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             String s = CustomInfo.InfoMapToStr(FriendMap);
 //               mPresenter.modifyGroupCustomInfo(s, TUIKitConstants.Group.MODIFY_GROUP_INTRODUCTION_);
 
-        });
-        isMuteView.setChecked(mute.equals("0") ? false : true);
+        });*/
+        isMuteView.setChecked(mute == 1);
         isMuteView.setCheckListener((buttonView, isChecked) -> {
             if (!buttonView.isPressed()) {
                 return;
@@ -404,10 +401,7 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             if (mGroupInfo == null) {
                 return;
             }
-            HashMap<String, Object> MuteMap = CustomInfo.InfoStrToMap(mGroupInfo.getGroupIntroduction());
-            MuteMap.put(CustomInfo.IS_MUTE, isChecked ? "1" : "0");
-            MuteMap.put(CustomInfo.LAST_EDIT, CustomInfo.IS_MUTE);
-            String s = CustomInfo.InfoMapToStr(MuteMap);
+            mMemberPreviewListener.allMute(info, isChecked);
 //               mPresenter.modifyGroupCustomInfo(s, TUIKitConstants.Group.MODIFY_GROUP_INTRODUCTION_);
 
         });

@@ -1,5 +1,6 @@
 package com.weiwu.ql.main.contact.chat;
 
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.bean.LoginData;
@@ -28,6 +29,21 @@ public class ChatPresenter implements ContactContract.IChatPresenter {
             @Override
             public void onSuccess(LoginData data) {
                 mView.uploadPicResult(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void getGroupInfo(String groupId) {
+        mSource.getGroupInfo((LifecycleProvider) mView, groupId, new IBaseCallBack<GroupInfoData>() {
+            @Override
+            public void onSuccess(GroupInfoData data) {
+                mView.groupInfoReceive(data);
             }
 
             @Override

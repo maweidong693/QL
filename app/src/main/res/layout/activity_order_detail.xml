@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/acBg"
+    android:orientation="vertical"
+    tools:context=".main.find.OrderDetailActivity">
+
+    <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
+        android:id="@+id/order_detail_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_12"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="@drawable/bg_login">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/orderDetailHint"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="16dp"
+                    android:text="订单号："
+                    app:layout_constraintBottom_toTopOf="@+id/textView2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_order_no"
+                    style="@style/orderDetailText"
+                    android:text="订单号"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                    app:layout_constraintStart_toStartOf="@+id/tv_order_get_time"
+                    app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:text="接单时间："
+                    app:layout_constraintBottom_toTopOf="@+id/textView4"
+                    app:layout_constraintStart_toStartOf="@+id/textView3"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+                <TextView
+                    android:id="@+id/tv_order_get_time"
+                    style="@style/orderDetailText"
+                    android:text="接单时间"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                    app:layout_constraintStart_toEndOf="@+id/textView2"
+                    app:layout_constraintTop_toTopOf="@+id/textView2"
+                    app:layout_constraintVertical_bias="1.0" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:text="出单时间："
+                    app:layout_constraintBottom_toTopOf="@+id/textView5"
+                    app:layout_constraintStart_toStartOf="@+id/textView2"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+                <TextView
+                    android:id="@+id/tv_order_out_time"
+                    style="@style/orderDetailText"
+                    android:text="出单时间"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintStart_toStartOf="@+id/tv_order_get_time"
+                    app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:text="出单人："
+                    app:layout_constraintBottom_toTopOf="@+id/textView6"
+                    app:layout_constraintStart_toStartOf="@+id/textView4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                <TextView
+                    android:id="@+id/tv_order_out_person"
+                    style="@style/orderDetailText"
+                    android:text="出单人"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                    app:layout_constraintStart_toStartOf="@+id/tv_order_out_time"
+                    app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:text="订单金额："
+                    app:layout_constraintBottom_toTopOf="@+id/textView7"
+                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <TextView
+                    android:id="@+id/tv_order_money"
+                    style="@style/orderDetailText"
+                    android:text="订单金额"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView6"
+                    app:layout_constraintStart_toStartOf="@+id/tv_order_out_person"
+                    app:layout_constraintTop_toTopOf="@+id/textView6" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:text="出单币种："
+                    app:layout_constraintBottom_toTopOf="@+id/textView8"
+                    app:layout_constraintStart_toStartOf="@+id/textView6"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                <TextView
+                    android:id="@+id/tv_order_out_coin"
+                    style="@style/orderDetailText"
+                    android:text="出单币种"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView7"
+                    app:layout_constraintStart_toStartOf="@+id/tv_order_money"
+                    app:layout_constraintTop_toTopOf="@+id/textView7" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:text="回币币种："
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toTopOf="@+id/textView10"
+                    app:layout_constraintStart_toStartOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+                <TextView
+                    android:id="@+id/tv_order_coin_release_coin"
+                    style="@style/orderDetailText"
+                    android:text="aaa"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView8"
+                    app:layout_constraintStart_toStartOf="@+id/tv_order_out_coin"
+                    app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    style="@style/orderDetailHint"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="@dimen/dp_16"
+                    android:text="回币地址："
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView8"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+                <TextView
+                    android:id="@+id/tv_order_coin_release_coin_address"
+                    style="@style/orderDetailText"
+                    android:drawablePadding="@dimen/dp_8"
+                    android:ellipsize="end"
+                    android:maxWidth="@dimen/dp_200"
+                    android:singleLine="true"
+                    android:text="aaaaa"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@id/textView10"
+                    app:layout_constraintStart_toStartOf="@id/tv_order_coin_release_coin"
+                    app:layout_constraintTop_toTopOf="@id/textView10" />
+
+                <TextView
+                    android:id="@+id/tv_order_paste_address"
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:background="@drawable/bg_order_status"
+                    android:gravity="center"
+                    android:text="复制"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dp_12"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_order_coin_release_coin_address"
+                    app:layout_constraintStart_toEndOf="@+id/tv_order_coin_release_coin_address"
+                    app:layout_constraintTop_toTopOf="@+id/tv_order_coin_release_coin_address" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_12"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="@drawable/bg_login">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    style="@style/orderDetailHint"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="订单跟踪"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_order_detail_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:drawableEnd="@mipmap/ic_order_detail_more"
+                    android:drawablePadding="8dp"
+                    android:text="展开"
+                    android:textColor="#666666"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView9"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_order_detail_record"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/dp_10"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/bt_get_order"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_40"
+                android:layout_margin="@dimen/dp_20"
+                android:background="@drawable/bg_order_status"
+                android:text="接单"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

@@ -25,6 +25,8 @@ import com.tencent.qcloud.tim.uikit.modules.group.interfaces.IGroupMemberLayout;
 import com.tencent.qcloud.tim.uikit.utils.CustomInfo;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitLog;
 import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
+import com.weiwu.ql.AppConstant;
+import com.weiwu.ql.utils.SPUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -86,7 +88,7 @@ public class GroupMemberTransferLayout extends LinearLayout implements IGroupMem
                     if (mInviteMembers.size() == 0) {
                         return;
                     }
-                    V2TIMManager.getInstance().getUsersInfo(mInviteMembers, new V2TIMValueCallback<List<V2TIMUserFullInfo>>() {
+                    /*V2TIMManager.getInstance().getUsersInfo(mInviteMembers, new V2TIMValueCallback<List<V2TIMUserFullInfo>>() {
                         @Override
                         public void onError(int code, String desc) {
 
@@ -106,7 +108,7 @@ public class GroupMemberTransferLayout extends LinearLayout implements IGroupMem
                             finish();
                             EventBus.getDefault().post(userModel);
                         }
-                    });
+                    });*/
                 }
             }
         });
@@ -137,6 +139,12 @@ public class GroupMemberTransferLayout extends LinearLayout implements IGroupMem
     }
 
     public void setDataSource(GroupInfo groupInfo) {
+        for (int i = 0; i < groupInfo.getMemberDetails().size(); i++) {
+            GroupMemberInfo memberInfo = groupInfo.getMemberDetails().get(i);
+            if(memberInfo.getAccount().equals(SPUtils.getValue(AppConstant.USER,AppConstant.USER_ID))){
+                groupInfo.getMemberDetails().remove(memberInfo);
+            }
+        }
         mGroupInfo = groupInfo;
         if (mType == 2) {
             /*String introduction = mGroupInfo.getGroupIntroduction();

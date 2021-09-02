@@ -41,5 +41,15 @@
       <option name="name" value="maven3" />
       <option name="url" value="https://mirrors.tencent.com/repository/maven/tencent_public" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="http://developer.huawei.com/repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven4" />
+      <option name="name" value="maven4" />
+      <option name="url" value="https://maven.google.com" />
+    </remote-repository>
   </component>
 </project>

@@ -77,6 +77,7 @@ public class TUIKitConstants {
 
         public static final String USER_ID_SELECT = "user_id_select";
         public static final String USER_NAMECARD_SELECT = "user_namecard_select";
+        public static final String ID = "groupId";
     }
 
     public static class ProfileType {

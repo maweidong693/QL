@@ -55,7 +55,7 @@
     <string name="group_remove_member">移出群聊</string>
     <string name="group_join_type">加群方式</string>
     <string name="add_friend_type">允许加好友</string>
-    <string name="without_review">无需审核直接进群</string>
+    <string name="without_review">审核进群</string>
     <string name="set_mute">全体禁言</string>
     <string name="set_chat_background">聊天背景</string>
     <string name="chat_background">聊天背景</string>

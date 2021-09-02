@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_55"
+    android:layout_height="@dimen/dp_65"
     android:paddingEnd="@dimen/dp_18">
 
     <ImageView
         android:id="@+id/iv_message_head"
-        android:layout_width="@dimen/dp_35"
-        android:layout_height="@dimen/dp_35"
+        android:layout_width="@dimen/dp_45"
+        android:layout_height="@dimen/dp_45"
+        android:layout_centerVertical="true"
         android:layout_margin="@dimen/dp_10"
         android:src="@drawable/default_head" />
 
@@ -17,9 +18,10 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/iv_message_head"
         android:layout_toEndOf="@id/iv_message_head"
+        android:singleLine="true"
         android:text="aaaaaa"
         android:textColor="@color/black"
-        android:textSize="@dimen/dp_15" />
+        android:textSize="@dimen/dp_16" />
 
     <TextView
         android:id="@+id/tv_message_info"
@@ -28,8 +30,9 @@
         android:layout_below="@id/tv_message_nick_name"
         android:layout_alignStart="@id/tv_message_nick_name"
         android:text="aaaaaaaa"
+        android:singleLine="true"
         android:textColor="@color/tab_text_normal_color"
-        android:textSize="@dimen/dp_12" />
+        android:textSize="@dimen/dp_13" />
 
     <TextView
         android:id="@+id/tv_message_time"

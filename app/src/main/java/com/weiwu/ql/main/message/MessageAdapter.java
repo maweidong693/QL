@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.weiwu.ql.R;
 import com.weiwu.ql.data.bean.MessageListData;
+import com.weiwu.ql.utils.SystemFacade;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -84,7 +85,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             } else {
                 Glide.with(itemView.getContext()).load(data.getAvator()).into(mAvator);
             }
-            mLastContent.setText(data.getLastContent());
+            mLastContent.setText(SystemFacade.base64ToString(data.getLastContent()));
             mNickName.setText(data.getNickName());
             if (!TextUtils.isEmpty(data.getTime())) {
                 mTime.setText(getDate(data.getTime()));
