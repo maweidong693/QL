@@ -9,6 +9,13 @@ package com.weiwu.ql.data.request;
 public class HandlerOrderRequestBody {
     private String handlerMemberCoinAddress;
     private String tradeId;
+    private String coinType;
+
+    public HandlerOrderRequestBody(String handlerMemberCoinAddress, String tradeId, String coinType) {
+        this.handlerMemberCoinAddress = handlerMemberCoinAddress;
+        this.tradeId = tradeId;
+        this.coinType = coinType;
+    }
 
     public HandlerOrderRequestBody(String tradeId) {
         this.tradeId = tradeId;
@@ -30,8 +37,4 @@ public class HandlerOrderRequestBody {
         this.tradeId = tradeId;
     }
 
-    public HandlerOrderRequestBody(String handlerMemberCoinAddress, String tradeId) {
-        this.handlerMemberCoinAddress = handlerMemberCoinAddress;
-        this.tradeId = tradeId;
-    }
 }

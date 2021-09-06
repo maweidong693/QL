@@ -123,7 +123,7 @@ public interface MineContract {
 
         void getOrderDetail(String id);
 
-        void getAllWallet();
+        void getAllWallet(String coinType);
 
         void handlerOrder(HandlerOrderRequestBody body);
 
@@ -158,7 +158,7 @@ public interface MineContract {
     }
 
     public interface IWalletPresenter extends IBasePresenter<IWalletView> {
-        void getAllWallet();
+        void getAllWallet(String coinType);
     }
 
     public interface IInviteView extends IBaseView<IInvitePresenter> {
@@ -202,7 +202,7 @@ public interface MineContract {
 
         void getOrderDetail(LifecycleProvider provider, String tradeId, IBaseCallBack<OrderDetailData> callBack);
 
-        void getAllWallet(LifecycleProvider provider, IBaseCallBack<WalletData> callBack);
+        void getAllWallet(LifecycleProvider provider, String coinType, IBaseCallBack<WalletData> callBack);
 
         void confirmGetCoin(LifecycleProvider provider, String cTradeId, IBaseCallBack<HttpResult> callBack);
 

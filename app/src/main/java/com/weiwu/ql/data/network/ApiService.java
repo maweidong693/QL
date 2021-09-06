@@ -164,7 +164,7 @@ public interface ApiService {
     Observable<OrderDetailData> getOrderDetail(@Query("tradeId") String tradeId);
 
     @GET("applet/member-coin-address/getAll")
-    Observable<WalletData> getAllWallet();
+    Observable<WalletData> getAllWallet(@Query("coinType") String coinType);
 
     @GET("applet/order/confirm-release")
     Observable<HttpResult> confirmGetCoin(@Query("cTradeId") String cTradeId);

@@ -19,10 +19,13 @@ import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.CoinData;
 import com.weiwu.ql.data.bean.CoinListData;
+import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.MineRepository;
 import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.view.BankListPopup;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -115,6 +118,7 @@ public class AddWalletActivity extends BaseActivity implements View.OnClickListe
     public void onSuccess(HttpResult data) {
         if (data != null) {
             showToast("添加成功！");
+            EventBus.getDefault().postSticky(new MessageEvent("添加钱包", 222));
             finish();
         }
     }

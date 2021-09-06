@@ -123,6 +123,7 @@ public class OrderTypeActivity extends BaseActivity implements MineContract.IOrd
             @Override
             public void onClick(OrderData.DataDTO.ListDTO data) {
                 final String id = data.getId();
+                final int handlerReturnCoinType = data.getReleaseCoinType();
                 int type = data.getType();
                 int status = data.getStatus();
                 if (type == 1) {
@@ -231,12 +232,12 @@ public class OrderTypeActivity extends BaseActivity implements MineContract.IOrd
                                             mWalletAdapter = new WalletAdapter();
                                             mRvCoin.setAdapter(mWalletAdapter);
 
-                                            mPresenter.getAllWallet();
+                                            mPresenter.getAllWallet(String.valueOf(handlerReturnCoinType));
 
                                             mWalletAdapter.setWalletClickListener(new WalletAdapter.IWalletClickListener() {
                                                 @Override
                                                 public void onClick(WalletData.DataDTO data) {
-                                                    mPresenter.handlerOrder(new HandlerOrderRequestBody(data.getCoinAddress(), id));
+                                                    mPresenter.handlerOrder(new HandlerOrderRequestBody(data.getCoinAddress(), id, String.valueOf(handlerReturnCoinType)));
                                                 }
                                             });
 //                                            mPresenter.handlerOrder("", data.getId());
@@ -288,7 +289,7 @@ public class OrderTypeActivity extends BaseActivity implements MineContract.IOrd
             mAdapter.setList(data.getData().getList());
             mSrlOrderType.finishRefresh();
 
-        }else {
+        } else {
             mAdapter.clearList();
             mAdapter.notifyDataSetChanged();
             mSrlOrderType.finishRefresh();

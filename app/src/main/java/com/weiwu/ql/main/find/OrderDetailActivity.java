@@ -200,7 +200,7 @@ public class OrderDetailActivity extends BaseActivity implements MineContract.IO
                                             if (mCheckList.size() > 0) {
                                                 OrderData.DataDTO.ListDTO listDTO = new OrderData.DataDTO.ListDTO();
                                                 listDTO.setId(detailData.getId());
-                                                listDTO.setMoney(detailData.getMoney()/100);
+                                                listDTO.setMoney(detailData.getMoney() / 100);
                                                 Intent intent = new Intent(OrderDetailActivity.this, DistributeActivity.class);
                                                 HandlerData handlerData = new HandlerData();
                                                 handlerData.setData(mCheckList);
@@ -273,12 +273,12 @@ public class OrderDetailActivity extends BaseActivity implements MineContract.IO
                                                     mWalletAdapter = new WalletAdapter();
                                                     mRvCoin.setAdapter(mWalletAdapter);
 
-                                                    mPresenter.getAllWallet();
+                                                    mPresenter.getAllWallet(String.valueOf(detailData.getReleaseCoinType()));
 
                                                     mWalletAdapter.setWalletClickListener(new WalletAdapter.IWalletClickListener() {
                                                         @Override
                                                         public void onClick(WalletData.DataDTO data) {
-                                                            mPresenter.handlerOrder(new HandlerOrderRequestBody(data.getCoinAddress(), id));
+                                                            mPresenter.handlerOrder(new HandlerOrderRequestBody(data.getCoinAddress(), id,String.valueOf(detailData.getReleaseCoinType())));
                                                         }
                                                     });
 //                                            mPresenter.handlerOrder("", detailData.getId());
@@ -331,7 +331,7 @@ public class OrderDetailActivity extends BaseActivity implements MineContract.IO
             mTvOrderGetTime.setText(detailData.getCreatedTime());
             mTvOrderOutTime.setText(detailData.getReleaseTime());
             mTvOrderOutPerson.setText(detailData.getReleaseUserInfo().getName());
-            mTvOrderMoney.setText(String.valueOf(detailData.getMoney()/100));
+            mTvOrderMoney.setText(String.valueOf(detailData.getMoney() / 100));
             mTvOrderOutCoin.setText(detailData.getReleaseCoinName());
             mTvOrderCoinCount.setText(detailData.getHandlerReturnCoinName());
             mTvOrderCoinAddress.setText(detailData.getReleaseUserCoinAddress());

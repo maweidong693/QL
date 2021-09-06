@@ -126,8 +126,8 @@ public class MineRepository extends BaseRepository implements MineContract.MineS
     }
 
     @Override
-    public void getAllWallet(LifecycleProvider provider, IBaseCallBack<WalletData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getAllWallet(), callBack);
+    public void getAllWallet(LifecycleProvider provider, String coinType, IBaseCallBack<WalletData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getAllWallet(coinType), callBack);
     }
 
     @Override

@@ -14,10 +14,16 @@ import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.bean.WalletData;
 import com.weiwu.ql.data.repositories.MineRepository;
+import com.weiwu.ql.data.request.OrderRequestBody;
 import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.utils.IntentUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class WalletActivity extends BaseActivity implements MineContract.IWalletView {
 
@@ -32,8 +38,26 @@ public class WalletActivity extends BaseActivity implements MineContract.IWallet
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         setPresenter(new WalletPresenter(MineRepository.getInstance()));
         initView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent msg) {
+        if (msg.code == 222) {
+            mPresenter.getAllWallet("");
+        }
     }
 
     private void initView() {
@@ -57,7 +81,7 @@ public class WalletActivity extends BaseActivity implements MineContract.IWallet
         mAdapter = new WalletAdapter();
         mRvWallet.setAdapter(mAdapter);
 
-        mPresenter.getAllWallet();
+        mPresenter.getAllWallet("");
     }
 
     @Override

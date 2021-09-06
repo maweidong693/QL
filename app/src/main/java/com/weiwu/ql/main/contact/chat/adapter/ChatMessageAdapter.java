@@ -388,7 +388,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     NoticeOrderData.ReleaseTimeDTO.DateDTO date = createdTime.getDate();
                     NoticeOrderData.ReleaseTimeDTO.TimeDTO time = createdTime.getTime();
                     sendHolder.mOrderTime.setText(date.getYear() + " -" + date.getMonth() + " -" + date.getDay() + " " + time.getHour() + ":" + time.getMinute());
-                    sendHolder.mOrderMoney.setText(String.valueOf(tradeInfo.getMoney()));
+                    sendHolder.mOrderMoney.setText(String.valueOf(tradeInfo.getMoney() / 100));
                     sendHolder.mOrderPerson.setText(tradeInfo.getDispatchMemberId());
                     sendHolder.mOrderCoin.setText(tradeInfo.getReleaseCoinName());
 

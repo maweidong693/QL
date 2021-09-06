@@ -21,8 +21,8 @@ public class WalletPresenter implements MineContract.IWalletPresenter {
     }
 
     @Override
-    public void getAllWallet() {
-        mSource.getAllWallet((LifecycleProvider) mView, new IBaseCallBack<WalletData>() {
+    public void getAllWallet(String coinType) {
+        mSource.getAllWallet((LifecycleProvider) mView,coinType, new IBaseCallBack<WalletData>() {
             @Override
             public void onSuccess(WalletData data) {
                 mView.walletReceive(data);

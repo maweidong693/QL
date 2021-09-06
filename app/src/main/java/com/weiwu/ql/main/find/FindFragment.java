@@ -118,7 +118,7 @@ public class FindFragment extends BaseFragment implements MineContract.IOrderVie
         mTvOrderNoConfirm = (RadioButton) view.findViewById(R.id.tv_order_no_confirm);
         mTvOrderNoPay = (RadioButton) view.findViewById(R.id.tv_order_no_pay);
         mTvOrderOkConfirm = (RadioButton) view.findViewById(R.id.tv_order_ok_confirm);
-        if(mRole==1){
+        if (mRole == 1) {
             mTvOrderNoConfirm.setText("待派单");
             mTvOrderNoPay.setText("已派单");
         }
@@ -189,7 +189,7 @@ public class FindFragment extends BaseFragment implements MineContract.IOrderVie
         mRvOrderList.setAdapter(mAdapter);
         mTvOrderNoGet.setChecked(true);
 
-        mPresenter.getAllOrder(new OrderRequestBody(pageSize, pageNum, String.valueOf(status)));
+//        mPresenter.getAllOrder(new OrderRequestBody(pageSize, pageNum, String.valueOf(status)));
 
         mAdapter.setOrderDetailClickListener(new OrderAdapter.IOrderDetailClickListener() {
             @Override
@@ -203,6 +203,7 @@ public class FindFragment extends BaseFragment implements MineContract.IOrderVie
             @Override
             public void onClick(OrderData.DataDTO.ListDTO data) {
                 final String id = data.getId();
+                final int handlerReturnCoinType = data.getReleaseCoinType();
                 int type = data.getType();
                 int status = data.getStatus();
                 if (type == 1) {
@@ -242,7 +243,7 @@ public class FindFragment extends BaseFragment implements MineContract.IOrderVie
                                         Intent intent = new Intent(getContext(), DistributeActivity.class);
                                         HandlerData handlerData = new HandlerData();
                                         handlerData.setData(mCheckList);
-                                        data.setMoney(data.getMoney()/100);
+                                        data.setMoney(data.getMoney() / 100);
                                         intent.putExtra(AppConstant.DISTRIBUTE_LIST, handlerData);
                                         intent.putExtra(AppConstant.ORDER_INFO, data);
                                         getActivity().startActivity(intent);
@@ -312,12 +313,12 @@ public class FindFragment extends BaseFragment implements MineContract.IOrderVie
                                             mWalletAdapter = new WalletAdapter();
                                             mRvCoin.setAdapter(mWalletAdapter);
 
-                                            mPresenter.getAllWallet();
+                                            mPresenter.getAllWallet(String.valueOf(handlerReturnCoinType));
 
                                             mWalletAdapter.setWalletClickListener(new WalletAdapter.IWalletClickListener() {
                                                 @Override
                                                 public void onClick(WalletData.DataDTO data) {
-                                                    mPresenter.handlerOrder(new HandlerOrderRequestBody(data.getCoinAddress(), id));
+                                                    mPresenter.handlerOrder(new HandlerOrderRequestBody(data.getCoinAddress(), id, String.valueOf(handlerReturnCoinType)));
                                                 }
                                             });
 //                                            mPresenter.handlerOrder("", data.getId());
