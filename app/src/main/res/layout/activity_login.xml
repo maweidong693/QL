@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/ic_bg_login"
+    android:background="@drawable/bg_login"
     android:orientation="vertical">
 
     <CheckBox
@@ -257,7 +257,7 @@
             android:clickable="true"
             android:gravity="center"
             android:text="@string/login"
-            android:textColor="#6F7AE3"
+            android:textColor="@color/tab_text_selected_color"
             android:textSize="17sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

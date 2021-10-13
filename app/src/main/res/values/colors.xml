@@ -51,7 +51,7 @@
     <color name="common_color_c5_45494e">#45494e</color>
     <color name="status_bar_color">#EDEDED</color>
 
-    <color name="tab_text_selected_color">#006EFF</color>
+    <color name="tab_text_selected_color">#23B08D</color>
     <color name="tab_text_normal_color">#888888</color>
 
     <color name="dark_gray_bg">#F5F5F5</color>

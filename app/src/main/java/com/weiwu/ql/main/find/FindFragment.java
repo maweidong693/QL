@@ -94,7 +94,7 @@ public class FindFragment extends BaseFragment implements MineContract.IOrderVie
         setPresenter(new OrderPresenter(MineRepository.getInstance()));
         initView(view);
     }
-
+ 
     @Override
     public void onDestroy() {
         super.onDestroy();

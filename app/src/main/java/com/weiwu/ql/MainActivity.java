@@ -231,22 +231,22 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
             case R.id.conversation_btn_group:
                 current = new MessageFragment();
                 mConversationBtn.setTextColor(getResources().getColor(R.color.tab_text_selected_color));
-                mConversationBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.conversation_selected), null, null);
+                mConversationBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_message), null, null);
                 break;
             case R.id.contact_btn_group:
                 current = new ContactFragment();
                 mContactBtn.setTextColor(getResources().getColor(R.color.tab_text_selected_color));
-                mContactBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.contact_selected), null, null);
+                mContactBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_contact), null, null);
                 break;
             case R.id.find_btn_group:
                 current = new FindFragment();
                 mFindBtn.setTextColor(getResources().getColor(R.color.tab_text_selected_color));
-                mFindBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.find_selected), null, null);
+                mFindBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_find), null, null);
                 break;
             case R.id.myself_btn_group:
                 current = new MineFragment();
                 mProfileSelfBtn.setTextColor(getResources().getColor(R.color.tab_text_selected_color));
-                mProfileSelfBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.myself_selected), null, null);
+                mProfileSelfBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_mine), null, null);
                 break;
             default:
                 break;
@@ -262,13 +262,13 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
 
     private void resetMenuState() {
         mConversationBtn.setTextColor(getResources().getColor(R.color.tab_text_normal_color));
-        mConversationBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.conversation_normal), null, null);
+        mConversationBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_message_not), null, null);
         mContactBtn.setTextColor(getResources().getColor(R.color.tab_text_normal_color));
-        mContactBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.contact_normal), null, null);
+        mContactBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_contact_not), null, null);
         mFindBtn.setTextColor(getResources().getColor(R.color.tab_text_normal_color));
-        mFindBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.find_normal), null, null);
+        mFindBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_find_not), null, null);
         mProfileSelfBtn.setTextColor(getResources().getColor(R.color.tab_text_normal_color));
-        mProfileSelfBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.myself_normal), null, null);
+        mProfileSelfBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_mine_not), null, null);
     }
 
     /**
