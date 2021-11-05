@@ -35,7 +35,7 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/icon" />
+                    android:src="@drawable/ic_launcher" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -121,7 +121,7 @@
                         android:layout_height="25dp"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="16dp"
-                        android:src="@drawable/my_icon_chat"></ImageView>
+                        android:src="@drawable/ic_mine_dongtai"></ImageView>
 
                     <TextView
                         android:id="@+id/name"
@@ -175,7 +175,7 @@
                     android:layout_height="wrap_content"
                     app:canNav="true"
                     app:name="@string/view_favorites"
-                    app:src="@drawable/my_icon_personal" />
+                    app:src="@drawable/ic_mine_collect" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_wallet"
@@ -185,7 +185,7 @@
                     app:canNav="true"
                     app:isBottom="true"
                     app:name="@string/view_wallet"
-                    app:src="@mipmap/ic_wallet" />
+                    app:src="@drawable/ic_mine_wallet" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_privacy_setting"
@@ -195,7 +195,7 @@
                     app:canNav="true"
                     app:isBottom="true"
                     app:name="@string/privacy_setting"
-                    app:src="@drawable/my_icon_notice" />
+                    app:src="@drawable/ic_mine_private" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_general_setting"
@@ -204,7 +204,7 @@
                     app:canNav="true"
                     app:isBottom="true"
                     app:name="@string/general_setting"
-                    app:src="@drawable/my_icon_set" />
+                    app:src="@drawable/ic_mine_setting" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_general_anquan"
@@ -213,7 +213,7 @@
                     app:canNav="true"
                     app:isBottom="true"
                     app:name="@string/anquan_center"
-                    app:src="@drawable/ic_anquan" />
+                    app:src="@drawable/ic_mine_anquan" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/clear_cache"
@@ -221,7 +221,7 @@
                     android:layout_height="wrap_content"
                     app:canNav="true"
                     app:name="@string/clear_cache"
-                    app:src="@drawable/my_icon_help" />
+                    app:src="@drawable/ic_mine_cache" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/about_im"
@@ -230,7 +230,7 @@
                     android:layout_marginTop="10dp"
                     app:canNav="true"
                     app:name="@string/about_im"
-                    app:src="@drawable/my_icon_about" />
+                    app:src="@drawable/ic_mine_about" />
 
                 <Button
                     android:id="@+id/logout_btn"

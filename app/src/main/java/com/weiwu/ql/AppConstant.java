@@ -8,7 +8,7 @@ package com.weiwu.ql;
  */
 public interface AppConstant {
 
-    String BASE_URL="http://47.108.192.155:8802/";
+    String BASE_URL="http://ql.aimaster.top/";
 
     String USER = "User";
     String TOKEN_NAME = "token";

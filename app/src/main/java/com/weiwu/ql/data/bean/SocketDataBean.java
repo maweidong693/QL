@@ -4,10 +4,9 @@ package com.weiwu.ql.data.bean;
  *  
  * author : 马伟东
  * email : maweidong693@163.com
- * date : 2021/8/26 14:44 
+ * date : 2021/11/4 16:25 
  */
-public class LoginReceive {
-
+public class SocketDataBean {
 
     private int code;
     private String msg;
@@ -38,23 +37,32 @@ public class LoginReceive {
     }
 
     public static class DataDTO {
-        private String token;
-        private String account;
+        private String host;
+        private String port;
+        private String url;
 
-        public String getToken() {
-            return token;
+        public String getHost() {
+            return host;
         }
 
-        public void setToken(String token) {
-            this.token = token;
+        public void setHost(String host) {
+            this.host = host;
         }
 
-        public String getAccount() {
-            return account;
+        public String getPort() {
+            return port;
         }
 
-        public void setAccount(String account) {
-            this.account = account;
+        public void setPort(String port) {
+            this.port = port;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 }

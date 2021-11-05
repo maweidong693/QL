@@ -4,6 +4,7 @@ import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.LoginReceive;
+import com.weiwu.ql.data.bean.SocketDataBean;
 import com.weiwu.ql.data.request.LoginRequestBody;
 import com.weiwu.ql.main.mine.MineContract;
 
@@ -28,6 +29,21 @@ public class LoginPresenter implements MineContract.ILoginPresenter {
             @Override
             public void onSuccess(LoginReceive data) {
                 mView.loginResult(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void getSocketUrl() {
+        mSource.getSocketUrl((LifecycleProvider) mView, new IBaseCallBack<SocketDataBean>() {
+            @Override
+            public void onSuccess(SocketDataBean data) {
+                mView.socketUrl(data);
             }
 
             @Override

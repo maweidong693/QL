@@ -76,6 +76,7 @@
         <activity android:name=".main.mine.setting.AnQuanActivity" />
         <activity android:name=".main.mine.setting.ClearCacheActicity" />
         <activity android:name=".main.contact.black.BlackListActivity" />
+        <activity android:name=".main.find.NewsActivity" />
         <activity
             android:name=".main.contact.chat.ChatActivity"
             android:windowSoftInputMode="stateHidden" />

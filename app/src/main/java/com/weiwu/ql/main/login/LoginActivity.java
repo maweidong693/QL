@@ -27,6 +27,7 @@ import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.LoginReceive;
+import com.weiwu.ql.data.bean.SocketDataBean;
 import com.weiwu.ql.data.repositories.MineRepository;
 import com.weiwu.ql.data.request.LoginRequestBody;
 import com.weiwu.ql.greendao.db.DaoMaster;
@@ -70,7 +71,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_login);
         ImmersionBar.with(this).transparentNavigationBar().hideBar(BarHide.FLAG_HIDE_STATUS_BAR).init();
         setPresenter(new LoginPresenter(MineRepository.getInstance()));
-        startMain();
+//        startMain();
         initView();
         Utils.checkPermission(this);
     }
@@ -298,15 +299,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public void loginResult(LoginReceive data) {
         if (data.getData() != null) {
-            showToast(data.getMessage());
+            showToast(data.getMsg());
             SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData().getToken());
-            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, data.getData().getMemberInfo().getId());
+//            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, data.getData().getMemberInfo().getId());
            /* DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
             SQLiteDatabase database = helper.getWritableDatabase();
             DaoMaster daoMaster = new DaoMaster(database);
             MyApplication.getInstance().setDaoSession(daoMaster.newSession());*/
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+//            startActivity(new Intent(this, MainActivity.class));
+//            finish();
+            mPresenter.getSocketUrl();
+        }
+    }
+
+    @Override
+    public void socketUrl(SocketDataBean dataBean) {
+        if (dataBean != null && dataBean.getCode() == 200) {
+
         }
     }
 

@@ -11,6 +11,7 @@ import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.bean.OrderData;
 import com.weiwu.ql.data.bean.OrderDetailData;
+import com.weiwu.ql.data.bean.SocketDataBean;
 import com.weiwu.ql.data.bean.WalletData;
 import com.weiwu.ql.data.network.DataService;
 import com.weiwu.ql.data.network.HttpResult;
@@ -143,5 +144,10 @@ public class MineRepository extends BaseRepository implements MineContract.MineS
     @Override
     public void getInviteKey(LifecycleProvider provider, IBaseCallBack<LoginData> callBack) {
         observerNoMap(provider, DataService.getApiService().getInviteKey(), callBack);
+    }
+
+    @Override
+    public void getSocketUrl(LifecycleProvider provider, IBaseCallBack<SocketDataBean> callBack) {
+        observerNoMap(provider, DataService.getApiService().getSocketUrl(), callBack);
     }
 }

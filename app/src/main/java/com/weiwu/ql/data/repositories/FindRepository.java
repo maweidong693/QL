@@ -3,6 +3,7 @@ package com.weiwu.ql.data.repositories;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.BaseRepository;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.bean.FindData;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.MineInfoData;
@@ -74,5 +75,10 @@ public class FindRepository extends BaseRepository implements FriendsContract.Fi
     @Override
     public void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack) {
         observerNoMap(provider, DataService.getApiService().getMineInfo(), callBack);
+    }
+
+    @Override
+    public void getFindList(LifecycleProvider provider, IBaseCallBack<FindData> callBack) {
+        observerNoMap(provider,DataService.getApiService().getFindList(), callBack);
     }
 }

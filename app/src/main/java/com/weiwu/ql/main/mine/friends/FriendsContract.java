@@ -4,6 +4,7 @@ import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.base.IBasePresenter;
 import com.weiwu.ql.base.IBaseView;
+import com.weiwu.ql.data.bean.FindData;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.MineInfoData;
@@ -66,6 +67,16 @@ public interface FriendsContract {
         void getMineInfo();
     }
 
+    interface IFindView extends IBaseView<IFindPresenter> {
+        void onSuccess(FindData data);
+
+        void onFail(String msg, int code);
+    }
+
+    interface IFindPresenter extends IBasePresenter<IFindView> {
+        void getFindList();
+    }
+
     interface FindSource {
         void issueMessage(LifecycleProvider provider, IssueMessageRequestBody body, IBaseCallBack<HttpResult> callBack);
 
@@ -82,5 +93,7 @@ public interface FriendsContract {
         void updateBg(LifecycleProvider provider, UpdateMineInfoRequestBody body, IBaseCallBack<HttpResult> callBack);
 
         void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack);
+
+        void getFindList(LifecycleProvider provider, IBaseCallBack<FindData> callBack);
     }
 }

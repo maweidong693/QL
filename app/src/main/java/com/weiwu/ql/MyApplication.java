@@ -52,7 +52,7 @@ public class MyApplication extends ZApplication {
          * @param configs  TUIKit的相关配置项，一般使用默认即可，需特殊配置参考API文档
          */
         TUIKit.init(this, GenerateTestUserSig.SDKAPPID, new ConfigHelper().getConfigs());
-//        initX5();
+        initX5();
 
 //        setDatabase();
 

@@ -13,6 +13,7 @@ import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.bean.OrderData;
 import com.weiwu.ql.data.bean.OrderDetailData;
+import com.weiwu.ql.data.bean.SocketDataBean;
 import com.weiwu.ql.data.bean.WalletData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
@@ -36,6 +37,8 @@ public interface MineContract {
     public interface ILoginView extends IBaseView<ILoginPresenter> {
         void loginResult(LoginReceive data);
 
+        void socketUrl(SocketDataBean dataBean);
+
         void registerResult(LoginData data);
 
         void onFail(String msg, int code);
@@ -43,6 +46,8 @@ public interface MineContract {
 
     public interface ILoginPresenter extends IBasePresenter<ILoginView> {
         void login(LoginRequestBody body);
+
+        void getSocketUrl();
 
         void register(LoginRequestBody body);
     }
@@ -209,6 +214,8 @@ public interface MineContract {
         void confirmRecycleCoin(LifecycleProvider provider, String cTradeId, IBaseCallBack<HttpResult> callBack);
 
         void getInviteKey(LifecycleProvider provider, IBaseCallBack<LoginData> callBack);
+
+        void getSocketUrl(LifecycleProvider provider, IBaseCallBack<SocketDataBean> callBack);
 
     }
 }

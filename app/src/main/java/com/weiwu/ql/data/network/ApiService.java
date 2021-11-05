@@ -6,6 +6,7 @@ import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.weiwu.ql.data.bean.CheckInvitesData;
 import com.weiwu.ql.data.bean.CoinData;
 import com.weiwu.ql.data.bean.CoinListData;
+import com.weiwu.ql.data.bean.FindData;
 import com.weiwu.ql.data.bean.FriendInfoData;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.HandlerData;
@@ -15,6 +16,7 @@ import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.bean.NewFriendListData;
 import com.weiwu.ql.data.bean.OrderData;
 import com.weiwu.ql.data.bean.OrderDetailData;
+import com.weiwu.ql.data.bean.SocketDataBean;
 import com.weiwu.ql.data.bean.WalletData;
 import com.weiwu.ql.data.request.AddCommentRequestBody;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
@@ -45,8 +47,11 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    @POST("applet/login/in")
+    @POST("Login/login")
     Observable<LoginReceive> login(@Body LoginRequestBody body);
+
+    @POST("Pub/getSocketUrl")
+    Observable<SocketDataBean> getSocketUrl();
 
     @POST("applet/member/regist")
     Observable<LoginData> register(@Body LoginRequestBody body);
@@ -174,4 +179,7 @@ public interface ApiService {
 
     @GET("applet/member/getInviteKey")
     Observable<LoginData> getInviteKey();
+
+    @GET("applet/discover/list")
+    Observable<FindData> getFindList();
 }

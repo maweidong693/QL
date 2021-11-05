@@ -38,6 +38,7 @@ import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
 import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
 import com.weiwu.ql.main.find.FindFragment;
+import com.weiwu.ql.main.find.MoreFragment;
 import com.weiwu.ql.main.message.DBCore;
 import com.weiwu.ql.main.message.MessageFragment;
 import com.weiwu.ql.main.mine.MineContract;
@@ -239,7 +240,7 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
                 mContactBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_contact), null, null);
                 break;
             case R.id.find_btn_group:
-                current = new FindFragment();
+                current = new MoreFragment();
                 mFindBtn.setTextColor(getResources().getColor(R.color.tab_text_selected_color));
                 mFindBtn.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.ic_find), null, null);
                 break;
