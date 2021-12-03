@@ -28,6 +28,8 @@ import com.weiwu.ql.data.bean.CheckInvitesData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
 import com.weiwu.ql.data.request.CheckInvitesRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
+import com.weiwu.ql.data.request.GroupRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
 
 import java.util.ArrayList;
@@ -83,7 +85,7 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
                     holder.getView(R.id.group_apply_refuse).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            acceptOrRefuse(item, 0);
+                            acceptOrRefuse(item, 2);
                         }
                     });
                 } else if (item.getStatus() == 2) {
@@ -110,7 +112,7 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
     private void acceptOrRefuse(GroupInvitInfo info, int status) {
         DialogMaker.showProgressDialog(getActivity(), "请稍后…");
 
-        mPresenter.checkInvites(info.getId(), String.valueOf(status));
+        mPresenter.checkInvites(new GroupInfoRequestBody(Integer.parseInt(info.getId()), String.valueOf(status)));
         /*Map map = new HashMap();
         map.put("id", info.getId());
         map.put("status", status);
@@ -129,7 +131,7 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
     }
 
     private void getData() {
-        mPresenter.getAllInvites(mGroupInfo.getId());
+        mPresenter.getAllInvites(new GroupRequestBody(mGroupInfo.getGroupId()));
         /*Map paramsMap = new HashMap();
         paramsMap.put("page", 1);
         paramsMap.put("size", 2000);

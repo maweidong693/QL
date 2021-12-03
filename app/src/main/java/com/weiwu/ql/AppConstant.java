@@ -30,4 +30,11 @@ public interface AppConstant {
     String ORDER_INFO = "orderId";
     String ORDER_TYPE = "orderType";
     String USER_TYPE = "userType";
+    String USER_URL = "userUrl";
+    String IN = "in";
+    String CHAT_ID = "chatId";
+    String FRIEND_TYPE = "friendType";
+    String USER_PHONE = "userPhone";
+    String USER_COUNTRY = "userCountry";
+    String USER_AVATAR = "userAvatar";
 }

@@ -7,12 +7,19 @@ import com.weiwu.ql.data.bean.FindData;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.network.DataService;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddCommentRequestBody;
+import com.weiwu.ql.data.request.FriendsRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.data.request.IssueMessageRequestBody;
+import com.weiwu.ql.data.request.RemindRequestBody;
+import com.weiwu.ql.data.request.RemoveCommentRequestBody;
+import com.weiwu.ql.data.request.UpdateBgBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
 import com.weiwu.ql.main.mine.friends.FriendsContract;
+import com.weiwu.ql.main.mine.friends.data.MsgData;
 
 import okhttp3.MultipartBody;
 
@@ -48,13 +55,13 @@ public class FindRepository extends BaseRepository implements FriendsContract.Fi
     }
 
     @Override
-    public void getAllFriends(LifecycleProvider provider, String pageSize, String pageNum, IBaseCallBack<FriendsData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getAllFriends(pageSize, pageNum), callBack);
+    public void getAllFriends(LifecycleProvider provider, FriendsRequestBody body, IBaseCallBack<FriendsData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getAllFriends(body), callBack);
     }
 
     @Override
-    public void deleteFriends(LifecycleProvider provider, String momentId, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().deleteFriends(momentId), callBack);
+    public void deleteFriends(LifecycleProvider provider, FriendsRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().deleteFriends(body), callBack);
     }
 
     @Override
@@ -63,22 +70,42 @@ public class FindRepository extends BaseRepository implements FriendsContract.Fi
     }
 
     @Override
-    public void deleteComment(LifecycleProvider provider, String commentId, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().removeComment(commentId), callBack);
+    public void deleteComment(LifecycleProvider provider, RemoveCommentRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().removeComment(body), callBack);
     }
 
     @Override
-    public void updateBg(LifecycleProvider provider, UpdateMineInfoRequestBody body, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().updateMineInfo(body), callBack);
+    public void updateBg(LifecycleProvider provider, UpdateBgBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().updateBg(body), callBack);
     }
 
-    @Override
-    public void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getMineInfo(), callBack);
-    }
+//    @Override
+//    public void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack) {
+//        observerNoMap(provider, DataService.getApiService().getMineInfo(), callBack);
+//    }
 
     @Override
     public void getFindList(LifecycleProvider provider, IBaseCallBack<FindData> callBack) {
-        observerNoMap(provider,DataService.getApiService().getFindList(), callBack);
+        observerNoMap(provider, DataService.getApiService().getFindList(), callBack);
+    }
+
+    @Override
+    public void like(LifecycleProvider provider, RemoveCommentRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().like(body), callBack);
+    }
+
+    @Override
+    public void getNewMsgCount(LifecycleProvider provider, IBaseCallBack<NewMsgData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getNewMsgCount(), callBack);
+    }
+
+    @Override
+    public void getMsgList(LifecycleProvider provider, IBaseCallBack<MsgData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getMsgList(), callBack);
+    }
+
+    @Override
+    public void readMsg(LifecycleProvider provider, RemindRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().readAll(body), callBack);
     }
 }

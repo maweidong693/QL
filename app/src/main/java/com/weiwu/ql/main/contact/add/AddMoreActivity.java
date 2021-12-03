@@ -18,18 +18,13 @@ import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.FriendInfoData;
-import com.weiwu.ql.data.bean.MineInfoData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
-import com.weiwu.ql.utils.SystemFacade;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.jsoup.helper.StringUtil.isNumeric;
 
 public class AddMoreActivity extends BaseActivity implements ContactContract.IAddFriendView {
 
@@ -90,11 +85,11 @@ public class AddMoreActivity extends BaseActivity implements ContactContract.IAd
             ToastUtil.toastShortMessage("不能添加自己");
             return;
         }
-        if (SystemFacade.isMobile(id)) {
+        /*if (SystemFacade.isMobile(id)) {
             mPresenter.findFriendId(id);
-        } else {
-            addFriend(id);
-        }
+        } else {*/
+        addFriend(id);
+//        }
     }
 
     private void addFriend(String id) {
@@ -127,19 +122,19 @@ public class AddMoreActivity extends BaseActivity implements ContactContract.IAd
     @Override
     public void addFriendReceive(HttpResult data) {
         if (data != null) {
-            showToast(data.getMessage());
+            showToast(data.getMsg());
             finish();
         }
     }
 
     @Override
     public void findFriendIdReceive(FriendInfoData data) {
-        if (data.getData() != null && data.getData().size() > 0) {
+        /*if (data.getData() != null && data.getData().size() > 0) {
             long id = data.getData().get(0).getId();
             addFriend(String.valueOf(id));
         } else {
             showToast("没有找到该用户！");
-        }
+        }*/
     }
 
     @Override

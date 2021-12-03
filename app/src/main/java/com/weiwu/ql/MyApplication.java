@@ -10,9 +10,6 @@ import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.smtt.sdk.QbSdk;
 import com.uuzuche.lib_zxing.ZApplication;
 import com.weiwu.ql.data.repositories.ContactRepository;
-import com.weiwu.ql.greendao.db.DaoMaster;
-import com.weiwu.ql.greendao.db.DaoSession;
-import com.weiwu.ql.main.login.LoginActivity;
 import com.weiwu.ql.utils.SPUtils;
 import com.youth.banner.util.LogUtils;
 

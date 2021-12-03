@@ -21,4 +21,10 @@ public interface IGroupMemberRouter {
     void allMute(GroupInfo info, boolean isMute);
 
     void setExamine(GroupInfo info, boolean isExamine);
+
+    void setGroupIcon(GroupInfo info);
+
+    void setAddFriend(GroupInfo info, int isAddFriend);
+
+    void setIsTop(GroupInfo info, boolean isTop);
 }

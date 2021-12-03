@@ -9,8 +9,10 @@ import java.util.List;
  * date : 2021/8/11 13:20 
  */
 public class GroupInfoData {
+
+
     private int code;
-    private String message;
+    private String msg;
     private DataDTO data;
 
     public int getCode() {
@@ -21,12 +23,12 @@ public class GroupInfoData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public DataDTO getData() {
@@ -39,45 +41,82 @@ public class GroupInfoData {
 
     public static class DataDTO {
         private String id;
-        private String name;
-        private String createdTime;
-        private String updatedTime;
-        private int del;
-        private String createdBy;
-        private String updatedBy;
-        private List<GroupMemberData.DataDTO> memberGroupResultVOList;
-        private String currentMemberRoleName;
-        private int currentMemberRole;
-        private String currentMemberId;
-        private String avator;
-        private String notice;
+        private int group_role;
+        private int group_user_count;
+        private String group_name;
+        private Object group_avatar_url;
+        private String group_id;
+        private String my_group_nickname;
+        private String notification;
         private String introduction;
-        private int isForbidden;
-        private int isAllForbidden;
-        private int isExamine;
+        private int is_add_friend;
+        private int is_join_check;
+        private int is_ban_say;
+        private int is_top;
+        private List<GroupUserDTO> groupUser;
 
-        public int getIsAllForbidden() {
-            return isAllForbidden;
+        public String getId() {
+            return id;
         }
 
-        public void setIsAllForbidden(int isAllForbidden) {
-            this.isAllForbidden = isAllForbidden;
+        public void setId(String id) {
+            this.id = id;
         }
 
-        public int getIsExamine() {
-            return isExamine;
+        public int getGroup_role() {
+            return group_role;
         }
 
-        public void setIsExamine(int isExamine) {
-            this.isExamine = isExamine;
+        public void setGroup_role(int group_role) {
+            this.group_role = group_role;
         }
 
-        public int getIsForbidden() {
-            return isForbidden;
+        public int getGroup_user_count() {
+            return group_user_count;
         }
 
-        public void setIsForbidden(int isForbidden) {
-            this.isForbidden = isForbidden;
+        public void setGroup_user_count(int group_user_count) {
+            this.group_user_count = group_user_count;
+        }
+
+        public String getGroup_name() {
+            return group_name;
+        }
+
+        public void setGroup_name(String group_name) {
+            this.group_name = group_name;
+        }
+
+        public Object getGroup_avatar_url() {
+            return group_avatar_url;
+        }
+
+        public void setGroup_avatar_url(Object group_avatar_url) {
+            this.group_avatar_url = group_avatar_url;
+        }
+
+        public String getGroup_id() {
+            return group_id;
+        }
+
+        public void setGroup_id(String group_id) {
+            this.group_id = group_id;
+        }
+
+        public String getMy_group_nickname() {
+            return my_group_nickname;
+        }
+
+        public void setMy_group_nickname(String my_group_nickname) {
+            this.my_group_nickname = my_group_nickname;
+        }
+
+        public String getNotification() {
+            return notification;
+        }
+
+        public void setNotification(String notification) {
+            this.notification = notification;
         }
 
         public String getIntroduction() {
@@ -88,109 +127,302 @@ public class GroupInfoData {
             this.introduction = introduction;
         }
 
-        public String getId() {
-            return id;
+        public int getIs_add_friend() {
+            return is_add_friend;
         }
 
-        public void setId(String id) {
-            this.id = id;
+        public void setIs_add_friend(int is_add_friend) {
+            this.is_add_friend = is_add_friend;
         }
 
-        public String getName() {
-            return name;
+        public int getIs_join_check() {
+            return is_join_check;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setIs_join_check(int is_join_check) {
+            this.is_join_check = is_join_check;
         }
 
-        public String getCreatedTime() {
-            return createdTime;
+        public int getIs_ban_say() {
+            return is_ban_say;
         }
 
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
+        public void setIs_ban_say(int is_ban_say) {
+            this.is_ban_say = is_ban_say;
         }
 
-        public String getUpdatedTime() {
-            return updatedTime;
+        public int getIs_top() {
+            return is_top;
         }
 
-        public void setUpdatedTime(String updatedTime) {
-            this.updatedTime = updatedTime;
+        public void setIs_top(int is_top) {
+            this.is_top = is_top;
         }
 
-        public int getDel() {
-            return del;
+        public List<GroupUserDTO> getGroupUser() {
+            return groupUser;
         }
 
-        public void setDel(int del) {
-            this.del = del;
+        public void setGroupUser(List<GroupUserDTO> groupUser) {
+            this.groupUser = groupUser;
         }
 
-        public String getCreatedBy() {
-            return createdBy;
-        }
+        public static class GroupUserDTO {
+            private int id;
+            private String group_id;
+            private int join_type;
+            private String operator_id;
+            private Object my_group_nickname;
+            private String member_id;
+            private int is_ban_say;
+            private String join_time;
+            private int group_role;
+            private String face_url;
+            private String nick_name;
+            private MemberDTO member;
 
-        public void setCreatedBy(String createdBy) {
-            this.createdBy = createdBy;
-        }
+            public int getId() {
+                return id;
+            }
 
-        public String getUpdatedBy() {
-            return updatedBy;
-        }
+            public void setId(int id) {
+                this.id = id;
+            }
 
-        public void setUpdatedBy(String updatedBy) {
-            this.updatedBy = updatedBy;
-        }
+            public String getGroup_id() {
+                return group_id;
+            }
 
-        public List<GroupMemberData.DataDTO> getMemberGroupResultVOList() {
-            return memberGroupResultVOList;
-        }
+            public void setGroup_id(String group_id) {
+                this.group_id = group_id;
+            }
 
-        public void setMemberGroupResultVOList(List<GroupMemberData.DataDTO> memberGroupResultVOList) {
-            this.memberGroupResultVOList = memberGroupResultVOList;
-        }
+            public int getJoin_type() {
+                return join_type;
+            }
 
-        public String getCurrentMemberRoleName() {
-            return currentMemberRoleName;
-        }
+            public void setJoin_type(int join_type) {
+                this.join_type = join_type;
+            }
 
-        public void setCurrentMemberRoleName(String currentMemberRoleName) {
-            this.currentMemberRoleName = currentMemberRoleName;
-        }
+            public String getOperator_id() {
+                return operator_id;
+            }
 
-        public int getCurrentMemberRole() {
-            return currentMemberRole;
-        }
+            public void setOperator_id(String operator_id) {
+                this.operator_id = operator_id;
+            }
 
-        public void setCurrentMemberRole(int currentMemberRole) {
-            this.currentMemberRole = currentMemberRole;
-        }
+            public Object getMy_group_nickname() {
+                return my_group_nickname;
+            }
 
-        public String getCurrentMemberId() {
-            return currentMemberId;
-        }
+            public void setMy_group_nickname(Object my_group_nickname) {
+                this.my_group_nickname = my_group_nickname;
+            }
 
-        public void setCurrentMemberId(String currentMemberId) {
-            this.currentMemberId = currentMemberId;
-        }
+            public String getMember_id() {
+                return member_id;
+            }
 
-        public String getAvator() {
-            return avator;
-        }
+            public void setMember_id(String member_id) {
+                this.member_id = member_id;
+            }
 
-        public void setAvator(String avator) {
-            this.avator = avator;
-        }
+            public int getIs_ban_say() {
+                return is_ban_say;
+            }
 
-        public String getNotice() {
-            return notice;
-        }
+            public void setIs_ban_say(int is_ban_say) {
+                this.is_ban_say = is_ban_say;
+            }
 
-        public void setNotice(String notice) {
-            this.notice = notice;
-        }
+            public String getJoin_time() {
+                return join_time;
+            }
 
+            public void setJoin_time(String join_time) {
+                this.join_time = join_time;
+            }
+
+            public int getGroup_role() {
+                return group_role;
+            }
+
+            public void setGroup_role(int group_role) {
+                this.group_role = group_role;
+            }
+
+            public String getFace_url() {
+                return face_url;
+            }
+
+            public void setFace_url(String face_url) {
+                this.face_url = face_url;
+            }
+
+            public String getNick_name() {
+                return nick_name;
+            }
+
+            public void setNick_name(String nick_name) {
+                this.nick_name = nick_name;
+            }
+
+            public MemberDTO getMember() {
+                return member;
+            }
+
+            public void setMember(MemberDTO member) {
+                this.member = member;
+            }
+
+            public static class MemberDTO {
+                private int id;
+                private Object pid;
+                private String nation_code;
+                private String mobile;
+                private String im_id;
+                private int is_check_friend;
+                private String password;
+                private String token;
+                private String nick_name;
+                private String sing;
+                private String face_url;
+                private int sex;
+                private int status;
+                private Object master_code;
+                private String my_code;
+                private String reg_time;
+
+                public int getId() {
+                    return id;
+                }
+
+                public void setId(int id) {
+                    this.id = id;
+                }
+
+                public Object getPid() {
+                    return pid;
+                }
+
+                public void setPid(Object pid) {
+                    this.pid = pid;
+                }
+
+                public String getNation_code() {
+                    return nation_code;
+                }
+
+                public void setNation_code(String nation_code) {
+                    this.nation_code = nation_code;
+                }
+
+                public String getMobile() {
+                    return mobile;
+                }
+
+                public void setMobile(String mobile) {
+                    this.mobile = mobile;
+                }
+
+                public String getIm_id() {
+                    return im_id;
+                }
+
+                public void setIm_id(String im_id) {
+                    this.im_id = im_id;
+                }
+
+                public int getIs_check_friend() {
+                    return is_check_friend;
+                }
+
+                public void setIs_check_friend(int is_check_friend) {
+                    this.is_check_friend = is_check_friend;
+                }
+
+                public String getPassword() {
+                    return password;
+                }
+
+                public void setPassword(String password) {
+                    this.password = password;
+                }
+
+                public String getToken() {
+                    return token;
+                }
+
+                public void setToken(String token) {
+                    this.token = token;
+                }
+
+                public String getNick_name() {
+                    return nick_name;
+                }
+
+                public void setNick_name(String nick_name) {
+                    this.nick_name = nick_name;
+                }
+
+                public String getSing() {
+                    return sing;
+                }
+
+                public void setSing(String sing) {
+                    this.sing = sing;
+                }
+
+                public String getFace_url() {
+                    return face_url;
+                }
+
+                public void setFace_url(String face_url) {
+                    this.face_url = face_url;
+                }
+
+                public int getSex() {
+                    return sex;
+                }
+
+                public void setSex(int sex) {
+                    this.sex = sex;
+                }
+
+                public int getStatus() {
+                    return status;
+                }
+
+                public void setStatus(int status) {
+                    this.status = status;
+                }
+
+                public Object getMaster_code() {
+                    return master_code;
+                }
+
+                public void setMaster_code(Object master_code) {
+                    this.master_code = master_code;
+                }
+
+                public String getMy_code() {
+                    return my_code;
+                }
+
+                public void setMy_code(String my_code) {
+                    this.my_code = my_code;
+                }
+
+                public String getReg_time() {
+                    return reg_time;
+                }
+
+                public void setReg_time(String reg_time) {
+                    this.reg_time = reg_time;
+                }
+            }
+        }
     }
 }

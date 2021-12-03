@@ -3,16 +3,13 @@ package com.weiwu.ql.main.contact.group;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.tencent.common.Constant;
+import com.tencent.common.http.BlackListData;
 import com.tencent.common.http.ContactListData;
-import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
-import com.tencent.qcloud.tim.uikit.modules.chat.base.ChatInfo;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactListView;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
@@ -20,11 +17,15 @@ import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.GroupListData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.ContactPresenter;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupListActivity extends BaseActivity implements ContactContract.IContactView {
 
@@ -76,14 +77,15 @@ public class GroupListActivity extends BaseActivity implements ContactContract.I
 
                 Intent intent = new Intent(GroupListActivity.this, ChatActivity.class);
                 intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contact);
-                intent.putExtra(AppConstant.CHAT_TYPE, "group");
+                intent.putExtra(AppConstant.IN, 2);
+                intent.putExtra(AppConstant.CHAT_TYPE, 2);
                 startActivity(intent);
             }
         });
     }
 
     public void loadDataSource() {
-        mPresenter.getContactList();
+        mPresenter.getGroupList();
     }
 
     @Override
@@ -93,7 +95,30 @@ public class GroupListActivity extends BaseActivity implements ContactContract.I
 
     @Override
     public void contactReceive(ContactListData data) {
-        mListView.loadDataSource(ContactListView.DataSource.GROUP_LIST, data.getData());
+
+    }
+
+    @Override
+    public void groupListReceive(GroupListData data) {
+        if (data != null && data.getData() != null) {
+            List<ContactListData.DataDTO.GroupsDTO> groups = new ArrayList<>();
+            for (int i = 0; i < data.getData().size(); i++) {
+                GroupListData.DataDTO dto = data.getData().get(i);
+                ContactListData.DataDTO.GroupsDTO groupsDTO = new ContactListData.DataDTO.GroupsDTO();
+                groupsDTO.setId(dto.getGroup_id());
+                groupsDTO.setName(dto.getGroup_name());
+                groupsDTO.setAvatar(dto.getAvatar_url());
+                groups.add(groupsDTO);
+            }
+            ContactListData.DataDTO contactListData = new ContactListData.DataDTO();
+            contactListData.setGroups(groups);
+            mListView.loadDataSource(ContactListView.DataSource.GROUP_LIST, contactListData);
+        }
+    }
+
+    @Override
+    public void blackListReceive(BlackListData data) {
+
     }
 
     @Override

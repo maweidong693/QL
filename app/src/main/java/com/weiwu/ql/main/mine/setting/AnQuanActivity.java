@@ -9,6 +9,7 @@ import com.tencent.common.Constant;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.weiwu.ql.R;
+import com.weiwu.ql.main.login.ForgetPasswordActivity;
 
 public class AnQuanActivity extends Activity {
 
@@ -37,9 +38,10 @@ public class AnQuanActivity extends Activity {
         viewUpdatePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(AnQuanActivity.this, ForgetPasswrodActivity.class);
-//                intent.putExtra(Constant.PASSWORD_TYPE,1);
-//                startActivity(intent);
+                Intent intent = new Intent(AnQuanActivity.this, ForgetPasswordActivity.class);
+                intent.putExtra(Constant.PASSWORD_TYPE, 1);
+                startActivity(intent);
+
             }
         });
     }

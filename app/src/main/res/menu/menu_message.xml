@@ -7,4 +7,12 @@
     <item
         android:id="@+id/tv_message_withdraw"
         android:title="撤回" />
+
+    <item
+        android:id="@+id/tv_message_collection"
+        android:title="收藏" />
+
+    <item
+        android:id="@+id/tv_message_delete"
+        android:title="删除" />
 </menu>

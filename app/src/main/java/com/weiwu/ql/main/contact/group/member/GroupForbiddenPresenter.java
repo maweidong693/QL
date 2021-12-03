@@ -1,9 +1,12 @@
 package com.weiwu.ql.main.contact.group.member;
 
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.ForbiddenRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
 
@@ -23,10 +26,10 @@ public class GroupForbiddenPresenter implements GroupContract.IGroupForbiddenPre
     }
 
     @Override
-    public void getGroupMember(String groupId) {
-        mSource.getGroupMember((LifecycleProvider) mView, groupId, new IBaseCallBack<GroupMemberData>() {
+    public void getGroupMember(GroupInfoRequestBody body) {
+        mSource.getGroupMember((LifecycleProvider) mView, body, new IBaseCallBack<GroupInfoData>() {
             @Override
-            public void onSuccess(GroupMemberData data) {
+            public void onSuccess(GroupInfoData data) {
                 mView.groupMemberReceive(data);
             }
 
@@ -38,7 +41,7 @@ public class GroupForbiddenPresenter implements GroupContract.IGroupForbiddenPre
     }
 
     @Override
-    public void forbiddenMember(InviteOrDeleteRequestBody body) {
+    public void forbiddenMember(ForbiddenRequestBody body) {
         mSource.forbiddenMember((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
@@ -53,7 +56,7 @@ public class GroupForbiddenPresenter implements GroupContract.IGroupForbiddenPre
     }
 
     @Override
-    public void cancelForbiddenMember(InviteOrDeleteRequestBody body) {
+    public void cancelForbiddenMember(ForbiddenRequestBody body) {
         mSource.cancelForbiddenMember((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {

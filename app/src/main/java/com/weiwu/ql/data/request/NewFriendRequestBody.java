@@ -8,29 +8,19 @@ package com.weiwu.ql.data.request;
  */
 public class NewFriendRequestBody {
     private String status;
-    private String requestId;
-    private String handlerRemark;
+    private String id;
 
-    public String getRequestId() {
-        return requestId;
+    public String getId() {
+        return id;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getHandlerRemark() {
-        return handlerRemark;
-    }
-
-    public void setHandlerRemark(String handlerRemark) {
-        this.handlerRemark = handlerRemark;
-    }
-
-    public NewFriendRequestBody(String status, String requestId, String handlerRemark) {
+    public NewFriendRequestBody(String status, String requestId) {
         this.status = status;
-        this.requestId = requestId;
-        this.handlerRemark = handlerRemark;
+        this.id = requestId;
     }
 
     public String getStatus() {

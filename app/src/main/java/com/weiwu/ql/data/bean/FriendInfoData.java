@@ -11,8 +11,8 @@ import java.util.List;
 public class FriendInfoData {
 
     private int code;
-    private String message;
-    private List<DataDTO> data;
+    private String msg;
+    private DataDTO data;
 
     public int getCode() {
         return code;
@@ -22,103 +22,103 @@ public class FriendInfoData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
-    public List<DataDTO> getData() {
+    public DataDTO getData() {
         return data;
     }
 
-    public void setData(List<DataDTO> data) {
+    public void setData(DataDTO data) {
         this.data = data;
     }
 
     public static class DataDTO {
-        private long id;
-        private String nickName;
-        private String password;
-        private String mobile;
-        private String lastLoginTime;
-        private String createdTime;
-        private String updatedTime;
-        private int del;
-        private int sex;
+        private String user_id;
+        private String nick_name;
+        private String alias;
+        private String face_url;
+        private int is_black;
+        private int not_show;
+        private int not_see;
+        private int is_friend;
+        private List<?> moments;
 
-        public long getId() {
-            return id;
+        public int getIs_friend() {
+            return is_friend;
         }
 
-        public void setId(long id) {
-            this.id = id;
+        public void setIs_friend(int is_friend) {
+            this.is_friend = is_friend;
         }
 
-        public String getNickName() {
-            return nickName;
+        public String getUser_id() {
+            return user_id;
         }
 
-        public void setNickName(String nickName) {
-            this.nickName = nickName;
+        public void setUser_id(String user_id) {
+            this.user_id = user_id;
         }
 
-        public String getPassword() {
-            return password;
+        public String getNick_name() {
+            return nick_name;
         }
 
-        public void setPassword(String password) {
-            this.password = password;
+        public void setNick_name(String nick_name) {
+            this.nick_name = nick_name;
         }
 
-        public String getMobile() {
-            return mobile;
+        public String getAlias() {
+            return alias;
         }
 
-        public void setMobile(String mobile) {
-            this.mobile = mobile;
+        public void setAlias(String alias) {
+            this.alias = alias;
         }
 
-        public String getLastLoginTime() {
-            return lastLoginTime;
+        public String getFace_url() {
+            return face_url;
         }
 
-        public void setLastLoginTime(String lastLoginTime) {
-            this.lastLoginTime = lastLoginTime;
+        public void setFace_url(String face_url) {
+            this.face_url = face_url;
         }
 
-        public String getCreatedTime() {
-            return createdTime;
+        public int getIs_black() {
+            return is_black;
         }
 
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
+        public void setIs_black(int is_black) {
+            this.is_black = is_black;
         }
 
-        public String getUpdatedTime() {
-            return updatedTime;
+        public int getNot_show() {
+            return not_show;
         }
 
-        public void setUpdatedTime(String updatedTime) {
-            this.updatedTime = updatedTime;
+        public void setNot_show(int not_show) {
+            this.not_show = not_show;
         }
 
-        public int getDel() {
-            return del;
+        public int getNot_see() {
+            return not_see;
         }
 
-        public void setDel(int del) {
-            this.del = del;
+        public void setNot_see(int not_see) {
+            this.not_see = not_see;
         }
 
-        public int getSex() {
-            return sex;
+        public List<?> getMoments() {
+            return moments;
         }
 
-        public void setSex(int sex) {
-            this.sex = sex;
+        public void setMoments(List<?> moments) {
+            this.moments = moments;
         }
     }
 }

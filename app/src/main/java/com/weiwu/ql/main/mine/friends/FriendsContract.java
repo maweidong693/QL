@@ -8,12 +8,21 @@ import com.weiwu.ql.data.bean.FindData;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgCount;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddCommentRequestBody;
+import com.weiwu.ql.data.request.FriendsRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.data.request.IssueMessageRequestBody;
+import com.weiwu.ql.data.request.RemindRequestBody;
+import com.weiwu.ql.data.request.RemoveCommentRequestBody;
+import com.weiwu.ql.data.request.UpdateBgBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
+import com.weiwu.ql.main.mine.friends.data.MsgData;
 
 import okhttp3.MultipartBody;
+import retrofit2.http.Body;
 
 /**
  *  
@@ -40,7 +49,8 @@ public interface FriendsContract {
     interface IFriendsView extends IBaseView<IFriendsPresenter> {
         void allFriendsReceive(FriendsData data);
 
-        void mineInfoReceive(MineInfoData data);
+        void newMsgCountResult(NewMsgData data);
+//        void mineInfoReceive(MineInfoData data);
 
         void uploadReceive(LoginData data);
 
@@ -51,20 +61,37 @@ public interface FriendsContract {
         void onFail(String msg, int code);
     }
 
+    public interface IMsgView extends IBaseView<IMsgPresenter> {
+        void msgReceive(MsgData data);
+
+        void onSuccess(HttpResult data);
+
+        void onFail(String msg, int code);
+    }
+
+    public interface IMsgPresenter extends IBasePresenter<IMsgView> {
+        void getMsgList();
+
+        void readMsg(RemindRequestBody body);
+
+    }
+
     interface IFriendsPresenter extends IBasePresenter<IFriendsView> {
         void addComment(AddCommentRequestBody body);
 
-        void deleteComment(String commentId);
+        void getNewMsgCount();
 
-        void getAllFriends(String pageSize, String pageNum);
+        void deleteComment(RemoveCommentRequestBody body);
 
-        void deleteFriends(String momentId);
+        void getAllFriends(FriendsRequestBody body);
+
+        void deleteFriends(FriendsRequestBody body);
+
+        void like(RemoveCommentRequestBody body);
 
         void uploadPic(MultipartBody.Part file);
 
-        void updateBg(UpdateMineInfoRequestBody body);
-
-        void getMineInfo();
+        void updateBg(UpdateBgBody body);
     }
 
     interface IFindView extends IBaseView<IFindPresenter> {
@@ -82,18 +109,27 @@ public interface FriendsContract {
 
         void uploadPic(LifecycleProvider provider, MultipartBody.Part file, IBaseCallBack<LoginData> callBack);
 
-        void getAllFriends(LifecycleProvider provider, String pageSize, String pageNum, IBaseCallBack<FriendsData> callBack);
+        void getAllFriends(LifecycleProvider provider, FriendsRequestBody body, IBaseCallBack<FriendsData> callBack);
 
-        void deleteFriends(LifecycleProvider provider, String momentId, IBaseCallBack<HttpResult> callBack);
+        void deleteFriends(LifecycleProvider provider, FriendsRequestBody body, IBaseCallBack<HttpResult> callBack);
 
         void addComment(LifecycleProvider provider, AddCommentRequestBody body, IBaseCallBack<HttpResult> callBack);
 
-        void deleteComment(LifecycleProvider provider, String commentId, IBaseCallBack<HttpResult> callBack);
+        void deleteComment(LifecycleProvider provider, RemoveCommentRequestBody body, IBaseCallBack<HttpResult> callBack);
 
-        void updateBg(LifecycleProvider provider, UpdateMineInfoRequestBody body, IBaseCallBack<HttpResult> callBack);
+        void updateBg(LifecycleProvider provider, UpdateBgBody body, IBaseCallBack<HttpResult> callBack);
 
-        void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack);
+//        void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack);
 
         void getFindList(LifecycleProvider provider, IBaseCallBack<FindData> callBack);
+
+        void like(LifecycleProvider provider, RemoveCommentRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void getNewMsgCount(LifecycleProvider provider, IBaseCallBack<NewMsgData> callBack);
+
+        void getMsgList(LifecycleProvider provider, IBaseCallBack<MsgData> callBack);
+
+        void readMsg(LifecycleProvider provider, RemindRequestBody body, IBaseCallBack<HttpResult> callBack);
+
     }
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:toos="http://schemas.android.com/tools"
+    android:background="#fff"
+    android:orientation="vertical">
+    <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:foreground="?android:attr/selectableItemBackground"
+        android:layout_margin="20dp"
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        toos:text="sdsadasd"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:lineSpacingExtra="3dp"
+        />
+    <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="@dimen/dp_10"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="1px"
+            android:background="@color/line" />
+        <ImageView
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:background="@drawable/origin" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="1px"
+            android:background="@color/line" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

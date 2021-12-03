@@ -79,16 +79,15 @@ public class NewFriendAdapter extends ArrayAdapter<NewFriendListData.DataDTO> {
             mViewHolder.refuse = mView.findViewById(R.id.refuse);
             mView.setTag(mViewHolder);
         }
-        NewFriendListData.DataDTO.ResultVODTO dataResultVO = data.getResultVO();
         Resources res = getContext().getResources();
-        if (TextUtils.isEmpty(dataResultVO.getAvator())) {
+        if (TextUtils.isEmpty(data.getFace_url())) {
             mViewHolder.avatar.setImageResource(R.drawable.ic_personal_member);
         } else {
-            Glide.with(mView.getContext()).load(dataResultVO.getAvator()).into(mViewHolder.avatar);
+            Glide.with(mView.getContext()).load(data.getFace_url()).into(mViewHolder.avatar);
         }
 
-        mViewHolder.name.setText(TextUtils.isEmpty(dataResultVO.getNickName()) ? dataResultVO.getId() : dataResultVO.getNickName());
-        mViewHolder.des.setText(TextUtils.isEmpty(data.getRemark()) ? data.getCreatedTime() : data.getRemark());
+        mViewHolder.name.setText(TextUtils.isEmpty(data.getNick_name()) ? data.getId() + "" : data.getNick_name());
+        mViewHolder.des.setText(TextUtils.isEmpty(data.getRemark()) ? data.getCreate_time() : data.getRemark());
         switch (data.getStatus()) {
             case 0:
                 mViewHolder.agree.setText(res.getString(R.string.request_agree));
@@ -103,10 +102,10 @@ public class NewFriendAdapter extends ArrayAdapter<NewFriendListData.DataDTO> {
 
                 break;
 
-            case 200:
+            case 1:
                 mViewHolder.agree.setText("已通过");
                 break;
-            case 111:
+            case 2:
                 mViewHolder.agree.setText("已拒绝");
                 break;
         }

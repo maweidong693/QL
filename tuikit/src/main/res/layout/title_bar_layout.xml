@@ -51,8 +51,11 @@
             android:layout_centerInParent="true"
             android:layout_weight="1"
             android:gravity="center"
+            android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="16.3sp"
+            android:maxEms="15"
+            android:ellipsize="middle"
             android:textStyle="bold" />
 
         <LinearLayout

@@ -6,15 +6,12 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.tencent.common.http.ContactListData;
-import com.tencent.imsdk.v2.V2TIMGroupMemberFullInfo;
-import com.tencent.imsdk.v2.V2TIMGroupMemberInfoResult;
-import com.tencent.imsdk.v2.V2TIMManager;
-import com.tencent.imsdk.v2.V2TIMValueCallback;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.component.CustomLinearLayoutManager;
 import com.tencent.qcloud.tim.uikit.component.indexlib.IndexBar.widget.IndexBar;
@@ -26,8 +23,6 @@ import com.tencent.qcloud.tim.uikit.utils.TUIKitLog;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.tencent.imsdk.v2.V2TIMGroupAtInfo.AT_ALL_TAG;
 
 
 public class ContactListView extends LinearLayout {
@@ -54,6 +49,7 @@ public class ContactListView extends LinearLayout {
     private TextView mTvSideBarHint;
     private List<ContactListData.DataDTO.FriendsDTO> mFriendsList = new ArrayList<>();
     private List<ContactListData.DataDTO.GroupsDTO> mGroupsList = new ArrayList<>();
+    private int mNew_friend_count;
 
     public ContactListView(Context context) {
         super(context);
@@ -113,17 +109,21 @@ public class ContactListView extends LinearLayout {
     }
 
     public void loadDataSource(int dataSource, ContactListData.DataDTO list) {
+        mNew_friend_count = list.getNew_friend_count();
         mContactLoadingBar.setVisibility(VISIBLE);
         mData.clear();
         switch (dataSource) {
             case DataSource.FRIEND_LIST:
-                if (list.getFriends() != null) {
-                    mFriendsList = list.getFriends();
+                if (list.getList() != null) {
+                    mFriendsList = list.getList();
                 }
                 loadFriendListDataAsync();
                 break;
             case DataSource.BLACK_LIST:
-                loadBlackListData();
+                if (list.getBlockFriends() != null) {
+                    mFriendsList = list.getBlockFriends();
+                }
+                loadFriendListDataAsync();
                 break;
             case DataSource.GROUP_LIST:
                 if (list.getGroups() != null) {
@@ -132,14 +132,14 @@ public class ContactListView extends LinearLayout {
                 loadGroupListData();
                 break;
             case DataSource.CONTACT_LIST:
-                if (list.getFriends() != null) {
-                    mFriendsList = list.getFriends();
+                if (list.getList() != null) {
+                    mFriendsList = list.getList();
                 }
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend))
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend),mNew_friend_count)
                         .setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group)).
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group),0).
                         setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.blacklist)).
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.blacklist),0).
                         setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
                 loadFriendListDataAsync();
                 break;
@@ -221,6 +221,7 @@ public class ContactListView extends LinearLayout {
 //    }
 
     private void assembleFriendListData(final List<ContactListData.DataDTO.FriendsDTO> timFriendInfoList) {
+        Log.d(TAG, "assembleFriendListData:aaavvv=== " + timFriendInfoList.size());
         if (timFriendInfoList != null) {
             for (ContactListData.DataDTO.FriendsDTO timFriendInfo : timFriendInfoList) {
                 ContactItemBean info = new ContactItemBean();

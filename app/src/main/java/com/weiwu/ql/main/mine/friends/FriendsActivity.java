@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,17 +47,16 @@ import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.LoginData;
-import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgCount;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.FindRepository;
 import com.weiwu.ql.data.request.AddCommentRequestBody;
-import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
+import com.weiwu.ql.data.request.FriendsRequestBody;
+import com.weiwu.ql.data.request.RemoveCommentRequestBody;
+import com.weiwu.ql.data.request.UpdateBgBody;
 import com.weiwu.ql.main.mine.friends.adapter.CircleAdapter;
 import com.weiwu.ql.main.mine.friends.data.CircleHeadUser;
-import com.weiwu.ql.main.mine.friends.data.CircleItem;
-import com.weiwu.ql.main.mine.friends.data.CommentConfig;
-import com.weiwu.ql.main.mine.friends.data.CommentItem;
-import com.weiwu.ql.main.mine.friends.data.FavortItem;
 import com.weiwu.ql.main.mine.friends.data.RefreshBean;
 import com.weiwu.ql.main.mine.friends.issue.FriendsNewActivity;
 import com.weiwu.ql.main.mine.friends.view.CommentListView;
@@ -64,6 +64,7 @@ import com.weiwu.ql.main.mine.friends.view.DivItemDecoration;
 import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.view.GlideEngine;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -95,7 +96,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     private int selectCircleItemH;
     private int selectCommentItemOffset;
     //    private CirclePresenter presenter;
-    private CommentConfig commentConfig;
+    private FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO commentConfig;
     private SuperRecyclerView recyclerView;
     private RelativeLayout bodyLayout;
     private LinearLayoutManager layoutManager;
@@ -110,8 +111,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     public Transferee transferee;
     private FriendsContract.IFriendsPresenter mPresenter;
     private int loadType = 0;
-    private FriendsData.DataDTO mAddCommentData;
-    private MineInfoData mInfoData;
+    private FriendsData.DataDTO.MessageDTO mAddCommentData;
+    private int page = 1;
+    private int commentType;
+    private int mMsgId;
 
     public static void start(Context context) {
         start(context, null);
@@ -234,7 +237,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
             public boolean onLongClick(View view) {
                 //长按进入文本
                 FriendsNewActivity.start(FriendsActivity.this);
-
+//                finish();
                 return true;
             }
         });
@@ -267,7 +270,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (edittextbody.getVisibility() == View.VISIBLE) {
-                    updateEditTextBodyVisible(View.GONE, null);
+                    updateEditTextBodyVisible(View.GONE);
                     return true;
                 }
                 return false;
@@ -281,8 +284,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                     @Override
                     public void run() {
                         loadType = TYPE_PULLREFRESH;
-                        mPresenter.getMineInfo();
+//                        mPresenter.getMineInfo();
 //                        presenter.loadData(TYPE_PULLREFRESH);
+                        mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
+
                     }
                 }, 1000);
             }
@@ -347,17 +352,20 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
 
         circleAdapter.setDeleteCommentListener(new CircleAdapter.IDeleteCommentListener() {
             @Override
-            public void deleteComment(String commentId) {
-                mPresenter.deleteComment(commentId);
+            public void deleteComment(int commentId, int type) {
+
+                mPresenter.deleteComment(new RemoveCommentRequestBody(commentId + "", type + ""));
             }
         });
 
         circleAdapter.setReplyCommentListener(new CircleAdapter.IReplyCommentListener() {
             @Override
-            public void replyComment(CommentConfig data) {
+            public void replyComment(FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO data, int msgId) {
+                commentType = 2;
                 edittextbody.setVisibility(View.VISIBLE);
+                mMsgId = msgId;
 
-                measureCircleItemHighAndCommentItemOffset(data);
+//                measureCircleItemHighAndCommentItemOffset(data);
                 commentConfig = data;
                 if (edittextbody != null) {
                     editText.requestFocus();
@@ -402,23 +410,22 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
 
         circleAdapter.setDeleteFriendsClickListener(new CircleAdapter.IDeleteFriendsClickListener() {
             @Override
-            public void mDeleteListener(FriendsData.DataDTO data, int type) {
+            public void mDeleteListener(FriendsData.DataDTO.MessageDTO data, int type) {
 //                loadType = TYPE_PULLREFRESH;
                 switch (type) {
                     case 0:
-                        mPresenter.deleteFriends(data.getId());
+                        mPresenter.deleteFriends(new FriendsRequestBody(data.getId() + ""));
                         break;
                     case 1:
-                        mPresenter.addComment(new AddCommentRequestBody(data.getId(), 2));
-                        break;
                     case 2:
-                        mPresenter.deleteComment(data.getId());
+                        mPresenter.like(new RemoveCommentRequestBody(data.getId() + ""));
                         break;
                     case 3:
+                        commentType = 1;
                         mAddCommentData = data;
                         edittextbody.setVisibility(View.VISIBLE);
 
-                        measureCircleItemHighAndCommentItemOffset(commentConfig);
+//                        measureCircleItemHighAndCommentItemOffset(commentConfig);
 
                         if (edittextbody != null) {
                             editText.requestFocus();
@@ -459,10 +466,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                     Toast.makeText(FriendsActivity.this, "评论内容不能为空...", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (mAddCommentData != null) {
-                    mPresenter.addComment(new AddCommentRequestBody(mAddCommentData.getId(), 0, content));
+                if (commentType == 1) {
+                    mPresenter.addComment(new AddCommentRequestBody(mAddCommentData.getId() + "", "1", content));
                 } else {
-                    mPresenter.addComment(new AddCommentRequestBody(commentConfig.msgId, 1, commentConfig.commentId, editText.getText().toString()));
+                    mPresenter.addComment(new AddCommentRequestBody("2", mMsgId + "", content, commentConfig.getCommentId() + "", commentConfig.getType() == 1 ? commentConfig.getCommentatorId() + "" : commentConfig.getReplyId() + ""));
                 }
                 editText.setText("");
                 /*if (presenter != null) {
@@ -478,7 +485,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                     }
                     presenter.addComment(content, commentConfig);
                 }*/
-                updateEditTextBodyVisible(View.GONE, null);
+                updateEditTextBodyVisible(View.GONE);
             }
         });
 
@@ -488,7 +495,9 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBaseBean(RefreshBean event) {
         loadType = TYPE_PULLREFRESH;
-        mPresenter.getMineInfo();
+//        mPresenter.getMineInfo();
+        mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
+
         //后台拉取资料完成之后刷新
 //        presenter.loadData(TYPE_PULLREFRESH);
     }
@@ -528,12 +537,12 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                 editTextBodyHeight = edittextbody.getHeight();
 
                 if (keyboardH < 150) {//说明是隐藏键盘的情况
-                    updateEditTextBodyVisible(View.GONE, null);
+                    updateEditTextBodyVisible(View.GONE);
                     return;
                 }
                 //偏移listview
                 if (layoutManager != null && commentConfig != null) {
-                    layoutManager.scrollToPositionWithOffset(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE, getListviewOffset(commentConfig));
+//                    layoutManager.scrollToPositionWithOffset(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE, getListviewOffset(commentConfig));
                 }
             }
         });
@@ -558,7 +567,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (edittextbody != null && edittextbody.getVisibility() == View.VISIBLE) {
                 //edittextbody.setVisibility(View.GONE);
-                updateEditTextBodyVisible(View.GONE, null);
+                updateEditTextBodyVisible(View.GONE);
                 return true;
             }
         }
@@ -572,9 +581,9 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
 
     @Override
     public void update2DeleteCircle(String circleId) {
-        List<CircleItem> circleItems = circleAdapter.getDatas();
+        List<FriendsData.DataDTO.MessageDTO> circleItems = circleAdapter.getDatas();
         for (int i = 0; i < circleItems.size(); i++) {
-            if (circleId.equals(circleItems.get(i).getId())) {
+            if (circleId.equals(circleItems.get(i).getId() + "")) {
                 circleItems.remove(i);
                 circleAdapter.notifyDataSetChanged();
                 //circleAdapter.notifyItemRemoved(i+1);
@@ -584,10 +593,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     }
 
     @Override
-    public void update2AddFavorite(int circlePosition, FavortItem addItem) {
+    public void update2AddFavorite(int circlePosition, FriendsData.DataDTO.MessageDTO.LikesDTO addItem) {
         if (addItem != null) {
-            CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
-            item.getFavorters().add(addItem);
+            FriendsData.DataDTO.MessageDTO item = (FriendsData.DataDTO.MessageDTO) circleAdapter.getDatas().get(circlePosition);
+            item.getLikes().add(addItem);
             circleAdapter.notifyDataSetChanged();
             //circleAdapter.notifyItemChanged(circlePosition+1);
         }
@@ -595,10 +604,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
 
     @Override
     public void update2DeleteFavort(int circlePosition, String favortId) {
-        CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
-        List<FavortItem> items = item.getFavorters();
+        FriendsData.DataDTO.MessageDTO item = (FriendsData.DataDTO.MessageDTO) circleAdapter.getDatas().get(circlePosition);
+        List<FriendsData.DataDTO.MessageDTO.LikesDTO> items = item.getLikes();
         for (int i = 0; i < items.size(); i++) {
-            if (favortId.equals(items.get(i).getId())) {
+            if (favortId.equals(items.get(i).getLikerId() + "")) {
                 items.remove(i);
                 circleAdapter.notifyDataSetChanged();
                 //circleAdapter.notifyItemChanged(circlePosition+1);
@@ -608,10 +617,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     }
 
     @Override
-    public void update2AddComment(int circlePosition, CommentItem addItem) {
+    public void update2AddComment(int circlePosition, FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO addItem) {
         if (addItem != null) {
-            CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
-            item.getComments().add(addItem);
+            FriendsData.DataDTO.MessageDTO item = (FriendsData.DataDTO.MessageDTO) circleAdapter.getDatas().get(circlePosition);
+            item.getCommentAndReplies().add(addItem);
             circleAdapter.notifyDataSetChanged();
             //circleAdapter.notifyItemChanged(circlePosition+1);
         }
@@ -621,10 +630,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
 
     @Override
     public void update2DeleteComment(int circlePosition, String commentId) {
-        CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
-        List<CommentItem> items = item.getComments();
+        FriendsData.DataDTO.MessageDTO item = (FriendsData.DataDTO.MessageDTO) circleAdapter.getDatas().get(circlePosition);
+        List<FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO> items = item.getCommentAndReplies();
         for (int i = 0; i < items.size(); i++) {
-            if (commentId.equals(items.get(i).getId())) {
+            if (commentId.equals(items.get(i).getId() + "")) {
                 items.remove(i);
                 circleAdapter.notifyDataSetChanged();
                 //circleAdapter.notifyItemChanged(circlePosition+1);
@@ -634,11 +643,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     }
 
     @Override
-    public void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig) {
-        this.commentConfig = commentConfig;
+    public void updateEditTextBodyVisible(int visibility) {
         edittextbody.setVisibility(visibility);
 
-        measureCircleItemHighAndCommentItemOffset(commentConfig);
+//        measureCircleItemHighAndCommentItemOffset(commentConfig);
 
         if (View.VISIBLE == visibility) {
             editText.requestFocus();
@@ -665,7 +673,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     }
 
     @Override
-    public void update2loadData(int loadType, List<CircleItem> datas, CircleHeadUser headUser) {
+    public void update2loadData(int loadType, List<FriendsData.DataDTO.MessageDTO> datas, CircleHeadUser headUser) {
         if (loadType == TYPE_PULLREFRESH) {
             recyclerView.setRefreshing(false);
             circleAdapter.setDatas(datas, headUser);
@@ -683,6 +691,8 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                         @Override
                         public void run() {
 //                            presenter.loadData(TYPE_UPLOADREFRESH);
+                            mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
+
                         }
                     }, 1000);
 
@@ -699,9 +709,8 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     /**
      * 测量偏移量
      *
-     * @param commentConfig
      * @return
-     */
+     *//*
     private int getListviewOffset(CommentConfig commentConfig) {
         if (commentConfig == null)
             return 0;
@@ -715,26 +724,26 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
         }
 //        Log.i(TAG, "listviewOffset : " + listviewOffset);
         return listviewOffset;
-    }
+    }*/
 
-    private void measureCircleItemHighAndCommentItemOffset(CommentConfig commentConfig) {
+    /*private void measureCircleItemHighAndCommentItemOffset(FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO commentConfig) {
         if (commentConfig == null)
             return;
 
         int firstPosition = layoutManager.findFirstVisibleItemPosition();
         //只能返回当前可见区域（列表可滚动）的子项
-        View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE - firstPosition);
+//        View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE - firstPosition);
 
         if (selectCircleItem != null) {
             selectCircleItemH = selectCircleItem.getHeight();
         }
 
-        if (commentConfig.commentType == CommentConfig.Type.REPLY) {
+        if (commentConfig.getType() == 2) {
             //回复评论的情况
             CommentListView commentLv = (CommentListView) selectCircleItem.findViewById(R.id.commentList);
             if (commentLv != null) {
                 //找到要回复的评论view,计算出该view距离所属动态底部的距离
-                View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);
+                *//*View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);
                 if (selectCommentItem != null) {
                     //选择的commentItem距选择的CircleItem底部的距离
                     selectCommentItemOffset = 0;
@@ -746,11 +755,10 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                             selectCommentItemOffset += (parentView.getHeight() - subItemBottom);
                         }
                     } while (parentView != null && parentView != selectCircleItem);
-                }
+                }*//*
             }
         }
-    }
-
+    }*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -758,6 +766,8 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
         if (requestCode == 1 && resultCode == RESULT_OK) {
             //刷新
 //            presenter.loadData(TYPE_PULLREFRESH);
+            mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
+
         }
     }
 
@@ -788,23 +798,29 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
 
     @Override
     public void allFriendsReceive(FriendsData data) {
-        List<FriendsData.DataDTO> list = new ArrayList<>();
-        if (loadType == TYPE_PULLREFRESH && mInfoData != null) {
+        List<FriendsData.DataDTO.MessageDTO> list = new ArrayList<>();
+        mPresenter.getNewMsgCount();
+
+        if (loadType == TYPE_PULLREFRESH) {
+            Log.d(TAG, "allFriendsReceive: pyq=1");
             recyclerView.setRefreshing(false);
             CircleHeadUser circleHeadUser = new CircleHeadUser();
-            circleHeadUser.setCircleBgUrl(mInfoData.getData().getMomentImg());
-            circleHeadUser.setHeadUrl(mInfoData.getData().getAvator());
+            circleHeadUser.setCircleBgUrl(data.getData().getBackgroundImg());
+            circleHeadUser.setHeadUrl(data.getData().getOwnerFaceUrl());
+            circleHeadUser.setName(data.getData().getOwnerName());
             circleHeadUser.setId(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID));
             if (data.getData() != null) {
-                list = data.getData();
+                list = data.getData().getMessage();
             }
             circleAdapter.setDatas(list, circleHeadUser);
         } else if (loadType == TYPE_UPLOADREFRESH) {
-            circleAdapter.getDatas().addAll(data.getData());
+            Log.d(TAG, "allFriendsReceive: pyq=1");
+
+            circleAdapter.getDatas().addAll(data.getData().getMessage());
         }
         circleAdapter.notifyDataSetChanged();
 
-        if (data.getData() != null && data.getData().size() > 19) {
+        if (data.getData() != null && data.getData().getMessage().size() > 19) {
             recyclerView.setupMoreListener(new OnMoreListener() {
                 @Override
                 public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
@@ -813,7 +829,7 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
                         @Override
                         public void run() {
                             loadType = TYPE_UPLOADREFRESH;
-                            mPresenter.getAllFriends("20", "2");
+                            mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
 //                            presenter.loadData(TYPE_UPLOADREFRESH);
                         }
                     }, 1000);
@@ -827,21 +843,31 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
     }
 
     @Override
+    public void newMsgCountResult(NewMsgData data) {
+        if (data.getData() != null) {
+            EventBus.getDefault().post(new NewMsgCount(data.getData().getFace_url(), data.getData().getCount()));
+        } else {
+            EventBus.getDefault().post(new NewMsgCount(null, 0));
+        }
+    }
+
+    /*@Override
     public void mineInfoReceive(MineInfoData data) {
         mInfoData = data;
-        mPresenter.getAllFriends("20", "1");
-    }
+        mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
+    }*/
 
     @Override
     public void uploadReceive(LoginData data) {
         DialogMaker.dismissProgressDialog();
-        mPresenter.updateBg(new UpdateMineInfoRequestBody(data.getData()));
+        mPresenter.updateBg(new UpdateBgBody(data.getData().getSrc()));
     }
 
     @Override
     public void updateBgReceive(HttpResult data) {
         loadType = TYPE_PULLREFRESH;
-        mPresenter.getMineInfo();
+//        mPresenter.getMineInfo();
+        mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
     }
 
     @Override
@@ -849,7 +875,9 @@ public class FriendsActivity extends BaseActivity implements CircleContract.View
         mAddCommentData = null;
         commentConfig = null;
         loadType = TYPE_PULLREFRESH;
-        mPresenter.getMineInfo();
+//        mPresenter.getMineInfo();
+        mPresenter.getAllFriends(new FriendsRequestBody("1", "20"));
+
     }
 
     @Override

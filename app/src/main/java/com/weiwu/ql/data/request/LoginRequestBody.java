@@ -8,31 +8,31 @@ package com.weiwu.ql.data.request;
  */
 public class LoginRequestBody {
     private String mobile;
-    private String nickName;
     private String password;
-    private int sex;
+    private String yzm;
+    private String login_type;
 
-    public String getNickName() {
-        return nickName;
+    public String getYzm() {
+        return yzm;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setYzm(String yzm) {
+        this.yzm = yzm;
     }
 
-    public int getSex() {
-        return sex;
+    public String getLogin_type() {
+        return login_type;
     }
 
-    public void setSex(int sex) {
-        this.sex = sex;
+    public void setLogin_type(String login_type) {
+        this.login_type = login_type;
     }
 
-    public LoginRequestBody(String mobile, String nickName, String password, int sex) {
+    public LoginRequestBody(String mobile, String password, String yzm, String login_type) {
         this.mobile = mobile;
-        this.nickName = nickName;
         this.password = password;
-        this.sex = sex;
+        this.yzm = yzm;
+        this.login_type = login_type;
     }
 
     public String getMobile() {
@@ -48,11 +48,6 @@ public class LoginRequestBody {
     }
 
     public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public LoginRequestBody(String mobile, String password) {
-        this.mobile = mobile;
         this.password = password;
     }
 }

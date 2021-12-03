@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/drawable/bg_forget_password_btn.xml" value="0.2698841698841699" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/drawable/jmui_msg_receive_bg.xml" value="0.24375" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/drawable/jmui_msg_send_bg.xml" value="0.24375" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/acticity_clear_cache.xml" value="0.15198087431693988" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_chat.xml" value="0.12777352716143842" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_choice_country.xml" value="0.15812841530054644" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_forget_passwrod.xml" value="0.19979508196721313" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_friend_profile.xml" value="0.12777352716143842" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_friends.xml" value="0.18" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_list.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_login.xml" value="0.12777352716143842" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_main.xml" value="0.12777352716143842" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_my_favorites_layout.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_priva_set.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_simple_play.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_text_favorites.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/activity_user_data_setting.xml" value="0.1875" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/favorites_item_img_view.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/favorites_item_sound_view.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/favorites_item_text_view.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/fragment_mine.xml" value="0.105078125" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/friend_circcle_head.xml" value="0.15198087431693988" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/friends_adapter_circle_item.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/friends_head_circle.xml" value="0.19433060109289618" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/friends_layout_editview.xml" value="0.164275956284153" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/group_info_layout.xml" value="0.2" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/gv_filter_image.xml" value="0.164275956284153" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_chat_receive_text.xml" value="0.12777352716143842" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_chat_send_text.xml" value="0.25" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_image_view.xml" value="0.15198087431693988" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_member_message.xml" value="0.25" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_not_red_msg.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_text_point.xml" value="0.15812841530054644" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_text_view.xml" value="0.15198087431693988" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/item_video_view.xml" value="0.15198087431693988" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/layout_loading.xml" value="0.1717896174863388" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/my_allow_friend_dialog.xml" value="0.17042349726775957" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/selection_activity.xml" value="0.19296448087431695" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/settings_activity.xml" value="0.2293259207783183" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/layout/view_keyboard_xhs.xml" value="0.15198087431693988" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/app/src/main/res/menu/menu_message.xml" value="0.2609375" />
+        <entry key="..\:/Code/WeiWu/QLNew/QL/tuikit/src/main/res/layout/title_bar_layout.xml" value="0.1762295081967213" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

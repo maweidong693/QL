@@ -25,21 +25,24 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
+import com.tencent.qcloud.tim.uikit.component.UnreadCountTextView;
 import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.CodeData;
+import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgCount;
+import com.weiwu.ql.data.bean.NewMsgData;
+import com.weiwu.ql.data.bean.SocketData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.MineRepository;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
+import com.weiwu.ql.data.request.ClientIdBody;
 import com.weiwu.ql.main.contact.ContactFragment;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
-import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
-import com.weiwu.ql.main.find.FindFragment;
 import com.weiwu.ql.main.find.MoreFragment;
-import com.weiwu.ql.main.message.DBCore;
 import com.weiwu.ql.main.message.MessageFragment;
 import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.main.mine.MineFragment;
@@ -47,6 +50,10 @@ import com.weiwu.ql.main.mine.MinePresenter;
 import com.weiwu.ql.utils.IntentUtil;
 import com.weiwu.ql.utils.Logger;
 import com.weiwu.ql.utils.SPUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -65,15 +72,22 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
     private String TAG = "MainActivity";
     private Context mContext;
     private MineContract.IMinePresenter mPresenter;
+    private UnreadCountTextView mNewFriendCount;
+    private UnreadCountTextView mNewMsgCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         setPresenter(new MinePresenter(MineRepository.getInstance()));
-        mPresenter.getMineInfo();
+//        mPresenter.getMineInfo();
+
         ImmersionBar.with(this).statusBarDarkFont(true).init();
         mContext = MainActivity.this;
+        initView();
     }
 
     private void initView() {
@@ -89,6 +103,8 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
         mConversationBtn = findViewById(R.id.conversation);
         mContactBtn = findViewById(R.id.contact);
         mFindBtn = findViewById(R.id.find);
+        mNewFriendCount = findViewById(R.id.tv_new_friend_count);
+        mNewMsgCount = findViewById(R.id.tv_new_msg_count);
         mProfileSelfBtn = findViewById(R.id.mine);
         getSupportFragmentManager().beginTransaction().replace(R.id.empty_view, new MessageFragment()).commitAllowingStateLoss();
         if (mLastTab == null) {
@@ -108,12 +124,14 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
         doRegisterReceiver();
         //检测通知是否开启
         checkNotification(mContext);
+
+        mPresenter.getMineInfo();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy: aaaccc===");
+        EventBus.getDefault().unregister(this);
         jWebSClientService.onDestroy();
         client.close();
     }
@@ -162,22 +180,33 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
     @Override
     public void mineInfoReceive(MineInfoData data) {
         MineInfoData.DataDTO dto = data.getData();
-        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getId());
-        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNickName());
-        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TYPE, String.valueOf(dto.getRole()));
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getIm_id());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNick_name());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_AVATAR, dto.getFace_url());
+//        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TYPE, String.valueOf(dto.getRole()));
 //        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
 //        SQLiteDatabase database = helper.getWritableDatabase();
 //        DaoMaster daoMaster = new DaoMaster(database);
 //        MyApplication.getInstance().setDaoSession(daoMaster.newSession());
-        DBCore.init(this);
 
-        initView();
+
+    }
+
+    @Override
+    public void newMsgCountResult(NewMsgData data) {
+        NewMsgData.DataDTO o = (NewMsgData.DataDTO) data.getData();
+        EventBus.getDefault().postSticky(new NewMsgCount(o.getFace_url(), o.getCount()));
 
     }
 
     @Override
     public void addFriendReceive(HttpResult data) {
         showToast("好友请求发送成功！");
+    }
+
+    @Override
+    public void onSuccess(HttpResult data) {
+
     }
 
     @Override
@@ -203,8 +232,34 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
-            ChatMessage receiveMessage = new Gson().fromJson(message, ChatMessage.class);
-            receiveMessage.setIsMeSend(0);
+            SocketData data = new Gson().fromJson(message, SocketData.class);
+            if (data.getType().equals("login")) {
+                mPresenter.init(new ClientIdBody(data.getClient_id()));
+            } else if (data.getType().equals("addFriend")) {
+                EventBus.getDefault().post(new MessageEvent("ss", 101));
+                mNewFriendCount.setVisibility(View.VISIBLE);
+                mNewFriendCount.setText(data.getNew_friend_count() + "");
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent msg) {
+        Log.d(TAG, "onMessageEvent: aaaccc==" + msg.message);
+        if (msg.code == 103) {
+            if (msg.message.equals("0")) {
+                mNewMsgCount.setVisibility(View.GONE);
+            } else {
+                mNewMsgCount.setVisibility(View.VISIBLE);
+                mNewMsgCount.setText(msg.message);
+            }
+        } else if (msg.code == 166) {
+            if (msg.message.equals("0")) {
+                mNewFriendCount.setVisibility(View.GONE);
+            } else {
+                mNewFriendCount.setVisibility(View.VISIBLE);
+                mNewFriendCount.setText(msg.message);
+            }
         }
     }
 

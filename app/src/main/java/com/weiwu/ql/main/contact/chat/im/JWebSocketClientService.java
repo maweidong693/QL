@@ -23,8 +23,7 @@ import com.google.gson.Gson;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.R;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
-import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
-import com.weiwu.ql.main.contact.chat.util.Util;
+import com.weiwu.ql.main.contact.chat.modle.HistoryMessageData;
 import com.weiwu.ql.utils.SPUtils;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -153,7 +152,7 @@ public class JWebSocketClientService extends Service {
      * 初始化websocket连接
      */
     private void initSocketClient() {
-        URI uri = URI.create("ws://47.108.192.155:8801/ws;" + SPUtils.getValue(AppConstant.USER, AppConstant.USER_TOKEN));
+        URI uri = URI.create("ws://ql.aimaster.top:9090");
         client = new JWebSocketClient(uri) {
             @Override
             public void onMessage(String message) {
@@ -173,6 +172,7 @@ public class JWebSocketClientService extends Service {
                 Log.e("JWebSocketClientService", "websocket连接成功");
             }
         };
+        client.addHeader("token", SPUtils.getValue(AppConstant.USER, AppConstant.USER_TOKEN));
         connect();
     }
 
@@ -256,7 +256,7 @@ public class JWebSocketClientService extends Service {
      * @param content
      */
     private void sendNotification(String content) {
-        ChatMessage chatMessage = new Gson().fromJson(content, ChatMessage.class);
+        HistoryMessageData.DataDTO.ListDTO  chatMessage = new Gson().fromJson(content, HistoryMessageData.DataDTO.ListDTO .class);
         Intent intent = new Intent();
         intent.setClass(this, ChatActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -266,7 +266,7 @@ public class JWebSocketClientService extends Service {
                 // 设置该通知优先级
                 .setPriority(Notification.PRIORITY_MAX)
                 .setSmallIcon(R.drawable.icon)
-                .setContentTitle(chatMessage.getMemberNickname())
+                .setContentTitle(chatMessage.getNick_name())
                 .setContentText("收到一条新消息")
                 .setVisibility(VISIBILITY_PUBLIC)
                 .setWhen(System.currentTimeMillis())

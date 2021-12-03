@@ -38,13 +38,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".main.find.OrderTypeActivity"></activity>
-        <activity android:name=".main.find.OrderDetailActivity" />
-        <activity android:name=".main.find.DistributeActivity" />
-        <activity android:name=".main.mine.wallet.AddWalletActivity" />
-        <activity android:name=".main.mine.wallet.WalletActivity" />
+        <activity
+            android:name=".main.contact.chat.test.UploadTestActivity"
+            android:exported="false"
+            android:label="@string/title_activity_upload_test" />
         <activity android:name=".main.contact.chat.ImgOrVideoActivity" />
         <activity android:name=".main.contact.new_friend.NewFriendActivity" />
+        <activity android:name=".main.contact.detail.UserDataSettingActivity" />
+        <activity android:name=".main.mine.collection.MyFavoritesActivity" />
+        <activity android:name=".main.mine.collection.MyTextFavoritesActivity" />
+        <activity android:name=".main.mine.friends.msg.MsgListActivity" />
+        <activity android:name=".main.login.country.ChoiceCountryActivity" />
+        <activity android:name=".main.mine.friends.FriendsAndMeCircleActivity" />
+        <activity android:name=".main.mine.friends.FriendsDetailsActivity" />
+        <activity android:name=".main.login.ForgetPasswordActivity" />
 
         <service
             android:name=".killSelfService"
@@ -107,6 +114,7 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".main.contact.add.AddMoreActivity" />
+        <activity android:name=".main.login.country.ChoiceCountryActivity" />
     </application>
 
 </manifest>

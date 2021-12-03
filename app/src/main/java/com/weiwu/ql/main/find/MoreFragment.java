@@ -77,7 +77,7 @@ public class MoreFragment extends BaseFragment implements FriendsContract.IFindV
             @Override
             public void onItemClick(@NonNull BaseQuickAdapter<?, ?> adapter, @NonNull View view, int position) {
                 Bundle bundle = new Bundle();
-                bundle.putString("url", ((FindData.DataDTO) adapter.getData().get(position)).getAddress());
+                bundle.putString("url", ((FindData.DataDTO) adapter.getData().get(position)).getUrl());
                 bundle.putString("title", getResources().getString(R.string.announcement_title));
 //                Intent intent = new Intent((Activity) getContext(), NewsActivity.class);
 //                ((Activity) getContext()).startActivity(intent);

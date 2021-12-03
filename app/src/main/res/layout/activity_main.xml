@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <RelativeLayout
-        android:background="@color/status_bar_color"
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:background="@color/status_bar_color" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,8 +22,8 @@
             android:id="@+id/conversation_btn_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="tabClick"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:onClick="tabClick">
 
             <TextView
                 android:id="@+id/conversation"
@@ -31,11 +32,25 @@
                 android:layout_centerInParent="true"
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_message"
-                android:textColor="@color/tab_text_selected_color"
                 android:drawablePadding="3dp"
                 android:gravity="center"
-                android:textSize="12sp"
-                android:text="@string/tab_conversation_tab_text" />
+                android:text="@string/tab_conversation_tab_text"
+                android:textColor="@color/tab_text_selected_color"
+                android:textSize="12sp" />
+
+            <com.tencent.qcloud.tim.uikit.component.UnreadCountTextView
+                android:id="@+id/tv_new_msg_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/conversation"
+                android:layout_alignEnd="@id/conversation"
+                android:layout_marginTop="-7dp"
+                android:layout_marginEnd="-10dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="#fff"
+                android:textSize="10sp"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -43,8 +58,9 @@
             android:id="@+id/contact_btn_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="tabClick"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:onClick="tabClick">
+
 
             <TextView
                 android:id="@+id/contact"
@@ -54,16 +70,31 @@
                 android:drawableTop="@drawable/contact_normal"
                 android:drawablePadding="3dp"
                 android:gravity="center"
-                android:textSize="12sp"
-                android:text="@string/tab_contact_tab_text" />
+                android:text="@string/tab_contact_tab_text"
+                android:textSize="12sp" />
+
+            <com.tencent.qcloud.tim.uikit.component.UnreadCountTextView
+                android:id="@+id/tv_new_friend_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/contact"
+                android:layout_alignEnd="@id/contact"
+                android:layout_marginTop="-7dp"
+                android:layout_marginEnd="-10dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="#fff"
+                android:textSize="10sp"
+                android:visibility="gone" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:id="@+id/find_btn_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="tabClick"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:onClick="tabClick">
 
             <TextView
                 android:id="@+id/find"
@@ -72,9 +103,9 @@
                 android:layout_centerInParent="true"
                 android:drawableTop="@drawable/find_normal"
                 android:drawablePadding="3dp"
-                android:textSize="12sp"
                 android:gravity="center"
-                android:text="@string/find" />
+                android:text="@string/find"
+                android:textSize="12sp" />
 
         </RelativeLayout>
 
@@ -82,8 +113,8 @@
             android:id="@+id/myself_btn_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="tabClick"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:onClick="tabClick">
 
             <TextView
                 android:id="@+id/mine"
@@ -92,9 +123,9 @@
                 android:layout_centerInParent="true"
                 android:drawableTop="@drawable/myself_normal"
                 android:drawablePadding="3dp"
-                android:textSize="12sp"
                 android:gravity="center"
-                android:text="@string/tab_profile_tab_text" />
+                android:text="@string/tab_profile_tab_text"
+                android:textSize="12sp" />
 
         </RelativeLayout>
     </LinearLayout>

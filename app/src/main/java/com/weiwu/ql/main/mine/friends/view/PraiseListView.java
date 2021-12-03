@@ -17,7 +17,6 @@ import com.weiwu.ql.R;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.main.mine.friends.CircleMovementMethod;
 import com.weiwu.ql.main.mine.friends.SpannableClickable;
-import com.weiwu.ql.main.mine.friends.data.FavortItem;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class PraiseListView extends TextView {
 
     private int itemColor;
     private int itemSelectorColor;
-    private List<FriendsData.DataDTO.ThumbListDTO> datas;
+    private List<FriendsData.DataDTO.MessageDTO.LikesDTO> datas;
     private OnItemClickListener onItemClickListener;
 
     public OnItemClickListener getOnItemClickListener() {
@@ -66,11 +65,11 @@ public class PraiseListView extends TextView {
         }
     }
 
-    public List<FriendsData.DataDTO.ThumbListDTO> getDatas() {
+    public List<FriendsData.DataDTO.MessageDTO.LikesDTO> getDatas() {
         return datas;
     }
 
-    public void setDatas(List<FriendsData.DataDTO.ThumbListDTO> datas) {
+    public void setDatas(List<FriendsData.DataDTO.MessageDTO.LikesDTO> datas) {
         this.datas = datas;
         notifyDataSetChanged();
     }
@@ -81,11 +80,11 @@ public class PraiseListView extends TextView {
         if (datas != null && datas.size() > 0) {
             //添加点赞图标
             builder.append(setImageSpan());
-            FriendsData.DataDTO.ThumbListDTO item = null;
+            FriendsData.DataDTO.MessageDTO.LikesDTO item = null;
             for (int i = 0; i < datas.size(); i++) {
                 item = datas.get(i);
                 if (item != null) {
-                    builder.append(setClickableSpan(item.getFromMemberInfo().getNickName(), i));
+                    builder.append(setClickableSpan(item.getLikernick_name(), i));
                     if (i != datas.size() - 1) {
                         builder.append(", ");
                     }

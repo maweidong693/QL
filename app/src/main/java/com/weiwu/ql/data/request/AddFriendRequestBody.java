@@ -7,11 +7,25 @@ package com.weiwu.ql.data.request;
  * date : 2021/7/23 13:43 
  */
 public class AddFriendRequestBody {
+    private String account;
     private String memberId;
-    private String remarks;
+    private String remark;
 
-    public AddFriendRequestBody(String memberId) {
-        this.memberId = memberId;
+    public AddFriendRequestBody(String account, String remark) {
+        this.account = account;
+        this.remark = remark;
+    }
+
+    public AddFriendRequestBody(String account) {
+        this.account = account;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getMemberId() {
@@ -22,16 +36,12 @@ public class AddFriendRequestBody {
         this.memberId = memberId;
     }
 
-    public String getRemarks() {
-        return remarks;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
-    public AddFriendRequestBody(String memberId, String remarks) {
-        this.memberId = memberId;
-        this.remarks = remarks;
-    }
 }

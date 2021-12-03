@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,11 +32,6 @@ import com.tencent.common.Constant;
 import com.tencent.common.UserInfo;
 import com.tencent.common.dialog.CustomAlertDialog;
 import com.tencent.imsdk.v2.V2TIMConversation;
-import com.tencent.imsdk.v2.V2TIMFriendInfo;
-import com.tencent.imsdk.v2.V2TIMFriendInfoResult;
-import com.tencent.imsdk.v2.V2TIMManager;
-import com.tencent.imsdk.v2.V2TIMUserFullInfo;
-import com.tencent.imsdk.v2.V2TIMValueCallback;
 import com.tencent.qcloud.tim.uikit.component.dialog.TUIKitDialog;
 import com.tencent.qcloud.tim.uikit.modules.chat.base.ChatInfo;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
@@ -48,13 +44,9 @@ import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.NewMsgCount;
 import com.weiwu.ql.main.contact.detail.FriendProfileActivity;
 import com.weiwu.ql.main.mine.friends.FriendsActivity;
+import com.weiwu.ql.main.mine.friends.msg.MsgListActivity;
 import com.weiwu.ql.main.mine.friends.data.ActionItem;
-import com.weiwu.ql.main.mine.friends.data.CircleItem;
-import com.weiwu.ql.main.mine.friends.data.CommentConfig;
-import com.weiwu.ql.main.mine.friends.data.CommentItem;
-import com.weiwu.ql.main.mine.friends.data.FavortItem;
 import com.weiwu.ql.main.mine.friends.data.PhotoInfo;
-import com.weiwu.ql.main.mine.friends.utils.DatasUtil;
 import com.weiwu.ql.main.mine.friends.utils.GlideCircleTransform;
 import com.weiwu.ql.main.mine.friends.utils.UrlUtils;
 import com.weiwu.ql.main.mine.friends.view.CommentDialog;
@@ -63,7 +55,9 @@ import com.weiwu.ql.main.mine.friends.view.ExpandTextView;
 import com.weiwu.ql.main.mine.friends.view.MultiImageView;
 import com.weiwu.ql.main.mine.friends.view.PraiseListView;
 import com.weiwu.ql.main.mine.friends.view.SnsPopupWindow;
+import com.weiwu.ql.utils.IntentUtil;
 import com.weiwu.ql.utils.SPUtils;
+import com.weiwu.ql.utils.SystemFacade;
 import com.weiwu.ql.view.GlideEngine;
 
 import org.greenrobot.eventbus.EventBus;
@@ -85,14 +79,14 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     private static final int STATE_DEACTIVED = 2;
     private int videoState = STATE_IDLE;
     public static final int HEADVIEW_SIZE = 1;
-    public static final String TAG = "";
+    public static final String TAG = "HHHHHH";
 
     int curPlayIndex = -1;
 
     //    private CirclePresenter presenter;
     private Context context;
-    private List<FriendsData.DataDTO.ThumbListDTO> favortDatas;
-    private List<FriendsData.DataDTO.CommentAndReplyListDTO> commentsDatas;
+    private List<FriendsData.DataDTO.MessageDTO.LikesDTO> favortDatas;
+    private List<FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO> commentsDatas;
 
    /* public void setCirclePresenter(CirclePresenter presenter) {
         this.presenter = presenter;
@@ -109,19 +103,13 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         }
 
         int itemType = 0;
-        FriendsData.DataDTO item = (FriendsData.DataDTO) datas.get(position - 1);
-        if (item.getType() == 0) {
+        FriendsData.DataDTO.MessageDTO item = (FriendsData.DataDTO.MessageDTO) datas.get(position - 1);
+        if (item.getPics().size() == 0 && item.getMediaUrl() == null) {
             itemType = CircleViewHolder.TYPE_TEXT;
-        } else if (item.getType() == 5) {
-            itemType = CircleViewHolder.TYPE_URL;
-//            itemType = CircleViewHolder.TYPE_URL;
-        } else if (item.getType() == 1) {
+        } else if (item.getPics() != null && item.getPics().size() > 0) {
             itemType = CircleViewHolder.TYPE_IMAGE;
-        } else if (item.getType() == 2) {
+        } else if (item.getMediaUrl() != null) {
             itemType = CircleViewHolder.TYPE_VIDEO;
-        } else if (item.getType() == 3) {
-            itemType = CircleViewHolder.TYPE_URL;
-//            itemType = CircleViewHolder.TYPE_MUSIC;
         }
         return itemType;
     }
@@ -180,7 +168,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             HeaderViewHolder mHeaderHolder = (HeaderViewHolder) viewHolder;
             GlideEngine.createGlideEngine().loadImage(context, headUser.getCircleBgUrl(), mHeaderHolder.mcircleBg);
 //            GlideEngine.createGlideEngine().loadImage(context,headUser.getHeadUrl(),mHeaderHolder.circleHead);
-            com.tencent.qcloud.tim.uikit.component.picture.imageEngine.impl.GlideEngine.loadCornerImage(mHeaderHolder.circleHead, headUser.getHeadUrl(), null, Constant.RADIUS);
+            GlideEngine.loadCornerImage(mHeaderHolder.circleHead, headUser.getHeadUrl(), null, Constant.RADIUS);
             mHeaderHolder.circleName.setText(headUser.getName());
             mHeaderHolder.mcircleBg.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -208,49 +196,6 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                                             return;
                                         }
                                         mHeadListener.replaceHeadImg(result.get(0));
-                                        /*DialogMaker.showProgressDialog(context, null, "正在上传", true, new DialogInterface.OnCancelListener() {
-                                            @Override
-                                            public void onCancel(DialogInterface dialog) {
-
-                                            }
-                                        }).setCanceledOnTouchOutside(false);
-                                        // 结果回调
-                                        Map map = new HashMap();
-                                        map.put("image", new File(result.get(0).getCutPath()));*/
-                                        /*YHttp.obtain().post(Constant.URL_UPLOAD, map, new HttpCallBack<BaseBean>() {
-                                            @Override
-                                            public void onSuccess(BaseBean bean) {
-                                                if (bean.getData() == null) {
-                                                    return;
-                                                }
-                                                FileUploadBean uploadBean = JSON.parseObject(bean.getData().toString(), FileUploadBean.class);
-                                                String mIconUrl = uploadBean.getUrl();
-                                                Map map = new HashMap();
-                                                map.put("background_img", mIconUrl);
-                                                YHttp.obtain().post(Constant.URL_MODIFYBACKGROUNDIMG, map, new HttpCallBack<BaseBean>() {
-                                                    @Override
-                                                    public void onSuccess(BaseBean bean) {
-                                                        if (bean.getData() == null) {
-                                                            return;
-                                                        }
-
-                                                        UserInfo.getInstance().setCircleBg(mIconUrl);
-                                                        GlideEngine.createGlideEngine().loadImage(context,mIconUrl,mHeaderHolder.mcircleBg);
-                                                    }
-
-                                                    @Override
-                                                    public void onFailed(String error) {
-
-                                                    }
-                                                });
-
-                                            }
-
-                                            @Override
-                                            public void onFailed(String error) {
-
-                                            }
-                                        });*/
 
 
                                     }
@@ -280,7 +225,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     //新消息提醒
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("notice", true);
-//                    IntentUtil.redirectToNextActivity(context, MsgListActivity.class,bundle );
+                    IntentUtil.redirectToNextActivity(context, MsgListActivity.class, bundle);
                 }
             });
             mHeaderHolder.circleHead.setOnClickListener(new View.OnClickListener() {
@@ -294,30 +239,31 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     /*ChatInfo chatInfo = new ChatInfo();
                     chatInfo.setId(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID));
                     chatInfo.setType(V2TIMConversation.V2TIM_C2C);*/
-                    Intent intent = new Intent(MyApplication.getInstance(), FriendProfileActivity.class);
+                    Intent intent = new Intent(mHeaderHolder.itemView.getContext(), FriendProfileActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contactItemBean);
-                    MyApplication.getInstance().startActivity(intent);
+                    mHeaderHolder.itemView.getContext().startActivity(intent);
 
                 }
             });
 
         } else {
             final int circlePosition = position - HEADVIEW_SIZE;
-            final FriendsData.DataDTO circleItem = (FriendsData.DataDTO) datas.get(circlePosition);
+            final FriendsData.DataDTO.MessageDTO circleItem = (FriendsData.DataDTO.MessageDTO) datas.get(circlePosition);
             final CircleViewHolder holder = (CircleViewHolder) viewHolder;
-            final String circleId = circleItem.getId();
-            String im_id = circleItem.getMemberId();
-            String name = circleItem.getMemberInfoResultVO().getNickName();
-            String headImg = circleItem.getMemberInfoResultVO().getAvator();
-            final String content = circleItem.getArticle();
+            final int circleId = circleItem.getId();
+            String im_id = circleItem.getIm_id();
+            String name = circleItem.getNick_name();
+            String headImg = circleItem.getFace_url();
+            final String content = circleItem.getText_content();
 //            String createTime = TimeUtil.getTimeShowString(TimeUtil.dateToString(circleItem.getCreatedTime()), false);
 //            Log.d(TAG, "onBindViewHolder: time==="+createTime+"---------"+circleItem.getCreatedTime());
-            if (circleItem.getThumbList() != null && circleItem.getThumbList().size() > 0) {
-                favortDatas = circleItem.getThumbList();
+            if (circleItem.getLikes() != null && circleItem.getLikes().size() > 0) {
+                favortDatas = circleItem.getLikes();
             }
-            if (circleItem.getCommentAndReplyList() != null && circleItem.getCommentAndReplyList().size() > 0) {
-                commentsDatas = circleItem.getCommentAndReplyList();
+            if (circleItem.getCommentAndReplies() != null && circleItem.getCommentAndReplies().size() > 0) {
+                commentsDatas = circleItem.getCommentAndReplies();
+                Log.d(TAG, "onBindViewHolder: po===c" + commentsDatas.size());
             }
             boolean hasFavort = circleItem.hasFavort();
             boolean hasComment = circleItem.hasComment();
@@ -330,12 +276,12 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     .into(holder.headIv);
 
             holder.nameTv.setText(name);
-            holder.timeTv.setText(circleItem.getCreatedTime());
+            holder.timeTv.setText(SystemFacade.getNewChatTime(circleItem.getCreate_time()));
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                    if (SPUtils.getValue(AppConstant.USER,AppConstant.USER_ID).equals(im_id)) {
+                    if (SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(im_id)) {
                         //是自己
                         /*ChatInfo chatInfo = new ChatInfo();
                         chatInfo.setId(im_id);
@@ -344,45 +290,20 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         contactItemBean.setId(im_id);
                         contactItemBean.setAvatarurl(headImg);
                         contactItemBean.setNickname(name);
-                        Intent intent = new Intent(MyApplication.getInstance(), FriendProfileActivity.class);
+                        Intent intent = new Intent(holder.itemView.getContext(), FriendProfileActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contactItemBean);
-                        MyApplication.getInstance().startActivity(intent);
+                        holder.itemView.getContext().startActivity(intent);
                     } else {
                         final ContactItemBean bean = new ContactItemBean();
                         bean.setFriend(true);
                         bean.setId(im_id);
                         bean.setAvatarurl(headImg);
                         bean.setNickname(name);
-                        Intent intent = new Intent(MyApplication.getInstance(), FriendProfileActivity.class);
+                        Intent intent = new Intent(holder.itemView.getContext(), FriendProfileActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra(TUIKitConstants.ProfileType.CONTENT, bean);
-                        MyApplication.getInstance().startActivity(intent);
-                       /* V2TIMManager.getFriendshipManager().getFriendsInfo(list, new V2TIMValueCallback<List<V2TIMFriendInfoResult>>() {
-                            @Override
-                            public void onError(int i, String s) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(List<V2TIMFriendInfoResult> v2TIMFriendInfoResults) {
-                                if (v2TIMFriendInfoResults != null && v2TIMFriendInfoResults.size() > 0) {
-
-                                    V2TIMFriendInfoResult v2TIMFriendInfoResult = v2TIMFriendInfoResults.get(0);
-                                    V2TIMFriendInfo friendInfo = v2TIMFriendInfoResult.getFriendInfo();
-                                    V2TIMUserFullInfo userProfile = friendInfo.getUserProfile();
-
-                                    bean.setRemark(friendInfo.getFriendRemark());
-                                    bean.setId(friendInfo.getUserID());
-                                    bean.setNickname(userProfile.getNickName());
-                                    bean.setAvatarurl(userProfile.getFaceUrl());
-                                    Intent intent = new Intent(MyApplication.instance(), FriendProfileActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    intent.putExtra(TUIKitConstants.ProfileType.CONTENT, bean);
-                                    MyApplication.instance().startActivity(intent);
-                                }
-                            }
-                        });*/
+                        holder.itemView.getContext().startActivity(intent);
                     }
                 }
             };
@@ -402,7 +323,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             }
             holder.contentTv.setVisibility(TextUtils.isEmpty(content) ? View.GONE : View.VISIBLE);
 
-            if (SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(circleItem.getMemberInfoResultVO().getId())) {
+            if (SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(circleItem.getIm_id())) {
                 holder.deleteBtn.setVisibility(View.VISIBLE);
             } else {
                 holder.deleteBtn.setVisibility(View.GONE);
@@ -440,7 +361,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         @Override
                         public void onClick(int position) {
 //                            String userName = favortDatas.get(position).getUser().getName();
-                            String im_id = favortDatas.get(position).getFromMemberInfo().getId();//im_id
+                            String im_id = favortDatas.get(position).getIm_id();//im_id
                             //跳转详细资料
                             ArrayList<String> list = new ArrayList<>();
                             list.add(im_id);
@@ -456,32 +377,6 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                             } else {
                                 final ContactItemBean bean = new ContactItemBean();
                                 bean.setFriend(true);
-                                V2TIMManager.getFriendshipManager().getFriendsInfo(list, new V2TIMValueCallback<List<V2TIMFriendInfoResult>>() {
-                                    @Override
-                                    public void onError(int i, String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onSuccess(List<V2TIMFriendInfoResult> v2TIMFriendInfoResults) {
-                                        if (v2TIMFriendInfoResults != null && v2TIMFriendInfoResults.size() > 0) {
-
-                                            V2TIMFriendInfoResult v2TIMFriendInfoResult = v2TIMFriendInfoResults.get(0);
-                                            V2TIMFriendInfo friendInfo = v2TIMFriendInfoResult.getFriendInfo();
-                                            V2TIMUserFullInfo userProfile = friendInfo.getUserProfile();
-
-                                            bean.setRemark(friendInfo.getFriendRemark());
-                                            bean.setId(friendInfo.getUserID());
-                                            bean.setNickname(userProfile.getNickName());
-                                            bean.setAvatarurl(userProfile.getFaceUrl());
-                                            Intent intent = new Intent(MyApplication.getInstance(), FriendProfileActivity.class);
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.putExtra(TUIKitConstants.ProfileType.CONTENT, bean);
-                                            MyApplication.getInstance().startActivity(intent);
-
-                                        }
-                                    }
-                                });
                             }
                         }
                     });
@@ -494,24 +389,26 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                 }
 
                 if (hasComment) {//处理评论列表
+                    Log.d(TAG, "onBindViewHolder: po===");
                     holder.commentList.setOnItemClickListener(new CommentListView.OnItemClickListener() {
                         @Override
-                        public void onItemClick(int commentPosition) {
-                            FriendsData.DataDTO.CommentAndReplyListDTO commentItem = commentsDatas.get(commentPosition);
-                            if (UserInfo.getInstance().getUserId().equals(commentItem.getFromMemberInfo().getId())) {//复制或者删除自己的评论
+                        public void onItemClick(int position, FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO commentPosition) {
+//                            FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO commentItem = commentsDatas.get(commentPosition);
+                            Log.d(TAG, "onItemClick: po===" + commentsDatas.size() + "----" + commentPosition.getCommentId() + "---nei===" + commentPosition.getContent());
+                            if (SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(commentPosition.getIm_id())||SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(commentPosition.getReplyImId())) {//复制或者删除自己的评论
 
-                                CommentDialog dialog = new CommentDialog(context, /*presenter,*/ commentItem, circlePosition);
+                                CommentDialog dialog = new CommentDialog(context, /*presenter,*/ commentPosition, circlePosition);
                                 dialog.show();
                             } else {//回复别人的评论
 //                                if (presenter != null) {
-                                CommentConfig config = new CommentConfig();
+                                /*CommentConfig config = new CommentConfig();
                                 config.msgId = circleId;
-                                config.commentId = commentItem.getId();
+                                config.commentId = commentPosition.getId();
                                 config.circlePosition = circlePosition;
-                                config.commentPosition = commentPosition;
+//                                config.commentPosition = commentPosition;
                                 config.commentType = CommentConfig.Type.REPLY;
-                                config.replyUser = commentItem.getFromMemberInfo();
-                                mReplyCommentListener.replyComment(config);
+                                config.commentatorId = commentPosition.getCommentatorId();*/
+                                mReplyCommentListener.replyComment(commentPosition, circleItem.getId());
 //                                    presenter.showEditTextBody(config);
 //                                }
                             }
@@ -521,13 +418,13 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         @Override
                         public void onItemLongClick(int commentPosition) {
                             //长按进行复制或者删除
-                            FriendsData.DataDTO.CommentAndReplyListDTO commentItem = commentsDatas.get(commentPosition);
+                            FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO commentItem = commentsDatas.get(commentPosition);
                             CommentDialog dialog = new CommentDialog(context,/* presenter,*/ commentItem, circlePosition);
                             dialog.setDeleteCommentListener(new CommentDialog.IDeleteCommentListener() {
                                 @Override
-                                public void mDeleteComment(FriendsData.DataDTO.CommentAndReplyListDTO data) {
+                                public void mDeleteComment(FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO data) {
                                     if (mDeleteCommentListener != null) {
-                                        mDeleteCommentListener.deleteComment(data.getId());
+                                        mDeleteCommentListener.deleteComment(data.getId(), data.getType());
                                     }
                                 }
                             });
@@ -550,8 +447,8 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
             final SnsPopupWindow snsPopupWindow = holder.snsPopupWindow;
             //判断是否已点赞
-            String curUserFavortId = circleItem.getCurUserFavortId(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID));
-            if (!TextUtils.isEmpty(curUserFavortId)) {
+            int curUserFavortId = circleItem.getCurUserFavortId(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID));
+            if (curUserFavortId != 0) {
                 snsPopupWindow.getmActionItems().get(0).mTitle = "取消";
             } else {
                 snsPopupWindow.getmActionItems().get(0).mTitle = "赞";
@@ -574,7 +471,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                 case CircleViewHolder.TYPE_IMAGE:// 处理图片
                     if (holder instanceof ImageViewHolder) {
                         final List<PhotoInfo> photos = new ArrayList<>();
-                        List<String> imgUrl = circleItem.getImgUrl();
+                        List<String> imgUrl = circleItem.getPics();
                         for (int i = 0; i < imgUrl.size(); i++) {
                             PhotoInfo photoInfo = new PhotoInfo();
                             photoInfo.url = imgUrl.get(i);
@@ -623,7 +520,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     break;
                 case CircleViewHolder.TYPE_VIDEO:
                     if (holder instanceof VideoPlayerViewHolder) {
-                        ((VideoPlayerViewHolder) holder).videoView.setUpLazy(circleItem.getVideoUrl(), true, null, null, "");
+                        ((VideoPlayerViewHolder) holder).videoView.setUpLazy(circleItem.getMediaUrl(), true, null, null, "");
 //                        ((VideoPlayerViewHolder) holder).videoView.setUp(circleItem.getVideoUrl(), true, "");
                         //增加title
                         ((VideoPlayerViewHolder) holder).videoView.getTitleTextView().setVisibility(View.GONE);
@@ -639,7 +536,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                                                 .centerCrop()
                                                 .error(R.drawable.nim_default_img_failed)
                                                 .placeholder(R.drawable.nim_default_img_failed))
-                                .load(circleItem.getVideoUrl())
+                                .load(circleItem.getMediaUrl())
                                 .into(imageView);
                         Glide.with(context)
                                 .setDefaultRequestOptions(
@@ -648,7 +545,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                                                 .centerCrop()
                                                 .error(R.drawable.nim_default_img_failed)
                                                 .placeholder(R.drawable.nim_default_img_failed))
-                                .load(circleItem.getVideoUrl())
+                                .load(circleItem.getMediaUrl())
                                 .into(((VideoPlayerViewHolder) holder).ThumbImage);
                         ((VideoPlayerViewHolder) holder).videoStart.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -736,9 +633,10 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             EventBus.getDefault().register(this);
         }
 
-        @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+        @Subscribe(threadMode = ThreadMode.MAIN)
         public void onBaseBean(NewMsgCount event) {
             if (event != null) {
+                Log.d(TAG, "onBaseBean: event===" + event.getCount());
                 int count = event.getCount();
                 String faceUrl = event.getFaceUrl();
                 if (!TextUtils.isEmpty(faceUrl) || count > 0) {
@@ -753,6 +651,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     newRemind.setVisibility(View.GONE);
                 }
             }
+//            notifyItemChanged(0);
         }
     }
 
@@ -763,7 +662,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     }
 
     public interface IDeleteCommentListener {
-        void deleteComment(String commentId);
+        void deleteComment(int commentId, int type);
     }
 
     public IDeleteFriendsClickListener mDeleteFriendsClickListener;
@@ -773,7 +672,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     }
 
     public interface IDeleteFriendsClickListener {
-        void mDeleteListener(FriendsData.DataDTO data, int type);
+        void mDeleteListener(FriendsData.DataDTO.MessageDTO data, int type);
     }
 
     public IReplyCommentListener mReplyCommentListener;
@@ -783,17 +682,17 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     }
 
     public interface IReplyCommentListener {
-        void replyComment(CommentConfig data);
+        void replyComment(FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO data, int msgId);
     }
 
     private class PopupItemClickListener implements SnsPopupWindow.OnItemClickListener {
-        private String mFavorId;
+        private int mFavorId;
         //动态在列表中的位置
         private int mCirclePosition;
         private long mLasttime = 0;
-        private FriendsData.DataDTO mCircleItem;
+        private FriendsData.DataDTO.MessageDTO mCircleItem;
 
-        public PopupItemClickListener(int circlePosition, FriendsData.DataDTO circleItem, String favorId) {
+        public PopupItemClickListener(int circlePosition, FriendsData.DataDTO.MessageDTO circleItem, int favorId) {
             this.mFavorId = favorId;
             this.mCirclePosition = circlePosition;
             this.mCircleItem = circleItem;
@@ -810,7 +709,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         if ("赞".equals(actionitem.mTitle.toString())) {
                             mDeleteFriendsClickListener.mDeleteListener(mCircleItem, 1);
                         } else {//取消点赞
-                            mDeleteCommentListener.deleteComment(mFavorId);
+                            mDeleteFriendsClickListener.mDeleteListener(mCircleItem, 2);
                         }
                     }
 

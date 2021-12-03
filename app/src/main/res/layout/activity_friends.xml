@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <com.tencent.qcloud.tim.uikit.component.TitleBarLayout
         android:id="@+id/friend_title_bar"
         android:layout_width="match_parent"
@@ -12,28 +13,25 @@
     <RelativeLayout
         android:id="@+id/bodyLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
-        <com.weiwu.ql.main.mine.friends.SuperRecyclerView
-            android:background="@color/white"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <com.weiwu.ql.main.mine.friends.SuperRecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/recyclerView"
-            android:scrollbars="none"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+            android:background="@color/white"
+            android:scrollbars="none"
             app:layout_moreProgress="@layout/friends_view_more_progress"
-            app:recyclerClipToPadding="true"
-          />
+            app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+            app:recyclerClipToPadding="true" />
 
         <include
+            layout="@layout/friends_layout_editview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            layout="@layout/friends_layout_editview"/>
+            android:layout_alignParentBottom="true" />
 
-        <com.weiwu.ql.main.mine.friends.view.CircularProgressBar
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <com.weiwu.ql.main.mine.friends.view.CircularProgressBar xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/video_progress"
             android:layout_width="50dp"
             android:layout_height="50dp"

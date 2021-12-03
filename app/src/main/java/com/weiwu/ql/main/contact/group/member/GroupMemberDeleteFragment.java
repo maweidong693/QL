@@ -68,12 +68,20 @@ public class GroupMemberDeleteFragment extends BaseFragment implements GroupCont
                     for (int i = 0; i < list.size(); i++) {
                         members.add(list.get(i).getAccount());
                     }
-                    mPresenter.deleteMembers(new InviteOrDeleteRequestBody(mGroupInfo.getId(), members));
-                }else {
+                    mPresenter.deleteMembers(new InviteOrDeleteRequestBody(mGroupInfo.getGroupId(), listToString(members, ',')));
+                } else {
                     showToast("请选择成员！");
                 }
             }
         });
+    }
+
+    public String listToString(List list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return list.isEmpty() ? "" : sb.toString().substring(0, sb.toString().length() - 1);
     }
 
     @Override
@@ -88,7 +96,7 @@ public class GroupMemberDeleteFragment extends BaseFragment implements GroupCont
 
     @Override
     public void deleteFriendReceive(HttpResult data) {
-        showToast(data.getMessage());
+        showToast(data.getMsg());
         getActivity().finish();
     }
 

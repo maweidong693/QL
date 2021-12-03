@@ -1,7 +1,5 @@
 package com.weiwu.ql.main.mine.friends.data;
 
-import com.weiwu.ql.data.bean.FriendsData;
-
 /**
  * Created by yiwei on 16/3/2.
  */
@@ -21,7 +19,7 @@ public class CommentConfig {
     public int circlePosition;
     public int commentPosition;
     public Type commentType;
-    public FriendsData.DataDTO.ThumbListDTO.FromMemberInfoDTO replyUser;
+    public User replyUser;
 
     @Override
     public String toString() {

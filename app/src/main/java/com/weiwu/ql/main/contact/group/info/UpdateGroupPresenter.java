@@ -3,6 +3,7 @@ package com.weiwu.ql.main.contact.group.info;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.SetFriendRequestBody;
 import com.weiwu.ql.data.request.UpdateGroupRequestBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
@@ -25,6 +26,21 @@ public class UpdateGroupPresenter implements GroupContract.IUpdateGroupInfoPrese
     @Override
     public void updateGroupInfo(UpdateGroupRequestBody body) {
         mSource.updateGroupInfo((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.onSuccess(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void updateFriendInfo(SetFriendRequestBody body) {
+        mSource.setFriendInfo((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
                 mView.onSuccess(data);

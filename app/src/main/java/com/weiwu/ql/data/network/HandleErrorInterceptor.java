@@ -29,10 +29,10 @@ public class HandleErrorInterceptor extends ResponseBodyInterceptor {
             e.printStackTrace();
         }
         if (jsonObject != null) {
-            if (jsonObject.optInt("code", -1) != 200 && jsonObject.has("message")) {
+            if (jsonObject.optInt("code", -1) != 200 && jsonObject.has("msg")) {
 
                 try {
-                    String msg = jsonObject.getString("message");
+                    String msg = jsonObject.getString("msg");
                     int code = jsonObject.getInt("code");
                     throw new ServerException(msg, code);
                 } catch (JSONException e) {

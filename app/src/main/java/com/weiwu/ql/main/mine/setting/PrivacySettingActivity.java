@@ -1,5 +1,6 @@
 package com.weiwu.ql.main.mine.setting;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -24,6 +25,13 @@ import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.utils.ToastUtil;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.RangeBean;
+import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.repositories.MineRepository;
+import com.weiwu.ql.data.request.SetRangeRequestBody;
+import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
+import com.weiwu.ql.main.mine.MineContract;
 import com.weiwu.ql.utils.IntentUtil;
 
 import java.util.ArrayList;
@@ -35,7 +43,7 @@ import java.util.Map;
  * @author Joseph_Yan
  * on 2020/12/23
  */
-public class PrivacySettingActivity extends BaseActivity {
+public class PrivacySettingActivity extends BaseActivity implements MineContract.IPrivateSetView {
 
     private TitleBarLayout mTitleBar;
     private LineControllerView viewRange;
@@ -47,10 +55,13 @@ public class PrivacySettingActivity extends BaseActivity {
     private ArrayList<String> rangeKey = new ArrayList<>();
     private Dialog dialog;
     private RadioGroup radioGroup;
+    private MineContract.IPrivateSetPresenter mPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_priva_set);
+        setPresenter(new PrivateSetPresenter(MineRepository.getInstance()));
         initView();
     }
 
@@ -65,12 +76,12 @@ public class PrivacySettingActivity extends BaseActivity {
         });
         mTitleBar.getRightIcon().setVisibility(View.GONE);
         viewRange = findViewById(R.id.view_range);
-        mMessageReminder =findViewById(R.id.new_message_reminder);
+        mMessageReminder = findViewById(R.id.new_message_reminder);
         mModifyAllowTypeView = findViewById(R.id.modify_allow_type);
-        mModifyAllowTypeView.setChecked(true);
+//        mModifyAllowTypeView.setChecked(true);
+        mPresenter.getMineInfo();
         viewRange.setOnClickListener(v -> {
             Dialog();
-
         });
         mMessageReminder.setOnClickListener(view -> {
 //            IntentUtil.redirectToNextActivity(this, NewMessageActivity.class);
@@ -79,11 +90,11 @@ public class PrivacySettingActivity extends BaseActivity {
             if (!buttonView.isPressed()) {
                 return;
             }
-            updateProfile();
+            mPresenter.updateMineInfo(new UpdateMineInfoRequestBody(isChecked ? "1" : "0"));
 
 
         });
-        getAllowType();
+//        getAllowType();
         getRange();
     }
 
@@ -102,9 +113,9 @@ public class PrivacySettingActivity extends BaseActivity {
             radioButton.setId(i);
             radioButton.setTextSize(18);
             radioButton.setTextColor(getResources().getColor(com.tencent.qcloud.tim.uikit.R.color.black));
-            radioButton.setPadding(25,45,0,45);
-            radioButton.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-            radioButton.setTextDirection(View.TEXT_DIRECTION_LTR);
+            radioButton.setPadding(25, 45, 0, 45);
+            radioButton.setLayoutDirection(android.view.View.LAYOUT_DIRECTION_LTR);
+            radioButton.setTextDirection(android.view.View.TEXT_DIRECTION_LTR);
             radioGroup.addView(radioButton, i, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
         radioGroup.check(mCurrentIndex);
@@ -112,8 +123,11 @@ public class PrivacySettingActivity extends BaseActivity {
             viewRange.setContent(rangeValue.get(checkedId));
             mIndex = rangeKey.get(checkedId);
             mCurrentIndex = checkedId;
-            Map map = new HashMap();
-            map.put("key",mIndex);
+            mPresenter.setRange(new SetRangeRequestBody(Integer.parseInt(mIndex)));
+            dialog.dismiss();
+
+            /*Map map = new HashMap();
+            map.put("key", mIndex);
             dialog.dismiss();
             YHttp.obtain().post(Constant.URL_SHOW_RANGE, map, new HttpCallBack<BaseBean>() {
                 @Override
@@ -125,7 +139,7 @@ public class PrivacySettingActivity extends BaseActivity {
                 public void onFailed(String error) {
 
                 }
-            });
+            });*/
 
         });
         radioGroup.invalidate();
@@ -140,72 +154,12 @@ public class PrivacySettingActivity extends BaseActivity {
 
     }
 
-    private void updateProfile() {
-
-        V2TIMUserFullInfo v2TIMUserFullInfo = new V2TIMUserFullInfo();
-
-        // 加我验证方式
-        boolean checked = mModifyAllowTypeView.isChecked();
-        int allowType = checked?V2TIMUserFullInfo.V2TIM_FRIEND_NEED_CONFIRM:V2TIMUserFullInfo.V2TIM_FRIEND_ALLOW_ANY;
-        v2TIMUserFullInfo.setAllowType(allowType);
-
-        V2TIMManager.getInstance().setSelfInfo(v2TIMUserFullInfo, new V2TIMCallback() {
-            @Override
-            public void onError(int code, String desc) {
-                ToastUtil.toastShortMessage("Error code = " + code + ", desc = " + desc);
-            }
-
-            @Override
-            public void onSuccess() {
-
-            }
-        });
-
-    }
-
-    private void getAllowType() {
-        String selfUserID = V2TIMManager.getInstance().getLoginUser();
-        List<String> userList = new ArrayList<>();
-        userList.add(selfUserID);
-        V2TIMManager.getInstance().getUsersInfo(userList, new V2TIMValueCallback<List<V2TIMUserFullInfo>>() {
-            @Override
-            public void onError(int code, String desc) {
-                ToastUtil.toastShortMessage("Error code = " + code + ", desc = " + desc);
-            }
-
-            @Override
-            public void onSuccess(List<V2TIMUserFullInfo> v2TIMUserFullInfos) {
-                if (v2TIMUserFullInfos == null || v2TIMUserFullInfos.size() == 0) {
-                    return;
-                }
-                V2TIMUserFullInfo v2TIMUserFullInfo = v2TIMUserFullInfos.get(0);
-//                mModifyAllowTypeView.setContent(getResources().getString(R.string.allow_type_need_confirm));
-                if (v2TIMUserFullInfo.getAllowType() == V2TIMUserFullInfo.V2TIM_FRIEND_ALLOW_ANY) {
-                    //允许任何人添加好友
-//                    mModifyAllowTypeView.setContent(getResources().getString(R.string.allow_type_allow_any));
-                    mModifyAllowTypeView.setChecked(false);
-                } else if (v2TIMUserFullInfo.getAllowType() == V2TIMUserFullInfo.V2TIM_FRIEND_DENY_ANY) {
-                    //拒绝任何人添加好友
-                    mModifyAllowTypeView.setChecked(true);
-//                    mModifyAllowTypeView.setContent(getResources().getString(R.string.allow_type_deny_any));
-                } else if (v2TIMUserFullInfo.getAllowType() == V2TIMUserFullInfo.V2TIM_FRIEND_NEED_CONFIRM) {
-                    //需要验证
-//                    mModifyAllowTypeView.setContent(getResources().getString(R.string.allow_type_need_confirm));
-                    mModifyAllowTypeView.setChecked(true);
-                } else {
-
-//                    mModifyAllowTypeView.setContent("");
-                }
-            }
-        });
-
-    }
-
     private void getRange() {
+        mPresenter.getRange();
         /*YHttp.obtain().post(Constant.URL_RANGE, null, new HttpCallBack<BaseBean>() {
             @Override
-            public void onSuccess(BaseBean  bean) {
-                if (bean.getData()!=null){
+            public void onSuccess(BaseBean bean) {
+                if (bean.getData() != null) {
                     *//*RangeBean rangeBean = JSON.parseObject(bean.getData().toString(), RangeBean.class);
                     int defaultX = rangeBean.getDefault();
                     mIndex = defaultX+"";
@@ -231,5 +185,51 @@ public class PrivacySettingActivity extends BaseActivity {
             }
         });*/
 
+    }
+
+    @Override
+    public void setPresenter(MineContract.IPrivateSetPresenter presenter) {
+        mPresenter = presenter;
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    public Activity getActivityObject() {
+        return this;
+    }
+
+    @Override
+    public void mineInfoReceive(MineInfoData data) {
+        mModifyAllowTypeView.setChecked(data.getData().getIs_check_friend() == 1);
+    }
+
+    @Override
+    public void rangeReceive(RangeBean data) {
+        RangeBean.DataDTO rangeBean = data.getData();
+        int defaultX = rangeBean.getDefaultX();
+        mIndex = defaultX + "";
+        List<RangeBean.DataDTO.ListDTO> list = rangeBean.getList();
+        if (list != null && list.size() > 0) {
+            rangeKey.clear();
+            rangeValue.clear();
+            for (int i = 0; i < list.size(); i++) {
+                if (mIndex.equals(list.get(i).getKey() + "")) {
+                    mCurrentIndex = i;
+                    viewRange.setContent(list.get(i).getValue());
+                }
+                rangeKey.add(list.get(i).getKey() + "");
+                rangeValue.add(list.get(i).getValue());
+            }
+        }
+    }
+
+    @Override
+    public void onSuccess(HttpResult data) {
+
+    }
+
+    @Override
+    public void onFail(String msg, int code) {
+        showToast(msg);
     }
 }

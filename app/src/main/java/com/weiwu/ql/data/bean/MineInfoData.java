@@ -7,8 +7,10 @@ package com.weiwu.ql.data.bean;
  * date : 2021/7/24 14:30 
  */
 public class MineInfoData {
+
+
     private int code;
-    private String message;
+    private String msg;
     private DataDTO data;
 
     public int getCode() {
@@ -19,12 +21,12 @@ public class MineInfoData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public DataDTO getData() {
@@ -36,64 +38,45 @@ public class MineInfoData {
     }
 
     public static class DataDTO {
-        private String id;
-        private String nickName;
+        private int id;
+        private Object pid;
+        private String nation_code;
         private String mobile;
-        private String lastLoginTime;
-        private String createdTime;
-        private String updatedTime;
-        private String avator;
-        private String personalSignature;
-        private String momentImg;
+        private String im_id;
+        private int is_check_friend;
+        private String password;
+        private String token;
+        private String nick_name;
+        private String sing;
+        private String face_url;
         private int sex;
-        private int role;
+        private int status;
+        private Object master_code;
+        private String my_code;
+        private String reg_time;
 
-        public int getRole() {
-            return role;
-        }
-
-        public void setRole(int role) {
-            this.role = role;
-        }
-
-        public String getMomentImg() {
-            return momentImg;
-        }
-
-        public void setMomentImg(String momentImg) {
-            this.momentImg = momentImg;
-        }
-
-        public String getPersonalSignature() {
-            return personalSignature;
-        }
-
-        public void setPersonalSignature(String personalSignature) {
-            this.personalSignature = personalSignature;
-        }
-
-        public String getAvator() {
-            return avator;
-        }
-
-        public void setAvator(String avator) {
-            this.avator = avator;
-        }
-
-        public String getId() {
+        public int getId() {
             return id;
         }
 
-        public void setId(String id) {
+        public void setId(int id) {
             this.id = id;
         }
 
-        public String getNickName() {
-            return nickName;
+        public Object getPid() {
+            return pid;
         }
 
-        public void setNickName(String nickName) {
-            this.nickName = nickName;
+        public void setPid(Object pid) {
+            this.pid = pid;
+        }
+
+        public String getNation_code() {
+            return nation_code;
+        }
+
+        public void setNation_code(String nation_code) {
+            this.nation_code = nation_code;
         }
 
         public String getMobile() {
@@ -104,28 +87,60 @@ public class MineInfoData {
             this.mobile = mobile;
         }
 
-        public String getLastLoginTime() {
-            return lastLoginTime;
+        public String getIm_id() {
+            return im_id;
         }
 
-        public void setLastLoginTime(String lastLoginTime) {
-            this.lastLoginTime = lastLoginTime;
+        public void setIm_id(String im_id) {
+            this.im_id = im_id;
         }
 
-        public String getCreatedTime() {
-            return createdTime;
+        public int getIs_check_friend() {
+            return is_check_friend;
         }
 
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
+        public void setIs_check_friend(int is_check_friend) {
+            this.is_check_friend = is_check_friend;
         }
 
-        public String getUpdatedTime() {
-            return updatedTime;
+        public String getPassword() {
+            return password;
         }
 
-        public void setUpdatedTime(String updatedTime) {
-            this.updatedTime = updatedTime;
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public String getNick_name() {
+            return nick_name;
+        }
+
+        public void setNick_name(String nick_name) {
+            this.nick_name = nick_name;
+        }
+
+        public String getSing() {
+            return sing;
+        }
+
+        public void setSing(String sing) {
+            this.sing = sing;
+        }
+
+        public String getFace_url() {
+            return face_url;
+        }
+
+        public void setFace_url(String face_url) {
+            this.face_url = face_url;
         }
 
         public int getSex() {
@@ -134,6 +149,38 @@ public class MineInfoData {
 
         public void setSex(int sex) {
             this.sex = sex;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public Object getMaster_code() {
+            return master_code;
+        }
+
+        public void setMaster_code(Object master_code) {
+            this.master_code = master_code;
+        }
+
+        public String getMy_code() {
+            return my_code;
+        }
+
+        public void setMy_code(String my_code) {
+            this.my_code = my_code;
+        }
+
+        public String getReg_time() {
+            return reg_time;
+        }
+
+        public void setReg_time(String reg_time) {
+            this.reg_time = reg_time;
         }
     }
 }

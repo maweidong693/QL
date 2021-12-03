@@ -3,21 +3,22 @@ package com.weiwu.ql.main.contact;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tencent.common.http.BlackListData;
 import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactListView;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
+import com.weiwu.ql.data.bean.GroupListData;
 import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
@@ -30,9 +31,6 @@ import com.weiwu.ql.view.Menu;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *  
@@ -108,10 +106,12 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
                     Intent intent = new Intent(getContext(), BlackListActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getActivity().startActivity(intent);
+//                    getActivity().finish();
                 } else {
                     Intent intent = new Intent(getContext(), FriendProfileActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contact);
+                    intent.putExtra(AppConstant.FRIEND_TYPE, 120);
                     getActivity().startActivity(intent);
 //                    getActivity().finish();
 
@@ -137,8 +137,20 @@ public class ContactFragment extends BaseFragment implements ContactContract.ICo
     public void contactReceive(ContactListData data) {
         if (data.getData() != null) {
             friends = data.getData();
+
             mContactLayout.initDefault(friends);
+            EventBus.getDefault().post(new MessageEvent(data.getData().getNew_friend_count()+"",166));
         }
+    }
+
+    @Override
+    public void groupListReceive(GroupListData data) {
+
+    }
+
+    @Override
+    public void blackListReceive(BlackListData data) {
+
     }
 
     @Override

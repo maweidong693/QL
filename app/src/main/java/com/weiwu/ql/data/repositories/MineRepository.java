@@ -3,30 +3,29 @@ package com.weiwu.ql.data.repositories;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.BaseRepository;
 import com.weiwu.ql.base.IBaseCallBack;
-import com.weiwu.ql.data.bean.CoinData;
-import com.weiwu.ql.data.bean.CoinListData;
-import com.weiwu.ql.data.bean.HandlerData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.bean.MineInfoData;
-import com.weiwu.ql.data.bean.OrderData;
-import com.weiwu.ql.data.bean.OrderDetailData;
+import com.weiwu.ql.data.bean.NewMsgData;
+import com.weiwu.ql.data.bean.RangeBean;
 import com.weiwu.ql.data.bean.SocketDataBean;
-import com.weiwu.ql.data.bean.WalletData;
 import com.weiwu.ql.data.network.DataService;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
-import com.weiwu.ql.data.request.DistributeRequestBody;
-import com.weiwu.ql.data.request.HandlerOrderRequestBody;
+import com.weiwu.ql.data.request.ClientIdBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.data.request.LoginRequestBody;
-import com.weiwu.ql.data.request.OrderRequestBody;
+import com.weiwu.ql.data.request.RegisterRequestBody;
+import com.weiwu.ql.data.request.SendPhoneMsgRequestBody;
+import com.weiwu.ql.data.request.SetRangeRequestBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
-import com.weiwu.ql.data.request.WebLoginRequestBody;
-import com.weiwu.ql.greendao.db.DaoSession;
+import com.weiwu.ql.data.request.VerifyCodeRequestBody;
+import com.weiwu.ql.main.login.country.CountryData;
 import com.weiwu.ql.main.mine.MineContract;
+import com.weiwu.ql.main.mine.collection.FavoritesData;
+import com.weiwu.ql.main.mine.friends.data.MsgData;
 
 import okhttp3.MultipartBody;
-import retrofit2.http.Query;
 
 /**
  *  
@@ -55,11 +54,6 @@ public class MineRepository extends BaseRepository implements MineContract.MineS
     }
 
     @Override
-    public void register(LifecycleProvider provider, LoginRequestBody body, IBaseCallBack<LoginData> callBack) {
-        observerNoMap(provider, DataService.getApiService().register(body), callBack);
-    }
-
-    @Override
     public void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack) {
         observerNoMap(provider, DataService.getApiService().getMineInfo(), callBack);
     }
@@ -84,62 +78,6 @@ public class MineRepository extends BaseRepository implements MineContract.MineS
         observerNoMap(provider, DataService.getApiService().addFriend(body), callBack);
     }
 
-    @Override
-    public void getCoin(LifecycleProvider provider, IBaseCallBack<CoinData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getCoinList(), callBack);
-    }
-
-    @Override
-    public void addWallet(LifecycleProvider provider, CoinListData body, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().addCoin(body), callBack);
-    }
-
-    @Override
-    public void getAllOrder(LifecycleProvider provider, OrderRequestBody body, IBaseCallBack<OrderData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getAllOrder(body), callBack);
-    }
-
-    @Override
-    public void handlerOrder(LifecycleProvider provider, HandlerOrderRequestBody body, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().handlerOrder(body), callBack);
-    }
-
-    @Override
-    public void receiveOrder(LifecycleProvider provider, String tradeId, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().receiveOrder(tradeId), callBack);
-
-    }
-
-    @Override
-    public void distributeOrder(LifecycleProvider provider, DistributeRequestBody body, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().distributeOrder(body), callBack);
-
-    }
-
-    @Override
-    public void getAllHandler(LifecycleProvider provider, IBaseCallBack<HandlerData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getAllHandler(), callBack);
-    }
-
-    @Override
-    public void getOrderDetail(LifecycleProvider provider, String tradeId, IBaseCallBack<OrderDetailData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getOrderDetail(tradeId), callBack);
-    }
-
-    @Override
-    public void getAllWallet(LifecycleProvider provider, String coinType, IBaseCallBack<WalletData> callBack) {
-        observerNoMap(provider, DataService.getApiService().getAllWallet(coinType), callBack);
-    }
-
-    @Override
-    public void confirmGetCoin(LifecycleProvider provider, String cTradeId, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().confirmGetCoin(cTradeId), callBack);
-    }
-
-    @Override
-    public void confirmRecycleCoin(LifecycleProvider provider, String cTradeId, IBaseCallBack<HttpResult> callBack) {
-        observerNoMap(provider, DataService.getApiService().confirmRecycleCoin(cTradeId), callBack);
-    }
 
     @Override
     public void getInviteKey(LifecycleProvider provider, IBaseCallBack<LoginData> callBack) {
@@ -149,5 +87,75 @@ public class MineRepository extends BaseRepository implements MineContract.MineS
     @Override
     public void getSocketUrl(LifecycleProvider provider, IBaseCallBack<SocketDataBean> callBack) {
         observerNoMap(provider, DataService.getApiService().getSocketUrl(), callBack);
+    }
+
+    @Override
+    public void sendPhoneMsg(LifecycleProvider provider, SendPhoneMsgRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().sendMsg(body), callBack);
+    }
+
+    @Override
+    public void verify(LifecycleProvider provider, VerifyCodeRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().verify(body), callBack);
+    }
+
+    @Override
+    public void register(LifecycleProvider provider, RegisterRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().register(body), callBack);
+    }
+
+    @Override
+    public void init(LifecycleProvider provider, ClientIdBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().init(body), callBack);
+    }
+
+    @Override
+    public void collectionList(LifecycleProvider provider, IBaseCallBack<FavoritesData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getCollectionList(), callBack);
+    }
+
+    @Override
+    public void delCollection(LifecycleProvider provider, GroupInfoRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().delCollection(body), callBack);
+    }
+
+    @Override
+    public void getRange(LifecycleProvider provider, IBaseCallBack<RangeBean> callBack) {
+        observerNoMap(provider, DataService.getApiService().getRange(), callBack);
+    }
+
+    @Override
+    public void setRange(LifecycleProvider provider, SetRangeRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().setRange(body), callBack);
+    }
+
+    @Override
+    public void getNewMsgCount(LifecycleProvider provider, IBaseCallBack<NewMsgData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getNewMsgCount(), callBack);
+    }
+
+    @Override
+    public void getMsgList(LifecycleProvider provider, IBaseCallBack<MsgData> callBack) {
+
+    }
+
+    @Override
+    public void readMsg(LifecycleProvider provider, GroupInfoRequestBody body, IBaseCallBack<HttpResult> callBack) {
+
+    }
+
+    @Override
+    public void getCountryList(LifecycleProvider provider, IBaseCallBack<CountryData> callBack) {
+        observerNoMap(provider, DataService.getApiService().getCountryList(), callBack);
+    }
+
+    @Override
+    public void updatePassword(LifecycleProvider provider, RegisterRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().updatePassword(body), callBack);
+    }
+
+    @Override
+    public void forgetPassword(LifecycleProvider provider, RegisterRequestBody body, IBaseCallBack<HttpResult> callBack) {
+        observerNoMap(provider, DataService.getApiService().forgetPassword(body), callBack);
     }
 }

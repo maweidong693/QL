@@ -1,5 +1,6 @@
 package com.weiwu.ql.main.contact.group.member;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -7,15 +8,18 @@ import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.tencent.qcloud.tim.uikit.modules.group.member.IGroupMemberRouter;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
+import com.weiwu.ql.main.contact.group.GroupContract;
 
 /**
  * 群成员管理
  */
-public class GroupMemberManagerFragment extends BaseFragment {
+public class GroupMemberManagerFragment extends BaseFragment implements GroupContract.IGroupMemberView {
 
     private GroupMemberManagerLayout mMemberLayout;
     private GroupInfo mGroupInfo;
@@ -44,6 +48,7 @@ public class GroupMemberManagerFragment extends BaseFragment {
     private void init() {
         mGroupInfo = (GroupInfo) getArguments().getSerializable(TUIKitConstants.Group.GROUP_INFO);
         mMemberLayout.setDataSource(mGroupInfo);
+
         mMemberLayout.getTitleBar().setOnLeftClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,5 +101,27 @@ public class GroupMemberManagerFragment extends BaseFragment {
             }
         });
 
+    }
+
+    @Override
+    public void groupMemberReceive(GroupInfoData data) {
+        if (data != null && data.getData() != null) {
+
+        }
+    }
+
+    @Override
+    public void onFail(String msg, int code) {
+
+    }
+
+    @Override
+    public void setPresenter(GroupContract.IGroupMemberPresenter presenter) {
+
+    }
+
+    @Override
+    public Activity getActivityObject() {
+        return null;
     }
 }

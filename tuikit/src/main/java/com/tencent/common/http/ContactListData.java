@@ -1,5 +1,7 @@
 package com.tencent.common.http;
 
+import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
+
 import java.util.List;
 
 /**
@@ -39,9 +41,18 @@ public class ContactListData {
     }
 
     public static class DataDTO {
-        private List<FriendsDTO> friends;
+        private int new_friend_count;
+        private List<FriendsDTO> list;
         private List<FriendsDTO> blockFriends;
         private List<GroupsDTO> groups;
+
+        public int getNew_friend_count() {
+            return new_friend_count;
+        }
+
+        public void setNew_friend_count(int new_friend_count) {
+            this.new_friend_count = new_friend_count;
+        }
 
         public List<FriendsDTO> getBlockFriends() {
             return blockFriends;
@@ -51,12 +62,12 @@ public class ContactListData {
             this.blockFriends = blockFriends;
         }
 
-        public List<FriendsDTO> getFriends() {
-            return friends;
+        public List<FriendsDTO> getList() {
+            return list;
         }
 
-        public void setFriends(List<FriendsDTO> friends) {
-            this.friends = friends;
+        public void setList(List<FriendsDTO> list) {
+            this.list = list;
         }
 
         public List<GroupsDTO> getGroups() {
@@ -68,15 +79,54 @@ public class ContactListData {
         }
 
         public static class FriendsDTO {
-            private String id;
-            private String nickName;
+            private int id;
+            private String im_id;
+            private String member_id;
+            private String nick_name;
             private String mobile;
             private String lastLoginTime;
             private String createdTime;
             private String updatedTime;
             private String remark;
-            private String avator;
+            private String face_url;
             private int sex;
+            private int unread;
+
+            public FriendsDTO covertTIMFriend(BlackListData.DataDTO friendInfo) {
+                if (friendInfo == null) {
+                    return this;
+                }
+                setIm_id(friendInfo.getMember_id());
+                setRemark(friendInfo.getNick_name());
+                setNick_name(friendInfo.getNick_name());
+                setMember_id(friendInfo.getMember_id());
+                setFace_url(friendInfo.getFace_url());
+                return this;
+            }
+
+            public String getMember_id() {
+                return member_id;
+            }
+
+            public void setMember_id(String member_id) {
+                this.member_id = member_id;
+            }
+
+            public int getUnread() {
+                return unread;
+            }
+
+            public void setUnread(int unread) {
+                this.unread = unread;
+            }
+
+            public String getIm_id() {
+                return im_id;
+            }
+
+            public void setIm_id(String im_id) {
+                this.im_id = im_id;
+            }
 
             public String getRemark() {
                 return remark;
@@ -86,28 +136,28 @@ public class ContactListData {
                 this.remark = remark;
             }
 
-            public String getAvator() {
-                return avator;
+            public String getFace_url() {
+                return face_url;
             }
 
-            public void setAvator(String avator) {
-                this.avator = avator;
+            public void setFace_url(String face_url) {
+                this.face_url = face_url;
             }
 
-            public String getId() {
+            public int getId() {
                 return id;
             }
 
-            public void setId(String id) {
+            public void setId(int id) {
                 this.id = id;
             }
 
-            public String getNickName() {
-                return nickName;
+            public String getNick_name() {
+                return nick_name;
             }
 
-            public void setNickName(String nickName) {
-                this.nickName = nickName;
+            public void setNick_name(String nick_name) {
+                this.nick_name = nick_name;
             }
 
             public String getMobile() {
@@ -159,7 +209,16 @@ public class ContactListData {
             private String updatedBy;
             private String createdTime;
             private String updatedTime;
+            private String avatar;
             private int del;
+
+            public String getAvatar() {
+                return avatar;
+            }
+
+            public void setAvatar(String avatar) {
+                this.avatar = avatar;
+            }
 
             public String getId() {
                 return id;

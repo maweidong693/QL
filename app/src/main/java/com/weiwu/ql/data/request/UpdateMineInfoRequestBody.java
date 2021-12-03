@@ -8,15 +8,24 @@ package com.weiwu.ql.data.request;
  */
 public class UpdateMineInfoRequestBody {
     private String mobile;
-    private int sex;
+    private String sex;
     private String name;
-    private String nickName;
-    private String personalSignature;
-    private String avator;
+    private String nick_name;
+    private String sing;
+    private String face_url;
     private String momentImg;
+    private String is_check_friend;
 
-    public UpdateMineInfoRequestBody(String momentImg) {
-        this.momentImg = momentImg;
+    public UpdateMineInfoRequestBody(String is_check_friend) {
+        this.is_check_friend = is_check_friend;
+    }
+
+    public String getIs_check_friend() {
+        return is_check_friend;
+    }
+
+    public void setIs_check_friend(String is_check_friend) {
+        this.is_check_friend = is_check_friend;
     }
 
     public String getMomentImg() {
@@ -27,13 +36,13 @@ public class UpdateMineInfoRequestBody {
         this.momentImg = momentImg;
     }
 
-    public UpdateMineInfoRequestBody(String mobile, int sex, String name, String nickName, String personalSignature, String avator) {
+    public UpdateMineInfoRequestBody(String mobile, String sex, String name, String nickName, String personalSignature, String avator) {
         this.mobile = mobile;
         this.sex = sex;
         this.name = name;
-        this.nickName = nickName;
-        this.personalSignature = personalSignature;
-        this.avator = avator;
+        this.nick_name = nickName;
+        this.sing = personalSignature;
+        this.face_url = avator;
     }
 
     public String getMobile() {
@@ -44,11 +53,11 @@ public class UpdateMineInfoRequestBody {
         this.mobile = mobile;
     }
 
-    public int getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(int sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
@@ -60,27 +69,27 @@ public class UpdateMineInfoRequestBody {
         this.name = name;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getNick_name() {
+        return nick_name;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setNick_name(String nick_name) {
+        this.nick_name = nick_name;
     }
 
-    public String getPersonalSignature() {
-        return personalSignature;
+    public String getSing() {
+        return sing;
     }
 
-    public void setPersonalSignature(String personalSignature) {
-        this.personalSignature = personalSignature;
+    public void setSing(String sing) {
+        this.sing = sing;
     }
 
-    public String getAvator() {
-        return avator;
+    public String getFace_url() {
+        return face_url;
     }
 
-    public void setAvator(String avator) {
-        this.avator = avator;
+    public void setFace_url(String face_url) {
+        this.face_url = face_url;
     }
 }

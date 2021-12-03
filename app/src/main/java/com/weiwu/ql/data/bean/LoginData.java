@@ -8,12 +8,20 @@ package com.weiwu.ql.data.bean;
  */
 public class LoginData {
     private int code;
-    private String message;
-    private String data;
+    private String msg;
+    private DataDto data;
 
-    public LoginData(int code, String message, String data) {
+    public LoginData(int code, String msg, DataDto data) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
+        this.data = data;
+    }
+
+    public DataDto getData() {
+        return data;
+    }
+
+    public void setData(DataDto data) {
         this.data = data;
     }
 
@@ -25,19 +33,34 @@ public class LoginData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
-    public String getData() {
-        return data;
-    }
 
-    public void setData(String data) {
-        this.data = data;
+
+    public class DataDto {
+        private String src;
+        private String url;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getSrc() {
+            return src;
+        }
+
+        public void setSrc(String src) {
+            this.src = src;
+        }
     }
 }

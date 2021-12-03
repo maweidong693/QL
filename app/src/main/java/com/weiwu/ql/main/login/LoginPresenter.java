@@ -5,7 +5,11 @@ import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.bean.SocketDataBean;
+import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.LoginRequestBody;
+import com.weiwu.ql.data.request.RegisterRequestBody;
+import com.weiwu.ql.data.request.SendPhoneMsgRequestBody;
+import com.weiwu.ql.data.request.VerifyCodeRequestBody;
 import com.weiwu.ql.main.mine.MineContract;
 
 /**
@@ -17,10 +21,72 @@ import com.weiwu.ql.main.mine.MineContract;
 public class LoginPresenter implements MineContract.ILoginPresenter {
 
     private MineContract.ILoginView mView;
-    private MineContract.MineSource mSource;
+    private final MineContract.MineSource mSource;
 
     public LoginPresenter(MineContract.MineSource source) {
         mSource = source;
+    }
+
+    @Override
+    public void forgetPassword(RegisterRequestBody body) {
+        mSource.forgetPassword((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.updateSuccess(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void updatePassword(RegisterRequestBody body) {
+        mSource.updatePassword((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.updateSuccess(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+
+            }
+        });
+    }
+
+    @Override
+    public void register(RegisterRequestBody body) {
+        mSource.register((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.registerSuccess(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void verify(VerifyCodeRequestBody body) {
+        mSource.verify((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.verifySuccess(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+
+            }
+        });
     }
 
     @Override
@@ -39,11 +105,11 @@ public class LoginPresenter implements MineContract.ILoginPresenter {
     }
 
     @Override
-    public void getSocketUrl() {
-        mSource.getSocketUrl((LifecycleProvider) mView, new IBaseCallBack<SocketDataBean>() {
+    public void sendPhone(SendPhoneMsgRequestBody body) {
+        mSource.sendPhoneMsg((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
-            public void onSuccess(SocketDataBean data) {
-                mView.socketUrl(data);
+            public void onSuccess(HttpResult data) {
+                mView.onSuccess(data);
             }
 
             @Override
@@ -54,11 +120,11 @@ public class LoginPresenter implements MineContract.ILoginPresenter {
     }
 
     @Override
-    public void register(LoginRequestBody body) {
-        mSource.register((LifecycleProvider) mView, body, new IBaseCallBack<LoginData>() {
+    public void getSocketUrl() {
+        mSource.getSocketUrl((LifecycleProvider) mView, new IBaseCallBack<SocketDataBean>() {
             @Override
-            public void onSuccess(LoginData data) {
-                mView.registerResult(data);
+            public void onSuccess(SocketDataBean data) {
+                mView.socketUrl(data);
             }
 
             @Override

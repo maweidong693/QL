@@ -8,14 +8,14 @@ package com.weiwu.ql.data.network;
  */
 public class HttpResult<T> {
     public int code = -1;
-    public String message;
+    public String msg;
     public T data;
 
     @Override
     public String toString() {
         return "HttpResult{" +
                 "code=" + code +
-                ", msg='" + message + '\'' +
+                ", msg='" + msg + '\'' +
                 ", data=" + data +
                 '}';
     }
@@ -28,12 +28,12 @@ public class HttpResult<T> {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public T getData() {
@@ -49,7 +49,7 @@ public class HttpResult<T> {
 
     public HttpResult(int code, String message, T data) {
         this.code = code;
-        this.message = message;
+        this.msg = message;
         this.data = data;
     }
 }

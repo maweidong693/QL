@@ -21,7 +21,7 @@ public class ImgOrVideoActivity extends AppCompatActivity {
 
     private GSYSampleADVideoPlayer mVpChatVideo;
     private String mUrl;
-    private String mType;
+    private int mType;
     private ImageView mIvChatImg;
 
     @Override
@@ -31,7 +31,7 @@ public class ImgOrVideoActivity extends AppCompatActivity {
         ImmersionBar.with(this).transparentNavigationBar().hideBar(BarHide.FLAG_HIDE_BAR).init();
         Intent intent = getIntent();
         if (intent != null) {
-            mType = intent.getStringExtra(AppConstant.IMG_OR_VIDEO);
+            mType = intent.getIntExtra(AppConstant.IMG_OR_VIDEO,0);
             mUrl = intent.getStringExtra(AppConstant.VIDEO_URL);
         }
         initView();
@@ -40,7 +40,7 @@ public class ImgOrVideoActivity extends AppCompatActivity {
     private void initView() {
         mVpChatVideo = (GSYSampleADVideoPlayer) findViewById(R.id.vp_chat_video);
         mIvChatImg = (ImageView) findViewById(R.id.iv_chat_img);
-        if (mType.equals("img")) {
+        if (mType==2) {
             mVpChatVideo.setVisibility(View.GONE);
             mIvChatImg.setVisibility(View.VISIBLE);
             Glide.with(this).load(mUrl).into(mIvChatImg);

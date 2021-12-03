@@ -7,44 +7,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
-import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
-import com.weiwu.ql.data.bean.MessageListData;
+import com.weiwu.ql.data.bean.MessageEvent;
+import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.DelChatBody;
+import com.weiwu.ql.main.contact.chat.modle.MessageListData;
 import com.weiwu.ql.data.repositories.ContactRepository;
-import com.weiwu.ql.greendao.db.ChatMessageDao;
-import com.weiwu.ql.greendao.db.DaoMaster;
-import com.weiwu.ql.greendao.db.DaoSession;
-import com.weiwu.ql.greendao.db.MessageListDataDao;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.chat.ChatActivity;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
-import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
-import com.weiwu.ql.main.contact.chat.modle.NoticeData;
-import com.weiwu.ql.utils.SPUtils;
-import com.weiwu.ql.utils.SystemFacade;
 import com.weiwu.ql.view.Menu;
 
-import org.greenrobot.greendao.query.QueryBuilder;
+import org.greenrobot.eventbus.EventBus;
 
-import java.util.List;
 import java.util.Random;
 
 import static android.content.Context.BIND_AUTO_CREATE;
@@ -65,10 +58,6 @@ public class MessageFragment extends BaseFragment implements ContactContract.IMe
     private TitleBarLayout mConversationTitle;
     private RecyclerView mRvMessageList;
     private MessageAdapter mMessageAdapter;
-    private List<MessageListData> list;
-    private MessageListDataDao messageListDataDao;
-    private QueryBuilder<MessageListData> qb;
-    private DaoSession daoSession;
     private Menu mMenu;
     private ContactContract.IMessagePresenter mPresenter;
 
@@ -91,18 +80,16 @@ public class MessageFragment extends BaseFragment implements ContactContract.IMe
     private static final String TAG = "MessageFragment";
 
     @Override
-    public void groupInfoReceive(GroupInfoData data) {
-        Log.d(TAG, "groupInfoReceive: ccc");
-        if (data.getData() != null) {
-            GroupInfoData.DataDTO dto = data.getData();
-            List<MessageListData> list = messageListDataDao.queryBuilder().where(MessageListDataDao.Properties.MId.eq(dto.getId())).list();
-            MessageListData messageListData = list.get(0);
-            messageListData.setNickName(dto.getName());
-            messageListDataDao.update(messageListData);
-
-            this.list = messageListDataDao.queryBuilder().orderDesc(MessageListDataDao.Properties.Time).list();
-            mMessageAdapter.setList(this.list);
+    public void messageListReceive(MessageListData data) {
+        if (data != null && data.getData() != null) {
+            mMessageAdapter.setList(data.getData().getList());
+            EventBus.getDefault().post(new MessageEvent(data.getData().getUnread_count() + "", 103));
         }
+    }
+
+    @Override
+    public void onSuccess(HttpResult data) {
+        mPresenter.getMessageList();
     }
 
     @Override
@@ -130,115 +117,7 @@ public class MessageFragment extends BaseFragment implements ContactContract.IMe
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
-            ChatMessage receiveMessage = new Gson().fromJson(message, ChatMessage.class);
-            if (receiveMessage.getType().equals("messageInfo")) {
-                if (receiveMessage.getCode() == 200) {
-                    return;
-                }
-
-            }
-
-            MessageListData messageListData;
-            String content = "";
-            String msgType = receiveMessage.getMsgType();
-            String type = receiveMessage.getType();
-            if (type.equals("message")) {
-                if (msgType.equals("img")) {
-                    content = "[图片]";
-                } else if (msgType.equals("video")) {
-                    content = "[视频]";
-                } else if (msgType.equals("voi")) {
-                    content = "[语音]";
-                } else if (msgType.equals("msg") || msgType.equals("quote")) {
-                    content = receiveMessage.getTextMsg();
-                } else {
-                    content = " ";
-                }
-            }
-
-            ChatMessageDao chatMessageDao = daoSession.getChatMessageDao();
-            if (type.equals("notice")) {
-                NoticeData noticeData = receiveMessage.getNotice();
-//                receiveMessage.setMessageId(String.valueOf(System.currentTimeMillis() + getNum(100)));
-                receiveMessage.setNoticeInfo(new Gson().toJson(noticeData));
-                receiveMessage.setIsMeSend(1);
-
-                int dataType = noticeData.getType();
-                if (dataType == 400) {
-                    messageListDataDao.deleteByKey(receiveMessage.getReceiverId());
-//                chatMessageDao.deleteByKey(receiveMessage.getReceiverId());
-                } else if (dataType == 120) {
-                    messageListDataDao.deleteByKey(receiveMessage.getMemberId());
-                } else if (dataType != 101 && dataType != 102 && dataType != 122 && dataType != 1201 && dataType != 1200 && dataType != 1202 && dataType != 1203 && dataType != 1204) {
-                    chatMessageDao.insertOrReplace(receiveMessage);
-                    if (receiveMessage.getReceiverType().equals("member")) {
-                        messageListData = new MessageListData(receiveMessage.getMemberId(), noticeData.getFromMemberNickName(), SystemFacade.toBase64(noticeData.getNoticeMessage()), "", receiveMessage.getSendTime(), receiveMessage.getReceiverType());
-                    } else {
-                        messageListData = new MessageListData(receiveMessage.getReceiverId(), receiveMessage.getReceiverId(), SystemFacade.toBase64(content), "", receiveMessage.getSendTime(), receiveMessage.getReceiverType());
-                    }
-                    qb.where(MessageListDataDao.Properties.MId.eq(messageListData.getMId()));
-                    if (qb.buildCount().count() > 0) {
-                        messageListDataDao.update(messageListData);
-                    } else {
-                        messageListDataDao.insertOrReplace(messageListData);
-                    }
-                }
-            } else if (type.equals("function")) {
-
-                int functionTab = receiveMessage.getFunctionArg().getFunctionTab();
-                if (functionTab == 901) {
-                    chatMessageDao.deleteByKey(receiveMessage.getMessageId());
-                    NoticeData data = new NoticeData(901, "撤回", receiveMessage.getMemberNickname(), "");
-
-                    String functionInfo = new Gson().toJson(data);
-                    receiveMessage.setNoticeInfo(functionInfo);
-//                    chatMessageDao.insertOrReplace(receiveMessage);
-
-                    /*if (receiveMessage.getReceiverType().equals("member")) {
-                        messageListData = new MessageListData(receiveMessage.getMemberId(), data.getFromMemberNickName(), data.getNoticeMessage(), "", receiveMessage.getSendTime(), receiveMessage.getReceiverType());
-
-                    } else {
-                        messageListData = new MessageListData(receiveMessage.getReceiverId(), receiveMessage.getReceiverId(), content, "", receiveMessage.getSendTime(), receiveMessage.getReceiverType());
-                    }
-                    qb.where(MessageListDataDao.Properties.MId.eq(messageListData.getMId()));
-                    if (qb.buildCount().count() > 0) {
-                        messageListDataDao.update(messageListData);
-                    } else {
-                        messageListDataDao.insertOrReplace(messageListData);
-                    }*/
-                }
-
-            } else {
-
-                if (msgType.equals("quote")) {
-                    receiveMessage.setQuoteMessageInfo(new Gson().toJson(receiveMessage.getQuoteMessage()));
-                }
-                chatMessageDao.insertOrReplace(receiveMessage);
-                if (receiveMessage.getReceiverType().equals("member")) {
-                    messageListData = new MessageListData(receiveMessage.getMemberId(), receiveMessage.getMemberNickname(), content, "", receiveMessage.getSendTime(), receiveMessage.getReceiverType());
-                } else {
-                    messageListData = new MessageListData(receiveMessage.getReceiverId(), receiveMessage.getReceiverId(), content, "", receiveMessage.getSendTime(), receiveMessage.getReceiverType());
-                }
-                qb.where(MessageListDataDao.Properties.MId.eq(messageListData.getMId()));
-                if (qb.buildCount().count() > 0) {
-                    messageListDataDao.update(messageListData);
-                } else {
-                    messageListDataDao.insertOrReplace(messageListData);
-                }
-            }
-
-
-            list = messageListDataDao.queryBuilder().orderDesc(MessageListDataDao.Properties.Time).list();
-
-            if (receiveMessage.getReceiverType().equals("group")) {
-                mPresenter.getGroupInfo(receiveMessage.getReceiverId());
-            } else {
-                mMessageAdapter.setList(list);
-            }
-
-//                receiveMessage.setIsMeSend(0);
-//                chatMessageList.add(receiveMessage);
-//                initChatMsgListView();
+            mPresenter.getMessageList();
         }
     }
 
@@ -250,15 +129,10 @@ public class MessageFragment extends BaseFragment implements ContactContract.IMe
         return 0;
     }
 
-    public void setMessageList() {
-        list = messageListDataDao.queryBuilder().orderDesc(MessageListDataDao.Properties.Time).list();
-        mMessageAdapter.setList(list);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        setMessageList();
+        mPresenter.getMessageList();
         Log.d(TAG, "onResume: aaa");
     }
 
@@ -307,28 +181,46 @@ public class MessageFragment extends BaseFragment implements ContactContract.IMe
         mMessageAdapter = new MessageAdapter();
         mRvMessageList.setAdapter(mMessageAdapter);
 
-
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(getContext(), SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
-        SQLiteDatabase database = helper.getWritableDatabase();
-        DaoMaster daoMaster = new DaoMaster(database);
-        daoSession = daoMaster.newSession();
-        daoSession.clear();
-        messageListDataDao = daoSession.getMessageListDataDao();
-        qb = messageListDataDao.queryBuilder();
-
-        list = messageListDataDao.queryBuilder().orderDesc(MessageListDataDao.Properties.Time).list();
-
-        mMessageAdapter.setList(list);
+        mPresenter.getMessageList();
 
         mMessageAdapter.setChatClickListener(new MessageAdapter.IChatClickListener() {
             @Override
-            public void mClick(MessageListData data) {
-                ContactItemBean bean = new ContactItemBean(data.getMId(), data.getNickName());
+            public void mClick(MessageListData.DataDTO.ListDTO data) {
+                ContactItemBean bean = new ContactItemBean(data.getToid(), data.getName());
                 Intent intent = new Intent(getContext(), ChatActivity.class);
                 intent.putExtra(TUIKitConstants.ProfileType.CONTENT, bean);
-                intent.putExtra(AppConstant.CHAT_TYPE, data.getReceiverType());
+                intent.putExtra(AppConstant.IN, 1);
+                intent.putExtra(AppConstant.CHAT_TYPE, data.getChat_type());
+                intent.putExtra(AppConstant.CHAT_ID, data.getId());
                 startActivity(intent);
 //                getActivity().finish();
+            }
+        });
+
+        mMessageAdapter.setMessageLongClickListener(new MessageAdapter.IMessageLongClickListener() {
+            @Override
+            public void mLongClick(MessageListData.DataDTO.ListDTO data,View view) {
+                PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_message, popupMenu.getMenu());
+                android.view.Menu menu = popupMenu.getMenu();
+                MenuItem withdrawMenuItem = menu.getItem(1);
+                MenuItem mQuote = menu.getItem(0);
+                MenuItem mCollection = menu.getItem(2);
+                withdrawMenuItem.setVisible(false);
+                mQuote.setVisible(false);
+                mCollection.setVisible(false);
+                popupMenu.show();
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch(item.getItemId()){
+                            case R.id.tv_message_delete:
+                                mPresenter.delChat(new DelChatBody(data.getId()));
+                                break;
+                        }
+                        return false;
+                    }
+                });
             }
         });
         initTitleAction();

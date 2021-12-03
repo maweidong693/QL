@@ -3,6 +3,7 @@ package com.weiwu.ql.main.mine.detail;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -65,7 +66,10 @@ public class PersonalInformationActivity extends BaseActivity implements View.On
         setContentView(R.layout.personal_information_fragment);
         setPresenter(new MineInfoPresenter(MineRepository.getInstance()));
         initView();
+        Log.d(TAG, "onCreate: id===" + SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID));
     }
+
+    private static final String TAG = "aaaa";
 
     public void initView() {
         mTitleBar = findViewById(R.id.self_info_title_bar);
@@ -90,7 +94,7 @@ public class PersonalInformationActivity extends BaseActivity implements View.On
 
         });
         mInvitationCodeView.setOnClickListener(v -> {
-            IntentUtil.redirectToNextActivity(this, QrCardActivity.class,"type","2");
+            IntentUtil.redirectToNextActivity(this, QrCardActivity.class, "type", "2");
 
         });
         mItemHeadView.setOnClickListener(v -> {
@@ -127,46 +131,6 @@ public class PersonalInformationActivity extends BaseActivity implements View.On
                         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                         MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
                         mPresenter.uploadPic(body);
-
-                        /*// 结果回调
-                        Map map = new HashMap();
-                        map.put("image", file);
-                        YHttp.obtain().post(Constant.URL_UPLOAD, map, new HttpCallBack<BaseBean>() {
-                            @Override
-                            public void onSuccess(BaseBean bean) {
-                                if (bean.getData() == null) {
-                                    return;
-                                }
-                                FileUploadBean uploadBean = JSON.parseObject(bean.getData().toString(), FileUploadBean.class);
-                                String mIconUrl = uploadBean.getUrl();
-                                V2TIMUserFullInfo v2TIMUserFullInfo = new V2TIMUserFullInfo();
-                                // 头像
-                                if (!TextUtils.isEmpty(mIconUrl)) {
-                                   GlideEngine.loadCornerImage(mUserIcon, mIconUrl, null, Constant.RADIUS);
-                                    v2TIMUserFullInfo.setFaceUrl(mIconUrl);
-                                    UserInfo.getInstance().setAvatar(mIconUrl);
-//                                    EventBus.getDefault().post(new RefreshBean());
-                                }
-                                V2TIMManager.getInstance().setSelfInfo(v2TIMUserFullInfo, new V2TIMCallback() {
-                                    @Override
-                                    public void onError(int code, String desc) {
-                                        ToastUtil.toastShortMessage("更新失败");
-                                    }
-
-                                    @Override
-                                    public void onSuccess() {
-                                        EventBus.getDefault().post(new UpdatesBean());
-                                        TUIKitConfigs.getConfigs().getGeneralConfig().setUserFaceUrl(mIconUrl);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onFailed(String error) {
-
-                            }
-                        });*/
-
 
                     }
 
@@ -257,27 +221,28 @@ public class PersonalInformationActivity extends BaseActivity implements View.On
     @Override
     public void mineInfoReceive(MineInfoData data) {
         MineInfoData.DataDTO dto = data.getData();
-        if (TextUtils.isEmpty(dto.getAvator())) {
+        if (TextUtils.isEmpty(dto.getFace_url())) {
             Glide.with(this).load(R.drawable.ic_launcher).into(mUserIcon);
 //            GlideEngine.loadImage(mUserIcon, R.drawable.ic_launcher);
         } else {
-            Glide.with(this).load(dto.getAvator()).into(mUserIcon);
+            Glide.with(this).load(dto.getFace_url()).into(mUserIcon);
 //            GlideEngine.loadCornerImage(mUserIcon, dto.getAvator(), null, Constant.RADIUS);
-            UserInfo.getInstance().setAvatar(dto.getAvator());
+            UserInfo.getInstance().setAvatar(dto.getFace_url());
         }
+        UserInfo.getInstance().setUserId(dto.getIm_id());
 
-        mModifyNickNameView.setContent(dto.getNickName());
-        mModifySignatureView.setContent(dto.getPersonalSignature());
-        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getId());
+        mModifyNickNameView.setContent(dto.getNick_name());
+        mModifySignatureView.setContent(dto.getSing());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getIm_id());
     }
 
     @Override
     public void uploadReceive(LoginData data) {
-        String mIconUrl = data.getData();
+        String mIconUrl = data.getData().getSrc();
         // 头像
         if (!TextUtils.isEmpty(mIconUrl)) {
             Glide.with(this).load(mIconUrl).into(mUserIcon);
-            mPresenter.updateMineInfo(new UpdateMineInfoRequestBody(null, 0, null, null, null, mIconUrl));
+            mPresenter.updateMineInfo(new UpdateMineInfoRequestBody(null, 0 + "", null, null, null, mIconUrl));
 //                                    EventBus.getDefault().post(new RefreshBean());
         }
     }

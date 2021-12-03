@@ -8,6 +8,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,6 @@ import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.main.contact.detail.FriendProfileActivity;
 import com.weiwu.ql.main.mine.friends.CircleMovementMethod;
 import com.weiwu.ql.main.mine.friends.SpannableClickable;
-import com.weiwu.ql.main.mine.friends.data.CommentItem;
 import com.weiwu.ql.main.mine.friends.utils.UrlUtils;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class CommentListView extends LinearLayout {
     private int itemSelectorColor;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
-    private List<FriendsData.DataDTO.CommentAndReplyListDTO> mDatas;
+    private List<FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO> mDatas;
     private LayoutInflater layoutInflater;
 
     public OnItemClickListener getOnItemClickListener() {
@@ -66,15 +66,15 @@ public class CommentListView extends LinearLayout {
         this.onItemLongClickListener = onItemLongClickListener;
     }
 
-    public void setDatas(List<FriendsData.DataDTO.CommentAndReplyListDTO> datas) {
+    public void setDatas(List<FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO> datas) {
         if (datas == null) {
-            datas = new ArrayList<FriendsData.DataDTO.CommentAndReplyListDTO>();
+            datas = new ArrayList<FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO>();
         }
         mDatas = datas;
         notifyDataSetChanged();
     }
 
-    public List<FriendsData.DataDTO.CommentAndReplyListDTO> getDatas() {
+    public List<FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO> getDatas() {
         return mDatas;
     }
 
@@ -132,21 +132,21 @@ public class CommentListView extends LinearLayout {
         TextView commentTv = (TextView) convertView.findViewById(R.id.commentTv);
         final CircleMovementMethod circleMovementMethod = new CircleMovementMethod(itemSelectorColor, itemSelectorColor);
 
-        final FriendsData.DataDTO.CommentAndReplyListDTO bean = mDatas.get(position);
-        String name = bean.getFromMemberInfo().getNickName();
-        String id = bean.getId();
+        final FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO bean = mDatas.get(position);
+        String name = TextUtils.isEmpty(bean.getCommentatornick_name()) ? bean.getReplyName() : bean.getCommentatornick_name();
+        int id = bean.getId();
         String toReplyName = "";
-        if (bean.getType() == 1) {
-            toReplyName = bean.getToMemberInfo().getNickName();
+        if (bean.getType() == 2) {
+            toReplyName = bean.getReplyToName();
         }
 
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(setClickableSpan(name, bean.getFromMemberInfo().getId()));
+        builder.append(setClickableSpan(name, bean.getIm_id()));
 
         if (!TextUtils.isEmpty(toReplyName)) {
 
             builder.append(" 回复 ");
-            builder.append(setClickableSpan(toReplyName, bean.getToMemberInfo().getId()));
+            builder.append(setClickableSpan(toReplyName, bean.getReplyToId()));
         }
         builder.append(": ");
         //转换表情字符
@@ -160,7 +160,8 @@ public class CommentListView extends LinearLayout {
             public void onClick(View v) {
                 if (circleMovementMethod.isPassToTv()) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(position);
+//                        Log.d(TAG, "onClick: po==="+position);
+                        onItemClickListener.onItemClick(position, bean);
                     }
                 }
 
@@ -181,6 +182,8 @@ public class CommentListView extends LinearLayout {
 
         return convertView;
     }
+
+    private static final String TAG = "HHH";
 
     @NonNull
     private SpannableString setClickableSpan(final String textStr, final String id) {
@@ -237,7 +240,7 @@ public class CommentListView extends LinearLayout {
     }
 
     public static interface OnItemClickListener {
-        public void onItemClick(int position);
+        public void onItemClick(int position, FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO bean);
     }
 
     public static interface OnItemLongClickListener {

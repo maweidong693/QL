@@ -3,8 +3,10 @@ package com.weiwu.ql.main.mine;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
+import com.weiwu.ql.data.request.ClientIdBody;
 import com.weiwu.ql.data.request.WebLoginRequestBody;
 
 /**
@@ -28,6 +30,36 @@ public class MinePresenter implements MineContract.IMinePresenter {
             @Override
             public void onSuccess(MineInfoData data) {
                 mView.mineInfoReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void getNewMsgCount() {
+        mSource.getNewMsgCount((LifecycleProvider) mView, new IBaseCallBack<NewMsgData>() {
+            @Override
+            public void onSuccess(NewMsgData data) {
+                mView.newMsgCountResult(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void init(ClientIdBody body) {
+        mSource.init((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.onSuccess(data);
             }
 
             @Override

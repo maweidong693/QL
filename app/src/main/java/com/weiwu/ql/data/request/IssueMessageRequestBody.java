@@ -10,31 +10,55 @@ import java.util.List;
  */
 public class IssueMessageRequestBody {
 
-    private String article;
-    private List<String> imgUrl;
+    private String textContent;
+    private String mediaUrl;
+    private String mediaPreview;
+    private String pics;
+
+    public IssueMessageRequestBody(String textContent, String mediaUrl, String mediaPreview) {
+        this.textContent = textContent;
+        this.mediaUrl = mediaUrl;
+        this.mediaPreview = mediaPreview;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    public void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
+
+    public String getMediaPreview() {
+        return mediaPreview;
+    }
+
+    public void setMediaPreview(String mediaPreview) {
+        this.mediaPreview = mediaPreview;
+    }
 
     public IssueMessageRequestBody(String article) {
-        this.article = article;
+        this.textContent = article;
     }
 
-    public IssueMessageRequestBody(String article, List<String> imgUrl) {
-        this.article = article;
-        this.imgUrl = imgUrl;
+    public IssueMessageRequestBody(String article, String imgUrl) {
+        this.textContent = article;
+        this.pics = imgUrl;
     }
 
-    public String getArticle() {
-        return article;
+    public String getTextContent() {
+        return textContent;
     }
 
-    public void setArticle(String article) {
-        this.article = article;
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
     }
 
-    public List<String> getImgUrl() {
-        return imgUrl;
+    public String getPics() {
+        return pics;
     }
 
-    public void setImgUrl(List<String> imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setPics(String pics) {
+        this.pics = pics;
     }
 }

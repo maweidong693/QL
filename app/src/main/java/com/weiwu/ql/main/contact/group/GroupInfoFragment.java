@@ -6,15 +6,22 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
+import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.listener.OnResultCallbackListener;
+import com.tencent.common.dialog.DialogMaker;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.base.BaseFragment;
 import com.tencent.qcloud.tim.uikit.modules.group.info.InfoData;
-import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
+import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.network.HttpResult;
-import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
+import com.weiwu.ql.data.request.ForbiddenRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.data.request.UpdateGroupRequestBody;
 import com.weiwu.ql.main.contact.group.info.invites.GroupInvitationFragment;
 import com.weiwu.ql.main.contact.group.member.GroupMemberDeleteFragment;
@@ -26,10 +33,17 @@ import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
 import com.weiwu.ql.R;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.weiwu.ql.data.repositories.GroupRepository;
+import com.weiwu.ql.main.mine.detail.PersonalInformationActivity;
 import com.weiwu.ql.utils.SPUtils;
+import com.weiwu.ql.view.GlideEngine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 
 public class GroupInfoFragment extends BaseFragment implements GroupContract.IGroupView {
@@ -63,8 +77,8 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
 
     private void initView(View view) {
         mGroupInfoLayout = view.findViewById(R.id.group_info_layout);
-        mGroupInfoLayout.setGroupId(getArguments().getString(TUIKitConstants.Group.GROUP_ID));
-        mPresenter.getGroupInfo(getArguments().getString(TUIKitConstants.Group.GROUP_ID));
+        mGroupInfoLayout.setGroupId(getArguments().getInt(TUIKitConstants.Group.GROUP_ID));
+        mPresenter.getGroupInfo(new GroupInfoRequestBody(getArguments().getInt(TUIKitConstants.Group.GROUP_ID, 0)));
         mGroupInfoLayout.setRouter(new IGroupMemberRouter() {
             @Override
             public void forwardListMember(GroupInfo info) {
@@ -146,9 +160,11 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
                     }
                 }
                 if (isMute) {
-                    mPresenter.allMute(new InviteOrDeleteRequestBody(info.getId(), membersId));
+                    mPresenter.updateGroupInfo(new UpdateGroupRequestBody(info.getId(), "1"));
+
                 } else {
-                    mPresenter.cancelMute(new InviteOrDeleteRequestBody(info.getId(), membersId));
+                    mPresenter.updateGroupInfo(new UpdateGroupRequestBody(info.getId(), "0"));
+
                 }
             }
 
@@ -157,11 +173,27 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
                 UpdateGroupRequestBody body = new UpdateGroupRequestBody();
                 body.setId(info.getId());
                 if (isExamine) {
-                    body.setIsExamine("1");
+                    body.setIs_join_check("1");
                 } else {
-                    body.setIsExamine("0");
+                    body.setIs_join_check("0");
                 }
                 mPresenter.updateGroupInfo(body);
+            }
+
+            @Override
+            public void setGroupIcon(GroupInfo info) {
+                choosePhoto();
+            }
+
+            @Override
+            public void setAddFriend(GroupInfo info, int isAddFriend) {
+                mPresenter.updateGroupInfo(new UpdateGroupRequestBody(groupInfo.getId(), null, null, null, null, null, isAddFriend + "", null, null));
+            }
+
+            @Override
+            public void setIsTop(GroupInfo info, boolean isTop) {
+                mPresenter.updateGroupInfo(new UpdateGroupRequestBody(groupInfo.getId(), null, null, null, null, null, null, null, isTop + ""));
+
             }
         });
 
@@ -169,39 +201,91 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
             @Override
             public void quitGroup(int type, String groupId) {
                 if (type == 1) {
-                    mPresenter.dissolveGroup(groupId);
+                    mPresenter.dissolveGroup(new GroupInfoRequestBody(Integer.parseInt(groupId)));
                 } else if (type == 2) {
-                    mPresenter.signGroup(groupId);
+                    mPresenter.signGroup(new GroupInfoRequestBody(Integer.parseInt(groupId)));
                 }
             }
         });
 
     }
 
+    //选择图片
+    private void choosePhoto() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofImage())
+                .selectionMode(PictureConfig.SINGLE)
+                .isGif(false)
+                .isEnableCrop(true)
+                .withAspectRatio(1, 1)
+                .showCropFrame(true)
+                .showCropGrid(false)
+                .isCompress(true)
+                .minimumCompressSize(1000)
+                .imageEngine(GlideEngine.createGlideEngine())
+                .forResult(new OnResultCallbackListener<LocalMedia>() {
+                    @Override
+                    public void onResult(List<LocalMedia> result) {
+                        if (result == null || result.isEmpty()) {
+                            return;
+                        }
+                        DialogMaker.showProgressDialog(getContext(), "正在上传...");
+                        File file = new File(result.get(0).getCompressPath());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+                        mPresenter.uploadPic(body);
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // 取消
+                    }
+                });
+
+    }
+
+    public String listToString(List list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return list.isEmpty() ? "" : sb.toString().substring(0, sb.toString().length() - 1);
+    }
+
     @Override
     public void groupInfoReceive(GroupInfoData data) {
         if (data != null) {
             groupInfo = new GroupInfo();
-            List<GroupMemberInfo> member = new ArrayList<>();
-            List<GroupMemberData.DataDTO> list = data.getData().getMemberGroupResultVOList();
+//            List<GroupMemberInfo> member = new ArrayList<>();
+            /*List<GroupMemberData.DataDTO> list = data.getData().getMemberGroupResultVOList();
             for (int i = 0; i < list.size(); i++) {
                 GroupMemberInfo groupMemberInfo = new GroupMemberInfo();
                 member.add(groupMemberInfo.covertTIMGroupMemberInfo(list.get(i)));
-            }
+            }*/
             groupInfo.covertTIMGroupDetailInfo(data);
-            groupInfo.setMemberDetails(member);
+//            groupInfo.setMemberDetails(member);
             mGroupInfoLayout.setGroupInfo(groupInfo);
         }
     }
 
     @Override
+    public void uploadReceive(LoginData data) {
+        if (data != null && data.getData() != null) {
+            DialogMaker.dismissProgressDialog();
+            mPresenter.updateGroupInfo(new UpdateGroupRequestBody(groupInfo.getId(), null, null, null, data.getData().getSrc(), null, null, null, null));
+        }
+    }
+
+    @Override
     public void allMuteReceive(HttpResult data) {
-        showToast(data.getMessage());
+        showToast(data.getMsg());
     }
 
     @Override
     public void onSuccess(HttpResult data) {
-        showToast(data.getMessage());
+        mPresenter.getGroupInfo(new GroupInfoRequestBody(getArguments().getInt(TUIKitConstants.Group.GROUP_ID, 0)));
+        showToast(data.getMsg());
         getActivity().setResult(1002);
         getActivity().finish();
     }

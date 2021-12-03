@@ -3,6 +3,7 @@ package com.tencent.qcloud.tim.uikit.modules.group.info;
 import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.qcloud.tim.uikit.modules.chat.base.ChatInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +21,19 @@ public class GroupInfo extends ChatInfo {
     private boolean isOwner;
     private int isExamine;
     private int isAllForbidden;
+    private int isAddFriend;
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public int getIsAddFriend() {
+        return isAddFriend;
+    }
+
+    public void setIsAddFriend(int isAddFriend) {
+        this.isAddFriend = isAddFriend;
+    }
 
     public int getIsExamine() {
         return isExamine;
@@ -106,12 +120,14 @@ public class GroupInfo extends ChatInfo {
     public void setNotice(String signature) {
         this.notice = signature;
     }
+
     /**
      * 获取群简介
      */
     public String getGroupIntroduction() {
         return groupIntroduction;
     }
+
     /**
      * 设置群简介
      *
@@ -202,9 +218,10 @@ public class GroupInfo extends ChatInfo {
      * @return
      */
     public boolean isManager() {
-        
-        return isManger() ;
+
+        return isManger();
     }
+
     /**
      * 设置是否是群主
      *
@@ -225,19 +242,29 @@ public class GroupInfo extends ChatInfo {
             return this;
         }
         GroupInfoData.DataDTO data = infoResult.getData();
-        setChatName(data.getName());
-        setGroupName(data.getName());
+        setChatName(data.getGroup_name());
+        setGroupName(data.getGroup_name());
         setId(data.getId());
-        setNotice(data.getNotice());
+        setGroupId(data.getGroup_id());
+        setNotice(data.getNotification());
         setGroupIntroduction(data.getIntroduction());
-        setMemberCount(data.getMemberGroupResultVOList().size());
+        setMemberCount(data.getGroup_user_count());
+        List<GroupMemberInfo> members = new ArrayList<>();
+        List<GroupInfoData.DataDTO.GroupUserDTO> groupUser = infoResult.getData().getGroupUser();
+        for (int i = 0; i < groupUser.size(); i++) {
+            GroupMemberInfo memberInfo = new GroupMemberInfo();
+            GroupMemberInfo info = memberInfo.covertTIMGroupMemberInfo(groupUser.get(i));
+            members.add(info);
+        }
+        setMemberDetails(members);
         setGroupType("群聊");
-        setOwner(data.getCurrentMemberRoleName());
-        setManger(data.getCurrentMemberRole() == 110);
-        setOwner(data.getCurrentMemberRole() == 111);
-        setIsExamine(data.getIsExamine());
-        setIsAllForbidden(data.getIsAllForbidden());
-//        setJoinType(infoResult.getGroupInfo().getGroupAddOpt());
+        setOwner(data.getGroup_name());
+        setManger(data.getGroup_role() == 1);
+        setOwner(data.getGroup_role() == 2);
+        setIsExamine(data.getIs_join_check());
+        setIsAllForbidden(data.getIs_ban_say());
+        setIsAddFriend(data.getIs_add_friend());
+        setTopChat(data.getIs_top() == 1);
         return this;
     }
 }

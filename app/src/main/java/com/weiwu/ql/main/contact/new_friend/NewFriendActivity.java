@@ -1,7 +1,5 @@
 package com.weiwu.ql.main.contact.new_friend;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +7,6 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.tencent.common.Constant;
-import com.tencent.common.http.HttpCallBack;
-import com.tencent.common.http.YHttp;
-import com.tencent.imsdk.v2.V2TIMFriendApplication;
-import com.tencent.qcloud.tim.uikit.NewFriendBean;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
@@ -29,9 +22,7 @@ import com.weiwu.ql.main.contact.add.AddMoreActivity;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class NewFriendActivity extends BaseActivity implements ContactContract.INewFriendView {
 
@@ -86,7 +77,7 @@ public class NewFriendActivity extends BaseActivity implements ContactContract.I
     }
 
     private void initPendency() {
-        mPresenter.getNewFriendList(new NewFriendRequestBody(""));
+        mPresenter.getNewFriendList();
     }
 
     @Override
@@ -115,7 +106,7 @@ public class NewFriendActivity extends BaseActivity implements ContactContract.I
         mProcessedAdapter.setNewFriendRequestItemClickListener(new NewFriendAdapter.INewFriendRequestItemClickListener() {
             @Override
             public void mItemClick(NewFriendListData.DataDTO dataDTO) {
-                mPresenter.handlerNewFriendRequest(new NewFriendRequestBody("200", dataDTO.getId(), ""));
+                mPresenter.handlerNewFriendRequest(new NewFriendRequestBody("1", dataDTO.getId() + ""));
             }
         });
     }
@@ -123,9 +114,9 @@ public class NewFriendActivity extends BaseActivity implements ContactContract.I
     @Override
     public void handlerFriendRequestReceive(HttpResult data) {
         if (data.getCode() == 200) {
-            showToast(data.getMessage());
+            showToast(data.getMsg());
         } else {
-            showToast(data.getMessage());
+            showToast(data.getMsg());
         }
         EventBus.getDefault().post(new MessageEvent("刷新好友列表", 101));
         initPendency();

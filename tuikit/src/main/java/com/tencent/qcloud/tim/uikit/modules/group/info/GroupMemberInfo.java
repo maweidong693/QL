@@ -164,15 +164,15 @@ public class GroupMemberInfo extends BaseIndexPinyinBean implements Serializable
         this.memberType = memberType;
     }
 
-    public GroupMemberInfo covertTIMGroupMemberInfo(GroupMemberData.DataDTO info) {
+    public GroupMemberInfo covertTIMGroupMemberInfo(GroupInfoData.DataDTO.GroupUserDTO info) {
 //        setJoinTime(info.getJoinTime());
-        setMemberType(info.getRole());
-        setAccount(info.getId());
-        setNameCard(info.getNickName());
-        setRemark(info.getNickName());
-        setNickname(info.getNickName());
-        setIconUrl(info.getAvator());
-        setIsForbidden(info.getIsForbidden());
+        setMemberType(info.getGroup_role());
+        setAccount(info.getMember_id());
+        setNameCard(info.getNick_name());
+        setRemark(info.getNick_name());
+        setNickname(info.getNick_name());
+        setIconUrl(info.getFace_url());
+        setIsForbidden(info.getIs_ban_say());
         return this;
     }
 

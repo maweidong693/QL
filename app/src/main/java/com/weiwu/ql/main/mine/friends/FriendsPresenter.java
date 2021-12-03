@@ -5,8 +5,12 @@ import com.weiwu.ql.base.IBaseCallBack;
 import com.weiwu.ql.data.bean.FriendsData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddCommentRequestBody;
+import com.weiwu.ql.data.request.FriendsRequestBody;
+import com.weiwu.ql.data.request.RemoveCommentRequestBody;
+import com.weiwu.ql.data.request.UpdateBgBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
 
 import okhttp3.MultipartBody;
@@ -42,8 +46,23 @@ public class FriendsPresenter implements FriendsContract.IFriendsPresenter {
     }
 
     @Override
-    public void deleteComment(String commentId) {
-        mSource.deleteComment((LifecycleProvider) mView, commentId, new IBaseCallBack<HttpResult>() {
+    public void getNewMsgCount() {
+        mSource.getNewMsgCount((LifecycleProvider) mView, new IBaseCallBack<NewMsgData>() {
+            @Override
+            public void onSuccess(NewMsgData data) {
+                mView.newMsgCountResult(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void deleteComment(RemoveCommentRequestBody body) {
+        mSource.deleteComment((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
                 mView.onSuccess(data);
@@ -57,8 +76,8 @@ public class FriendsPresenter implements FriendsContract.IFriendsPresenter {
     }
 
     @Override
-    public void getAllFriends(String pageSize, String pageNum) {
-        mSource.getAllFriends((LifecycleProvider) mView, pageSize, pageNum, new IBaseCallBack<FriendsData>() {
+    public void getAllFriends(FriendsRequestBody body) {
+        mSource.getAllFriends((LifecycleProvider) mView, body, new IBaseCallBack<FriendsData>() {
             @Override
             public void onSuccess(FriendsData data) {
                 mView.allFriendsReceive(data);
@@ -72,8 +91,23 @@ public class FriendsPresenter implements FriendsContract.IFriendsPresenter {
     }
 
     @Override
-    public void deleteFriends(String momentId) {
-        mSource.deleteFriends((LifecycleProvider) mView, momentId, new IBaseCallBack<HttpResult>() {
+    public void deleteFriends(FriendsRequestBody body) {
+        mSource.deleteFriends((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.onSuccess(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void like(RemoveCommentRequestBody body) {
+        mSource.like((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
                 mView.onSuccess(data);
@@ -102,7 +136,7 @@ public class FriendsPresenter implements FriendsContract.IFriendsPresenter {
     }
 
     @Override
-    public void updateBg(UpdateMineInfoRequestBody body) {
+    public void updateBg(UpdateBgBody body) {
         mSource.updateBg((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
@@ -116,20 +150,20 @@ public class FriendsPresenter implements FriendsContract.IFriendsPresenter {
         });
     }
 
-    @Override
-    public void getMineInfo() {
-        mSource.getMineInfo((LifecycleProvider) mView, new IBaseCallBack<MineInfoData>() {
-            @Override
-            public void onSuccess(MineInfoData data) {
-                mView.mineInfoReceive(data);
-            }
-
-            @Override
-            public void onFail(String msg, int statusCode) {
-                mView.onFail(msg, statusCode);
-            }
-        });
-    }
+//    @Override
+//    public void getMineInfo() {
+//        mSource.getMineInfo((LifecycleProvider) mView, new IBaseCallBack<MineInfoData>() {
+//            @Override
+//            public void onSuccess(MineInfoData data) {
+//                mView.mineInfoReceive(data);
+//            }
+//
+//            @Override
+//            public void onFail(String msg, int statusCode) {
+//                mView.onFail(msg, statusCode);
+//            }
+//        });
+//    }
 
     @Override
     public void attachView(FriendsContract.IFriendsView view) {

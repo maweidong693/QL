@@ -23,8 +23,8 @@ public class NewFriendPresenter implements ContactContract.INewFriendPresenter {
     }
 
     @Override
-    public void getNewFriendList(NewFriendRequestBody body) {
-        mSource.getNewFriendList((LifecycleProvider) mView, body, new IBaseCallBack<NewFriendListData>() {
+    public void getNewFriendList() {
+        mSource.getNewFriendList((LifecycleProvider) mView, new IBaseCallBack<NewFriendListData>() {
             @Override
             public void onSuccess(NewFriendListData data) {
                 mView.getNewFriendListReceive(data);

@@ -47,7 +47,7 @@ public class GlideEngine implements ImageEngine {
                 .load(url)
                 .into(imageView);
     }
-    public  void loadCornerImage(ImageView imageView, String filePath, RequestListener listener, float radius) {
+    public static void loadCornerImage(ImageView imageView, String filePath, RequestListener listener, float radius) {
         CornerTransform transform = new CornerTransform(TUIKit.getAppContext(), radius);
         RequestOptions options = new RequestOptions()
                 .centerCrop()

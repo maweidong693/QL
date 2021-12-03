@@ -3,7 +3,11 @@ package com.weiwu.ql.main.message;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.network.HttpResult;
+import com.weiwu.ql.data.request.DelChatBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
+import com.weiwu.ql.main.contact.chat.modle.MessageListData;
 
 /**
  *  
@@ -21,11 +25,21 @@ public class MessagePresenter implements ContactContract.IMessagePresenter {
     }
 
     @Override
-    public void getGroupInfo(String groupId) {
-        mSource.getGroupInfo((LifecycleProvider) mView, groupId, new IBaseCallBack<GroupInfoData>() {
+    public void attachView(ContactContract.IMessageView view) {
+        mView = view;
+    }
+
+    @Override
+    public void detachView(ContactContract.IMessageView view) {
+        mView = null;
+    }
+
+    @Override
+    public void delChat(DelChatBody body) {
+        mSource.delChat((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
-            public void onSuccess(GroupInfoData data) {
-                mView.groupInfoReceive(data);
+            public void onSuccess(HttpResult data) {
+                mView.onSuccess(data);
             }
 
             @Override
@@ -36,12 +50,17 @@ public class MessagePresenter implements ContactContract.IMessagePresenter {
     }
 
     @Override
-    public void attachView(ContactContract.IMessageView view) {
-        mView = view;
-    }
+    public void getMessageList() {
+        mSource.getMessageList((LifecycleProvider) mView, new IBaseCallBack<MessageListData>() {
+            @Override
+            public void onSuccess(MessageListData data) {
+                mView.messageListReceive(data);
+            }
 
-    @Override
-    public void detachView(ContactContract.IMessageView view) {
-        mView = null;
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
     }
 }

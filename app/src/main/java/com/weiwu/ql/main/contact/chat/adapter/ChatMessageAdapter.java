@@ -3,12 +3,11 @@ package com.weiwu.ql.main.contact.chat.adapter;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,19 +15,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.cunoraz.gifview.library.GifView;
 import com.google.gson.Gson;
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.R;
-import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
-import com.weiwu.ql.main.contact.chat.modle.NoticeData;
+import com.weiwu.ql.main.contact.chat.modle.HistoryMessageData;
 import com.weiwu.ql.main.contact.chat.modle.NoticeOrderData;
+import com.weiwu.ql.main.mine.friends.utils.GlideCircleTransform;
+import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.utils.SystemFacade;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -41,11 +43,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final String TAG = "ChatMessageAdapter";
 
-    private List<ChatMessage> mList = new ArrayList<>();
+    private List<HistoryMessageData.DataDTO.ListDTO> mList = new ArrayList<>();
 
-    public void setList(List<ChatMessage> list) {
-        mList = list;
+    public List<HistoryMessageData.DataDTO.ListDTO> getList() {
+        return mList;
+    }
+
+    public void setList(List<HistoryMessageData.DataDTO.ListDTO> list) {
+        mList.addAll(0, list);
         notifyDataSetChanged();
+    }
+
+
+    public void clearList() {
+        mList.clear();
     }
 
     @NonNull
@@ -59,22 +70,63 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    private IFriendClickListener mFriendClickListener;
+
+    public void setFriendClickListener(IFriendClickListener friendClickListener) {
+        mFriendClickListener = friendClickListener;
+    }
+
+    public interface IFriendClickListener {
+        void click(HistoryMessageData.DataDTO.ListDTO mChatMessage);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
-        ChatMessage mChatMessage = mList.get(position);
+        HistoryMessageData.DataDTO.ListDTO mChatMessage = mList.get(position);
 //        int isMeSend = mChatMessage.getIsMeSend();
         Context context = holder.itemView.getContext();
         if (holder instanceof ReceiveMessageViewHolder) {
             ReceiveMessageViewHolder receiveHolder = (ReceiveMessageViewHolder) holder;
-            if (mChatMessage.getType().equals("message")) {
-                String msgType = mChatMessage.getMsgType();
-
-                if (msgType.equals("msg") || msgType.equals("voi") || msgType.equals("quote")) {
+            if (mChatMessage.getLast_time().equals("0000-00-00 00:00:00")) {
+                receiveHolder.mReceiveTime.setVisibility(View.GONE);
+            } else {
+                receiveHolder.mReceiveTime.setVisibility(View.VISIBLE);
+                receiveHolder.mReceiveTime.setText(SystemFacade.getNewChatTime(mChatMessage.getLast_time()));
+            }
+            if (mChatMessage.getType() != 1) {
+                int msgType = mChatMessage.getCate();
+                receiveHolder.mReceiveIcon.setVisibility(View.VISIBLE);
+                receiveHolder.mReceiveIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mFriendClickListener != null) {
+                            mFriendClickListener.click(mChatMessage);
+                        }
+                    }
+                });
+                if (!TextUtils.isEmpty(mChatMessage.getFace_url())) {
+                    Glide.with(context)
+                            .load(mChatMessage.getFace_url())
+                            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                            .placeholder(R.drawable.icon)
+                            .transform(new GlideCircleTransform())
+                            .into(receiveHolder.mReceiveIcon);
+//                    Glide.with(receiveHolder.itemView.getContext()).load(mChatMessage.getFace_url()).into(receiveHolder.mReceiveIcon);
+                } else {
+                    Glide.with(context)
+                            .load(R.drawable.icon)
+                            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                            .placeholder(R.drawable.icon)
+                            .transform(new GlideCircleTransform())
+                            .into(receiveHolder.mReceiveIcon);
+//                    Glide.with(receiveHolder.itemView.getContext()).load(R.drawable.ic_launcher).into(receiveHolder.mReceiveIcon);
+                }
+                if (msgType == 1 || msgType == 3 || msgType == 5) {
                     receiveHolder.mReceiveContent.setBackground(context.getResources().getDrawable(R.drawable.jmui_msg_receive_bg));
                 } else {
                     receiveHolder.mReceiveContent.setBackground(context.getResources().getDrawable(R.color.transparent));
                 }
-                receiveHolder.mReceiveNickName.setText(mChatMessage.getMemberNickname());
+                receiveHolder.mReceiveNickName.setText(mChatMessage.getNick_name());
                 receiveHolder.mReceiveMsg.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
@@ -93,30 +145,30 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         return true;
                     }
                 });
-                if (msgType.equals("msg")) {
-                    String content = mChatMessage.getTextMsg();
+                if (msgType == 1) {
+                    String content = mChatMessage.getContent();
                     receiveHolder.mReceiveMsg.setVisibility(View.VISIBLE);
                     receiveHolder.mReceiveIv.setVisibility(View.GONE);
                     receiveHolder.mReceiveVideoPlay.setVisibility(View.GONE);
                     receiveHolder.mReceiveVoice.setVisibility(View.GONE);
-                    receiveHolder.mReceiveMsg.setText(SystemFacade.base64ToString(content));
+                    receiveHolder.mReceiveMsg.setText(content);
                     receiveHolder.mReceiveQuote.setVisibility(View.GONE);
                     receiveHolder.mReceiveIv.setOnClickListener(null);
 
-                } else if (msgType.equals("quote")) {
-                    String content = mChatMessage.getTextMsg();
+                } else if (msgType == 5) {
+                    String content = mChatMessage.getContent();
                     receiveHolder.mReceiveMsg.setVisibility(View.VISIBLE);
                     receiveHolder.mReceiveIv.setVisibility(View.GONE);
                     receiveHolder.mReceiveVideoPlay.setVisibility(View.GONE);
                     receiveHolder.mReceiveVoice.setVisibility(View.GONE);
-                    receiveHolder.mReceiveMsg.setText(SystemFacade.base64ToString(content));
+                    receiveHolder.mReceiveMsg.setText(content);
                     receiveHolder.mReceiveIv.setOnClickListener(null);
                     receiveHolder.mReceiveQuote.setVisibility(View.VISIBLE);
-                    String quoteMessageInfo = mChatMessage.getQuoteMessageInfo();
-                    ChatMessage chatMessage = new Gson().fromJson(quoteMessageInfo, ChatMessage.class);
+                    String quoteMessageInfo = mChatMessage.getCite();
+                    HistoryMessageData.DataDTO.ListDTO chatMessage = new Gson().fromJson(StringEscapeUtils.unescapeJava(quoteMessageInfo), HistoryMessageData.DataDTO.ListDTO.class);
                     if (chatMessage != null) {
                         String quoteContent = "";
-                        if (chatMessage.getMsgType().equals("img")) {
+                        if (chatMessage.getCate() == 2) {
                             quoteContent = "[图片]";
                             receiveHolder.mReceiveQuote.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -126,7 +178,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                     }
                                 }
                             });
-                        } else if (chatMessage.getMsgType().equals("video")) {
+                        } else if (chatMessage.getCate() == 4) {
                             quoteContent = "[视频]";
                             receiveHolder.mReceiveQuote.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -138,12 +190,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             });
 
                         } else {
-                            quoteContent = SystemFacade.base64ToString(chatMessage.getTextMsg());
+                            quoteContent = chatMessage.getContent();
                         }
-                        receiveHolder.mReceiveQuote.setText(chatMessage.getMemberNickname() + ":" + quoteContent);
+                        receiveHolder.mReceiveQuote.setText(chatMessage.getNick_name() + ":" + quoteContent);
                     }
 
-                } else if (msgType.equals("img")) {
+                } else if (msgType == 2) {
 
                     receiveHolder.mReceiveMsg.setVisibility(View.GONE);
                     receiveHolder.mReceiveIv.setVisibility(View.VISIBLE);
@@ -151,7 +203,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     receiveHolder.mReceiveVoice.setVisibility(View.GONE);
                     receiveHolder.mReceiveQuote.setVisibility(View.GONE);
 
-                    Glide.with(context).load(mChatMessage.getUrl()).into(receiveHolder.mReceiveIv);
+                    Glide.with(context).load(mChatMessage.getContent()).into(receiveHolder.mReceiveIv);
                     receiveHolder.mReceiveIv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -162,14 +214,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     });
 //                holder.rl_receive_msg.setOnLongClickListener(null);
 //                holder.rl_send_msg.setOnLongClickListener(null);
-                } else if (msgType.equals("video")) {
+                } else if (msgType == 4) {
                     receiveHolder.mReceiveMsg.setVisibility(View.GONE);
                     receiveHolder.mReceiveIv.setVisibility(View.VISIBLE);
                     receiveHolder.mReceiveVideoPlay.setVisibility(View.VISIBLE);
                     receiveHolder.mReceiveVoice.setVisibility(View.GONE);
                     receiveHolder.mReceiveQuote.setVisibility(View.GONE);
 
-                    Glide.with(context).load(mChatMessage.getUrl()).into(receiveHolder.mReceiveIv);
+                    Glide.with(context).load(mChatMessage.getContent()).into(receiveHolder.mReceiveIv);
                     receiveHolder.mReceiveIv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -181,7 +233,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 //                holder.rl_receive_msg.setOnLongClickListener(null);
 //                holder.rl_send_msg.setOnLongClickListener(null);
 
-                } else if (msgType.equals("voi")) {
+                } else if (msgType == 3) {
                     receiveHolder.mReceiveMsg.setVisibility(View.GONE);
                     receiveHolder.mReceiveIv.setVisibility(View.GONE);
                     receiveHolder.mReceiveVideoPlay.setVisibility(View.GONE);
@@ -191,7 +243,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     MediaPlayer mediaPlayer = new MediaPlayer();
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     try {
-                        mediaPlayer.setDataSource(mChatMessage.getUrl());
+                        mediaPlayer.setDataSource(mChatMessage.getContent());
                         mediaPlayer.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -210,11 +262,38 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 //                holder.rl_send_msg.setOnLongClickListener(null);
 
                 }
+            } else if (mChatMessage.getType() == 1) {
+                String noticeInfo = mChatMessage.getContent();
+                receiveHolder.mReceiveContent.setVisibility(View.GONE);
+                receiveHolder.mReceiveNickName.setVisibility(View.GONE);
+                receiveHolder.mReceiveIcon.setVisibility(View.GONE);
+                receiveHolder.mReceiveIcon.setOnClickListener(null);
+                receiveHolder.mNotice.setVisibility(View.VISIBLE);
+                receiveHolder.mNotice.setText(noticeInfo);
             }
-
         } else if (holder instanceof SendMessageViewHolder) {
             SendMessageViewHolder sendHolder = (SendMessageViewHolder) holder;
-            if (mChatMessage.getType().equals("message")) {
+            if (mChatMessage.getLast_time().equals("0000-00-00 00:00:00")) {
+                sendHolder.mSendTime.setVisibility(View.GONE);
+            } else {
+                sendHolder.mSendTime.setVisibility(View.VISIBLE);
+                sendHolder.mSendTime.setText(SystemFacade.getNewChatTime(mChatMessage.getLast_time()));
+            }
+            if (mChatMessage.getType() != 1) {
+                sendHolder.mSendIcon.setVisibility(View.VISIBLE);
+                sendHolder.mSendIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mFriendClickListener != null) {
+                            mFriendClickListener.click(mChatMessage);
+                        }
+                    }
+                });
+                if (!TextUtils.isEmpty(mChatMessage.getFace_url())) {
+                    Glide.with(sendHolder.itemView.getContext()).load(mChatMessage.getFace_url()).into(sendHolder.mSendIcon);
+                } else {
+                    Glide.with(sendHolder.itemView.getContext()).load(R.drawable.ic_launcher).into(sendHolder.mSendIcon);
+                }
                 sendHolder.mSendMsg.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
@@ -224,41 +303,41 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         return false;
                     }
                 });
+                int msgType = mChatMessage.getCate();
                 sendHolder.mSendIv.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         if (mMessageLongClickListener != null) {
+
                             mMessageLongClickListener.mLongClick(mChatMessage, sendHolder.mSendContent);
                         }
                         return false;
                     }
                 });
-                String msgType = mChatMessage.getMsgType();
 
                 sendHolder.mContent.setVisibility(View.VISIBLE);
                 sendHolder.mNotice.setVisibility(View.GONE);
-                sendHolder.mOrderNotice.setVisibility(View.GONE);
 
 
-                if (msgType.equals("msg") || msgType.equals("voi") || msgType.equals("quote")) {
+                if (msgType == 1 || msgType == 3 || msgType == 5) {
                     sendHolder.mSendContent.setBackground(context.getResources().getDrawable(R.drawable.jmui_msg_send_bg));
                 } else {
                     sendHolder.mSendContent.setBackground(context.getResources().getDrawable(R.color.transparent));
                 }
 
-                if (msgType.equals("msg")) {
-                    String content = mChatMessage.getTextMsg();
+                if (msgType == 1) {
+                    String content = mChatMessage.getContent();
                     sendHolder.mSendMsg.setVisibility(View.VISIBLE);
                     sendHolder.mSendIv.setVisibility(View.GONE);
                     sendHolder.mSendVideoPlay.setVisibility(View.GONE);
                     sendHolder.mSendVoice.setVisibility(View.GONE);
-                    sendHolder.mSendMsg.setText(SystemFacade.base64ToString(content));
+                    sendHolder.mSendMsg.setText(content);
                     sendHolder.mSendIv.setOnClickListener(null);
                     sendHolder.mSendQuote.setVisibility(View.GONE);
 
 
-                } else if (msgType.equals("quote")) {
-                    String content = mChatMessage.getTextMsg();
+                } else if (msgType == 5) {
+                    String content = mChatMessage.getContent();
                     sendHolder.mSendMsg.setVisibility(View.VISIBLE);
                     sendHolder.mSendIv.setVisibility(View.GONE);
                     sendHolder.mSendVideoPlay.setVisibility(View.GONE);
@@ -266,11 +345,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     sendHolder.mSendMsg.setText(content);
                     sendHolder.mSendIv.setOnClickListener(null);
                     sendHolder.mSendQuote.setVisibility(View.VISIBLE);
-                    String quoteMessageInfo = mChatMessage.getQuoteMessageInfo();
-                    ChatMessage chatMessage = new Gson().fromJson(quoteMessageInfo, ChatMessage.class);
+                    String quoteMessageInfo = mChatMessage.getCite();
+
+                    String s = StringEscapeUtils.unescapeJava(quoteMessageInfo);
+                    HistoryMessageData.DataDTO.ListDTO chatMessage = new Gson().fromJson(s, HistoryMessageData.DataDTO.ListDTO.class);
                     if (chatMessage != null) {
                         String quoteContent = "";
-                        if (chatMessage.getMsgType().equals("img")) {
+                        if (chatMessage.getCate() == 2) {
                             quoteContent = "[图片]";
                             sendHolder.mSendQuote.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -280,7 +361,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                     }
                                 }
                             });
-                        } else if (chatMessage.getMsgType().equals("video")) {
+                        } else if (chatMessage.getCate() == 4) {
                             quoteContent = "[视频]";
                             sendHolder.mSendQuote.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -292,12 +373,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             });
 
                         } else {
-                            quoteContent = SystemFacade.base64ToString(chatMessage.getTextMsg());
+                            quoteContent = chatMessage.getContent();
                         }
-                        sendHolder.mSendQuote.setText(chatMessage.getMemberNickname() + ":" + quoteContent);
+                        sendHolder.mSendQuote.setText(chatMessage.getNick_name() + ":" + quoteContent);
                     }
 
-                } else if (msgType.equals("img")) {
+                } else if (msgType == 2) {
 
                     sendHolder.mSendMsg.setVisibility(View.GONE);
                     sendHolder.mSendIv.setVisibility(View.VISIBLE);
@@ -305,7 +386,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     sendHolder.mSendVoice.setVisibility(View.GONE);
                     sendHolder.mSendQuote.setVisibility(View.GONE);
 
-                    Glide.with(context).load(mChatMessage.getUrl()).into(sendHolder.mSendIv);
+                    Glide.with(context).load(mChatMessage.getContent()).into(sendHolder.mSendIv);
                     sendHolder.mSendIv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -314,16 +395,21 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             }
                         }
                     });
+                    if (mChatMessage.getSending() == 0) {
+                        sendHolder.mSending.setVisibility(View.GONE);
+                    } else {
+                        sendHolder.mSending.setVisibility(View.VISIBLE);
+                    }
 //                holder.rl_receive_msg.setOnLongClickListener(null);
 //                holder.rl_send_msg.setOnLongClickListener(null);
-                } else if (msgType.equals("video")) {
+                } else if (msgType == 4) {
                     sendHolder.mSendMsg.setVisibility(View.GONE);
                     sendHolder.mSendIv.setVisibility(View.VISIBLE);
                     sendHolder.mSendVideoPlay.setVisibility(View.VISIBLE);
                     sendHolder.mSendVoice.setVisibility(View.GONE);
                     sendHolder.mSendQuote.setVisibility(View.GONE);
 
-                    Glide.with(context).load(mChatMessage.getUrl()).into(sendHolder.mSendIv);
+                    Glide.with(context).load(mChatMessage.getContent()).into(sendHolder.mSendIv);
                     sendHolder.mSendIv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -332,10 +418,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             }
                         }
                     });
+
+                    if (mChatMessage.getSending() == 0) {
+                        sendHolder.mSending.setVisibility(View.GONE);
+                    } else {
+                        sendHolder.mSending.setVisibility(View.VISIBLE);
+                    }
 //                holder.rl_receive_msg.setOnLongClickListener(null);
 //                holder.rl_send_msg.setOnLongClickListener(null);
 
-                } else if (msgType.equals("voi")) {
+                } else if (msgType == 3) {
                     sendHolder.mSendMsg.setVisibility(View.GONE);
                     sendHolder.mSendIv.setVisibility(View.GONE);
                     sendHolder.mSendVideoPlay.setVisibility(View.GONE);
@@ -345,7 +437,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     MediaPlayer mediaPlayer = new MediaPlayer();
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     try {
-                        mediaPlayer.setDataSource(mChatMessage.getUrl());
+                        mediaPlayer.setDataSource(mChatMessage.getContent());
                         mediaPlayer.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -360,134 +452,38 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                         }
                     });
+
+                    /*if (mChatMessage.getSending() == 0) {
+                        sendHolder.mSending.setVisibility(View.GONE);
+                    } else {
+                        sendHolder.mSending.setVisibility(View.VISIBLE);
+                    }*/
 //                holder.rl_receive_msg.setOnLongClickListener(null);
 //                holder.rl_send_msg.setOnLongClickListener(null);
 
                 }
-            } else if (mChatMessage.getType().equals("notice")) {
+            } else if (mChatMessage.getType() == 1) {
 
-                String noticeInfo = mChatMessage.getNoticeInfo();
-                NoticeData noticeData = new Gson().fromJson(noticeInfo, NoticeData.class);
-                int noticeDataType = noticeData.getType();
-                if (noticeDataType == 601) {
-                    NoticeOrderData tradeInfo = noticeData.getTradeInfo();
-                    sendHolder.mContent.setVisibility(View.GONE);
-                    sendHolder.mNotice.setVisibility(View.GONE);
-                    sendHolder.mOrderNotice.setVisibility(View.VISIBLE);
-                    sendHolder.mOrderNotice.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (mOrderNoticeClickListener != null) {
-                                mOrderNoticeClickListener.mOrderClick(tradeInfo);
-                            }
-                        }
-                    });
-
-                    sendHolder.mOrderNo.setText(tradeInfo.getOrderNo());
-                    NoticeOrderData.CreatedTimeDTO createdTime = tradeInfo.getCreatedTime();
-                    NoticeOrderData.ReleaseTimeDTO.DateDTO date = createdTime.getDate();
-                    NoticeOrderData.ReleaseTimeDTO.TimeDTO time = createdTime.getTime();
-                    sendHolder.mOrderTime.setText(date.getYear() + " -" + date.getMonth() + " -" + date.getDay() + " " + time.getHour() + ":" + time.getMinute());
-                    sendHolder.mOrderMoney.setText(String.valueOf(tradeInfo.getMoney() / 100));
-                    sendHolder.mOrderPerson.setText(tradeInfo.getDispatchMemberId());
-                    sendHolder.mOrderCoin.setText(tradeInfo.getReleaseCoinName());
-
-                } else {
-                    String noticeContent = "";
-                    switch (noticeDataType) {
-                        case 101:
-                        case 103:
-                            noticeContent = noticeData.getFromMemberNickName() + "禁言了成员";
-                            break;
-                        case 102:
-                        case 104:
-                            noticeContent = noticeData.getFromMemberNickName() + "解除了禁言";
-                            break;
-
-                        case 110:
-                            noticeContent = noticeData.getFromMemberNickName() + "设置了管理员";
-                            break;
-                        case 111:
-                            noticeContent = noticeData.getFromMemberNickName() + "转让了群主";
-                            break;
-                        case 112:
-                            noticeContent = noticeData.getFromMemberNickName() + "修改了群公告为：" + noticeData.getRelationInfo();
-
-                            break;
-                        case 113:
-                            noticeContent = noticeData.getFromMemberNickName() + "修改了群名称";
-
-                            break;
-                        case 114:
-                            noticeContent = noticeData.getFromMemberNickName() + "修改了加群方式";
-
-                            break;
-                        case 115:
-                            noticeContent = noticeData.getFromMemberNickName() + "设置了群内加好友方式";
-
-                            break;
-                        case 116:
-                            noticeContent = noticeData.getFromMemberNickName() + "退出了群聊";
-
-                            break;
-                        case 117:
-                            noticeContent = noticeData.getFromMemberNickName() + "更换了群头像";
-
-                            break;
-                        case 118:
-                            noticeContent = noticeData.getFromMemberNickName() + "新建群聊";
-                            break;
-                        case 119:
-                            noticeContent = noticeData.getFromMemberNickName() + "加入了群聊";
-
-                            break;
-                        case 400:
-                            noticeContent = "该群组已解散！";
-
-                            break;
-                        case 120:
-                            noticeContent = "对方以将你删除！";
-
-                            break;
-                        case 121:
-                            noticeContent = "你们已经成为好友啦！";
-
-                            break;
-                        case 122:
-                            noticeContent = "您有新的好友申请！";
-
-                            break;
-
-                    }
-                    sendHolder.mOrderNotice.setVisibility(View.GONE);
-                    sendHolder.mContent.setVisibility(View.GONE);
-                    sendHolder.mNotice.setVisibility(View.VISIBLE);
-                    sendHolder.mNotice.setText(noticeContent);
-                }
+                String noticeInfo = mChatMessage.getContent();
+                sendHolder.mContent.setVisibility(View.GONE);
+                sendHolder.mSendIcon.setVisibility(View.GONE);
+                sendHolder.mSendIcon.setOnClickListener(null);
+                sendHolder.mNotice.setVisibility(View.VISIBLE);
+                sendHolder.mNotice.setText(noticeInfo);
+                sendHolder.mSending.setVisibility(View.GONE);
 
             }
         }
 
     }
 
-    private String getDate(String milliSeconds) {
-        // Create a DateFormatter object for displaying date in specified
-        // format.
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        // Create a calendar object that will convert the date and time value in
-        // milliseconds to date.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(Long.parseLong(milliSeconds));
-        return formatter.format(calendar.getTime());
-    }
-
     @Override
     public int getItemViewType(int position) {
-        ChatMessage chatMessage = mList.get(position);
-        if (chatMessage.getIsMeSend() == 0) {
-            return 0;
-        } else {
+        HistoryMessageData.DataDTO.ListDTO chatMessage = mList.get(position);
+        if (chatMessage.getFid().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
             return 1;
+        } else {
+            return 0;
         }
     }
 
@@ -499,7 +495,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static class ReceiveMessageViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mReceiveIcon, mReceiveIv, mReceiveVideoPlay;
-        private TextView mReceiveNickName, mReceiveMsg, mReceiveVoice, mReceiveQuote;
+        private TextView mReceiveNickName, mReceiveMsg, mReceiveVoice, mReceiveQuote, mNotice, mReceiveTime;
         private RelativeLayout mReceiveContent;
 
         public ReceiveMessageViewHolder(@NonNull @NotNull View itemView) {
@@ -512,14 +508,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mReceiveMsg = itemView.findViewById(R.id.tv_content);
             mReceiveVoice = itemView.findViewById(R.id.tv_receive_voice);
             mReceiveQuote = itemView.findViewById(R.id.tv_receive_quote);
+            mNotice = itemView.findViewById(R.id.tv_notice_content);
+            mReceiveTime = itemView.findViewById(R.id.tv_receive_time);
+
         }
     }
 
     public static class SendMessageViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mSendIcon, mSendIv, mSendVideoPlay;
-        private TextView mSendNickName, mSendMsg, mSendVoice, mNotice, mSendQuote, mOrderNo, mOrderTime, mOrderMoney, mOrderPerson, mOrderCoin;
-        private RelativeLayout mSendContent, mContent, mOrderNotice;
+        private TextView mSendNickName, mSendMsg, mSendVoice, mNotice, mSendQuote, mSendTime;
+        private RelativeLayout mSendContent, mContent;
+        private GifView mSending;
 
         public SendMessageViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -532,24 +532,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mSendIcon = itemView.findViewById(R.id.jmui_avatar_iv);
             mNotice = itemView.findViewById(R.id.tv_notice_content);
             mSendQuote = itemView.findViewById(R.id.tv_send_quote);
-            mOrderNotice = itemView.findViewById(R.id.rl_get_order_notice);
-            mOrderNo = itemView.findViewById(R.id.tv_chat_order_no);
-            mOrderTime = itemView.findViewById(R.id.tv_chat_order_time);
-            mOrderMoney = itemView.findViewById(R.id.tv_chat_order_money);
-            mOrderPerson = itemView.findViewById(R.id.tv_chat_order_person);
-            mOrderCoin = itemView.findViewById(R.id.tv_chat_order_coin);
+            mSendTime = itemView.findViewById(R.id.tv_send_time);
+            mSending = itemView.findViewById(R.id.jmui_sending_iv);
 
         }
     }
 
-    private Adapter_ChatMessage.IVideoClickListener mVideoClickListener;
+    private IVideoClickListener mVideoClickListener;
 
-    public void setVideoClickListener(Adapter_ChatMessage.IVideoClickListener videoClickListener) {
+    public void setVideoClickListener(IVideoClickListener videoClickListener) {
         mVideoClickListener = videoClickListener;
     }
 
     public interface IVideoClickListener {
-        void mVideClick(ChatMessage message);
+        void mVideClick(HistoryMessageData.DataDTO.ListDTO message);
     }
 
     private IMessageLongClickListener mMessageLongClickListener;
@@ -559,7 +555,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public interface IMessageLongClickListener {
-        void mLongClick(ChatMessage message, View view);
+        void mLongClick(HistoryMessageData.DataDTO.ListDTO message, View view);
     }
 
     private IOrderNoticeClickListener mOrderNoticeClickListener;

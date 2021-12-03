@@ -23,8 +23,8 @@ public class GroupMangerPresenter implements GroupContract.IGroupMangerPresenter
     }
 
     @Override
-    public void changGroupOwner(String groupId, String memberId) {
-        mSource.changGroupOwner((LifecycleProvider) mView, groupId, memberId, new IBaseCallBack<HttpResult>() {
+    public void changGroupOwner(InviteOrDeleteRequestBody body) {
+        mSource.changGroupOwner((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
                 mView.onSuccess(data);

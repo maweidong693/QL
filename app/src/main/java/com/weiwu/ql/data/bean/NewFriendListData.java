@@ -9,8 +9,9 @@ import java.util.List;
  * date : 2021/7/24 13:51 
  */
 public class NewFriendListData {
+
     private int code;
-    private String message;
+    private String msg;
     private List<DataDTO> data;
 
     public int getCode() {
@@ -21,12 +22,12 @@ public class NewFriendListData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public List<DataDTO> getData() {
@@ -38,11 +39,37 @@ public class NewFriendListData {
     }
 
     public static class DataDTO {
-        private String id;
-        private ResultVODTO resultVO;
-        private String createdTime;
+        private int id;
+        private String nick_name;
+        private String face_url;
         private String remark;
+        private String create_time;
         private int status;
+        private String status_msg;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getNick_name() {
+            return nick_name;
+        }
+
+        public void setNick_name(String nick_name) {
+            this.nick_name = nick_name;
+        }
+
+        public String getFace_url() {
+            return face_url;
+        }
+
+        public void setFace_url(String face_url) {
+            this.face_url = face_url;
+        }
 
         public String getRemark() {
             return remark;
@@ -52,28 +79,12 @@ public class NewFriendListData {
             this.remark = remark;
         }
 
-        public String getId() {
-            return id;
+        public String getCreate_time() {
+            return create_time;
         }
 
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public ResultVODTO getResultVO() {
-            return resultVO;
-        }
-
-        public void setResultVO(ResultVODTO resultVO) {
-            this.resultVO = resultVO;
-        }
-
-        public String getCreatedTime() {
-            return createdTime;
-        }
-
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
+        public void setCreate_time(String create_time) {
+            this.create_time = create_time;
         }
 
         public int getStatus() {
@@ -84,52 +95,12 @@ public class NewFriendListData {
             this.status = status;
         }
 
-        public static class ResultVODTO {
-            private String id;
-            private String nickName;
-            private String mobile;
-            private String avator;
-            private int sex;
+        public String getStatus_msg() {
+            return status_msg;
+        }
 
-            public String getAvator() {
-                return avator;
-            }
-
-            public void setAvator(String avator) {
-                this.avator = avator;
-            }
-
-            public String getId() {
-                return id;
-            }
-
-            public void setId(String id) {
-                this.id = id;
-            }
-
-            public String getNickName() {
-                return nickName;
-            }
-
-            public void setNickName(String nickName) {
-                this.nickName = nickName;
-            }
-
-            public String getMobile() {
-                return mobile;
-            }
-
-            public void setMobile(String mobile) {
-                this.mobile = mobile;
-            }
-
-            public int getSex() {
-                return sex;
-            }
-
-            public void setSex(int sex) {
-                this.sex = sex;
-            }
+        public void setStatus_msg(String status_msg) {
+            this.status_msg = status_msg;
         }
     }
 }

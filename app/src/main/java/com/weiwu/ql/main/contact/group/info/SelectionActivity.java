@@ -26,6 +26,7 @@ import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
+import com.weiwu.ql.data.request.SetFriendRequestBody;
 import com.weiwu.ql.data.request.UpdateGroupRequestBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
@@ -174,14 +175,15 @@ public class SelectionActivity extends BaseActivity implements GroupContract.IUp
     }
 
     private void echoClick(String title) {
+        String inputText = input.getText().toString();
         switch (mSelectionType) {
             case TUIKitConstants.Selection.TYPE_TEXT:
-                if (TextUtils.isEmpty(input.getText().toString()) && title.equals(getResources().getString(R.string.modify_group_name))) {
+                if (TextUtils.isEmpty(inputText) && title.equals(getResources().getString(R.string.modify_group_name))) {
                     ToastUtil.toastLongMessage("没有输入昵称，请重新填写");
                     return;
                 }
                 if (title.equals(getResources().getString(R.string.modify_nick_name)) || title.equals(getResources().getString(R.string.modify_nick_name_in_goup))) {
-                    if (TextUtils.isEmpty(input.getText().toString().trim())) {
+                    if (TextUtils.isEmpty(inputText.trim())) {
                         ToastUtil.toastLongMessage("没有输入昵称，请重新填写");
                         return;
                     }
@@ -190,19 +192,37 @@ public class SelectionActivity extends BaseActivity implements GroupContract.IUp
                         return;
                     }*/
                 }
+                if (TextUtils.isEmpty(inputText) && title.equals("修改群公告")) {
+                    ToastUtil.toastLongMessage("没有输入群公告，请重新填写");
+                    return;
+                }
+                if (TextUtils.isEmpty(inputText) && title.equals("修改群简介")) {
+                    ToastUtil.toastLongMessage("没有输入群简介，请重新填写");
+                    return;
+                }
+                if (TextUtils.isEmpty(inputText) && title.equals("修改备注")) {
+                    ToastUtil.toastLongMessage("没有输入备注，请重新填写");
+                    return;
+                }
 
                 if (sOnResultReturnListener != null) {
-                    mName = input.getText().toString();
+                    mName = inputText;
                     if (limit == 200) {
-                        mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, mName, null, null, null, null));
+                        mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, mName, null, null, null, null, null, null, null));
+                    } else if (limit == 300) {
+                        mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, null, null, inputText, null, null, null, null, null));
+                    } else if (limit == 400) {
+                        mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, null, inputText, null, null, null, null, null, null));
+                    } else if (limit == 266) {
+                        mPresenter.updateFriendInfo(new SetFriendRequestBody(id, null, null, null, inputText));
                     } else {
-                        mPresenter.updateMineInfo(new UpdateMineInfoRequestBody(null, 0, null, input.getText().toString(), null, null));
+                        mPresenter.updateMineInfo(new UpdateMineInfoRequestBody(null, null, null, inputText, null, null));
                     }
                 }
                 break;
             case TUIKitConstants.Selection.TYPE_LIST:
                 if (sOnResultReturnListener != null) {
-                    mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, input.getText().toString(), null, null, null, null));
+                    mPresenter.updateGroupInfo(new UpdateGroupRequestBody(id, inputText, null, null, null, null, null, null, null));
                     sOnResultReturnListener.onReturn(radioGroup.getCheckedRadioButtonId());
                 }
                 break;

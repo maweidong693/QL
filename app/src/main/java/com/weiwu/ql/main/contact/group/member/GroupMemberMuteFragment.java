@@ -7,6 +7,7 @@ import android.view.View;
 import com.tencent.qcloud.tim.uikit.R;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfo;
+import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberData;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupMemberInfo;
 import com.tencent.qcloud.tim.uikit.modules.group.info.InfoData;
@@ -16,7 +17,8 @@ import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
-import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
+import com.weiwu.ql.data.request.ForbiddenRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
 import com.weiwu.ql.utils.SPUtils;
 
@@ -58,8 +60,15 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
     }
 
     private void init() {
-        mInviteLayout.initTitle((InfoData) getArguments().getSerializable("info"));
-        mPresenter.getGroupMember(mGroupInfo.getId());
+        List<GroupMemberInfo> members = new ArrayList<>();
+        for (int i = 0; i < mGroupInfo.getMemberDetails().size(); i++) {
+            GroupMemberInfo memberInfo = mGroupInfo.getMemberDetails().get(i);
+            if (!memberInfo.getAccount().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
+                members.add(memberInfo);
+            }
+        }
+        mGroupInfo.setMemberDetails(members);
+        mInviteLayout.setDataSource(mGroupInfo);
         mInviteLayout.getTitleBar().setOnLeftClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,23 +81,31 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
                 List<String> list = new ArrayList<>();
                 list.add(contact.getId());
                 if (selected) {
-                    mPresenter.forbiddenMember(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
+                    mPresenter.forbiddenMember(new ForbiddenRequestBody(mGroupInfo.getGroupId(), listToString(list, ','), "1"));
                 } else {
-                    mPresenter.cancelForbiddenMember(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
+                    mPresenter.cancelForbiddenMember(new ForbiddenRequestBody(mGroupInfo.getGroupId(), listToString(list, ','), "0"));
                 }
             }
         });
     }
 
+    public String listToString(List list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return list.isEmpty() ? "" : sb.toString().substring(0, sb.toString().length() - 1);
+    }
+
     @Override
-    public void groupMemberReceive(GroupMemberData data) {
+    public void groupMemberReceive(GroupInfoData data) {
         if (data.getData() != null) {
             List<GroupMemberInfo> members = new ArrayList<>();
-            for (int i = 0; i < data.getData().size(); i++) {
+            for (int i = 0; i < data.getData().getGroupUser().size(); i++) {
                 GroupMemberInfo memberInfo = new GroupMemberInfo();
-                GroupMemberData.DataDTO dataDTO = data.getData().get(i);
+                GroupInfoData.DataDTO.GroupUserDTO dataDTO = data.getData().getGroupUser().get(i);
                 memberInfo.covertTIMGroupMemberInfo(dataDTO);
-                if (!dataDTO.getId().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
+                if (!dataDTO.getMember_id().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
                     members.add(memberInfo);
                 }
             }
@@ -99,7 +116,7 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
 
     @Override
     public void forbiddenReceive(HttpResult data) {
-        showToast(data.getMessage());
+        showToast(data.getMsg());
     }
 
     @Override

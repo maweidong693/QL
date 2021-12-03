@@ -6,26 +6,34 @@ import com.weiwu.ql.base.IBasePresenter;
 import com.weiwu.ql.base.IBaseView;
 import com.weiwu.ql.data.bean.CoinData;
 import com.weiwu.ql.data.bean.CoinListData;
-import com.weiwu.ql.data.bean.FriendInfoData;
 import com.weiwu.ql.data.bean.HandlerData;
 import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.bean.OrderData;
 import com.weiwu.ql.data.bean.OrderDetailData;
+import com.weiwu.ql.data.bean.RangeBean;
 import com.weiwu.ql.data.bean.SocketDataBean;
 import com.weiwu.ql.data.bean.WalletData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
+import com.weiwu.ql.data.request.ClientIdBody;
 import com.weiwu.ql.data.request.DistributeRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
 import com.weiwu.ql.data.request.HandlerOrderRequestBody;
 import com.weiwu.ql.data.request.LoginRequestBody;
 import com.weiwu.ql.data.request.OrderRequestBody;
+import com.weiwu.ql.data.request.RegisterRequestBody;
+import com.weiwu.ql.data.request.SendPhoneMsgRequestBody;
+import com.weiwu.ql.data.request.SetRangeRequestBody;
 import com.weiwu.ql.data.request.UpdateMineInfoRequestBody;
-import com.weiwu.ql.data.request.WebLoginRequestBody;
+import com.weiwu.ql.data.request.VerifyCodeRequestBody;
+import com.weiwu.ql.main.login.country.CountryData;
+import com.weiwu.ql.main.mine.collection.FavoritesData;
+import com.weiwu.ql.main.mine.friends.data.MsgData;
 
 import okhttp3.MultipartBody;
-import retrofit2.http.Query;
 
 /**
  *  
@@ -35,33 +43,80 @@ import retrofit2.http.Query;
  */
 public interface MineContract {
     public interface ILoginView extends IBaseView<ILoginPresenter> {
+
+        void updateSuccess(HttpResult data);
+
+        void verifySuccess(HttpResult data);
+
+        void registerSuccess(HttpResult data);
+
         void loginResult(LoginReceive data);
 
         void socketUrl(SocketDataBean dataBean);
 
-        void registerResult(LoginData data);
+        void onSuccess(HttpResult data);
 
         void onFail(String msg, int code);
     }
 
+    public interface ICountryView extends IBaseView<ICountryPresenter> {
+        void countryReceive(CountryData data);
+    }
+
+    public interface ICountryPresenter extends IBasePresenter<ICountryView> {
+        void getCountryList();
+    }
+
+    public interface ICollectionView extends IBaseView<ICollectionPresenter> {
+        void collectionListReceive(FavoritesData data);
+
+        void onSuccess(HttpResult data);
+
+        void onFail(String msg, int code);
+    }
+
+    public interface ICollectionPresenter extends IBasePresenter<ICollectionView> {
+        void collectionList();
+
+        void delCollection(GroupInfoRequestBody body);
+    }
+
     public interface ILoginPresenter extends IBasePresenter<ILoginView> {
+
+        void forgetPassword(RegisterRequestBody body);
+
+        void updatePassword(RegisterRequestBody body);
+
+        void register(RegisterRequestBody body);
+
+        void verify(VerifyCodeRequestBody body);
+
         void login(LoginRequestBody body);
+
+        void sendPhone(SendPhoneMsgRequestBody body);
 
         void getSocketUrl();
 
-        void register(LoginRequestBody body);
     }
 
     public interface IMineView extends IBaseView<IMinePresenter> {
         void mineInfoReceive(MineInfoData data);
 
+        void newMsgCountResult(NewMsgData data);
+
         void addFriendReceive(HttpResult data);
+
+        void onSuccess(HttpResult data);
 
         void onFail(String msg, int code);
     }
 
     public interface IMinePresenter extends IBasePresenter<IMineView> {
         void getMineInfo();
+
+        void getNewMsgCount();
+
+        void init(ClientIdBody body);
 
         void addFriend(AddFriendRequestBody body);
     }
@@ -176,10 +231,32 @@ public interface MineContract {
         void getInviteKey();
     }
 
+    public interface IPrivateSetView extends IBaseView<IPrivateSetPresenter> {
+
+        void mineInfoReceive(MineInfoData data);
+
+        void rangeReceive(RangeBean data);
+
+        void onSuccess(HttpResult data);
+
+        void onFail(String msg, int code);
+
+    }
+
+    public interface IPrivateSetPresenter extends IBasePresenter<IPrivateSetView> {
+        void getRange();
+
+        void setCheckFriend(UpdateMineInfoRequestBody body);
+
+        void updateMineInfo(UpdateMineInfoRequestBody body);
+
+        void getMineInfo();
+
+        void setRange(SetRangeRequestBody body);
+    }
+
     public interface MineSource {
         void login(LifecycleProvider provider, LoginRequestBody body, IBaseCallBack<LoginReceive> callBack);
-
-        void register(LifecycleProvider provider, LoginRequestBody body, IBaseCallBack<LoginData> callBack);
 
         void getMineInfo(LifecycleProvider provider, IBaseCallBack<MineInfoData> callBack);
 
@@ -191,31 +268,36 @@ public interface MineContract {
 
         void addFriend(LifecycleProvider provider, AddFriendRequestBody body, IBaseCallBack<HttpResult> callBack);
 
-        void getCoin(LifecycleProvider provider, IBaseCallBack<CoinData> callBack);
-
-        void addWallet(LifecycleProvider provider, CoinListData body, IBaseCallBack<HttpResult> callBack);
-
-        void getAllOrder(LifecycleProvider provider, OrderRequestBody body, IBaseCallBack<OrderData> callBack);
-
-        void handlerOrder(LifecycleProvider provider, HandlerOrderRequestBody body, IBaseCallBack<HttpResult> callBack);
-
-        void receiveOrder(LifecycleProvider provider, String tradeId, IBaseCallBack<HttpResult> callBack);
-
-        void distributeOrder(LifecycleProvider provider, DistributeRequestBody body, IBaseCallBack<HttpResult> callBack);
-
-        void getAllHandler(LifecycleProvider provider, IBaseCallBack<HandlerData> callBack);
-
-        void getOrderDetail(LifecycleProvider provider, String tradeId, IBaseCallBack<OrderDetailData> callBack);
-
-        void getAllWallet(LifecycleProvider provider, String coinType, IBaseCallBack<WalletData> callBack);
-
-        void confirmGetCoin(LifecycleProvider provider, String cTradeId, IBaseCallBack<HttpResult> callBack);
-
-        void confirmRecycleCoin(LifecycleProvider provider, String cTradeId, IBaseCallBack<HttpResult> callBack);
-
         void getInviteKey(LifecycleProvider provider, IBaseCallBack<LoginData> callBack);
 
         void getSocketUrl(LifecycleProvider provider, IBaseCallBack<SocketDataBean> callBack);
 
+        void sendPhoneMsg(LifecycleProvider provider, SendPhoneMsgRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void verify(LifecycleProvider provider, VerifyCodeRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void register(LifecycleProvider provider, RegisterRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void init(LifecycleProvider provider, ClientIdBody body, IBaseCallBack<HttpResult> callBack);
+
+        void collectionList(LifecycleProvider provider, IBaseCallBack<FavoritesData> callBack);
+
+        void delCollection(LifecycleProvider provider, GroupInfoRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void getRange(LifecycleProvider provider, IBaseCallBack<RangeBean> callBack);
+
+        void setRange(LifecycleProvider provider, SetRangeRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void getNewMsgCount(LifecycleProvider provider, IBaseCallBack<NewMsgData> callBack);
+
+        void getMsgList(LifecycleProvider provider, IBaseCallBack<MsgData> callBack);
+
+        void readMsg(LifecycleProvider provider, GroupInfoRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void getCountryList(LifecycleProvider provider, IBaseCallBack<CountryData> callBack);
+
+        void updatePassword(LifecycleProvider provider, RegisterRequestBody body, IBaseCallBack<HttpResult> callBack);
+
+        void forgetPassword(LifecycleProvider provider, RegisterRequestBody body, IBaseCallBack<HttpResult> callBack);
     }
 }

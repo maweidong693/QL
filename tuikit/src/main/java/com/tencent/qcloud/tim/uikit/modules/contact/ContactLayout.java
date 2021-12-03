@@ -51,6 +51,7 @@ public class ContactLayout extends LinearLayout implements IContactLayout {
     }
 
     public void initDefault(ContactListData.DataDTO list) {
+
         mContactListView.loadDataSource(ContactListView.DataSource.CONTACT_LIST, list);
     }
 

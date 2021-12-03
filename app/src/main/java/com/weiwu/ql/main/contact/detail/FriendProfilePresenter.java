@@ -2,8 +2,12 @@ package com.weiwu.ql.main.contact.detail;
 
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.bean.FriendInfoData;
+import com.weiwu.ql.data.bean.FriendPicsData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.AddFriendRequestBody;
+import com.weiwu.ql.data.request.FriendInfoRequestBody;
+import com.weiwu.ql.data.request.SetFriendRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
 
 /**
@@ -22,11 +26,56 @@ public class FriendProfilePresenter implements ContactContract.IFriendDetailPres
     }
 
     @Override
-    public void deleteFriend(String memberId) {
-        mSource.deleteFriend((LifecycleProvider) mView, memberId, new IBaseCallBack<HttpResult>() {
+    public void getFriendInfo(FriendInfoRequestBody body) {
+        mSource.getFriendInfo((LifecycleProvider) mView, body, new IBaseCallBack<FriendInfoData>() {
+            @Override
+            public void onSuccess(FriendInfoData data) {
+                mView.friendInfoReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void getFriendPics(SetFriendRequestBody body) {
+        mSource.getFriendPics((LifecycleProvider) mView, body, new IBaseCallBack<FriendPicsData>() {
+            @Override
+            public void onSuccess(FriendPicsData data) {
+                mView.friendPicsReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void deleteFriend(AddFriendRequestBody body) {
+        mSource.deleteFriend((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override
             public void onSuccess(HttpResult data) {
                 mView.deleteFriendResult(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void setFriendInfo(SetFriendRequestBody body) {
+        mSource.setFriendInfo((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.setFriendInfoResult(data);
             }
 
             @Override

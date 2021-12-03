@@ -44,6 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     app:canNav="true"
+                    android:visibility="gone"
                     app:name="@string/new_message_reminder" />
 
             </LinearLayout>

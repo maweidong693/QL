@@ -51,7 +51,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ContactAdapter.ViewHolder holder, final int position) {
         final ContactItemBean contactBean = mData.get(position);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)holder.line.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.line.getLayoutParams();
         if (position < mData.size() - 1) {
             String tag1 = contactBean.getSuspensionTag();
             String tag2 = mData.get(position + 1).getSuspensionTag();
@@ -99,7 +99,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 mPreSelectedPosition = position;
             }
         });
-        holder.unreadText.setVisibility(View.GONE);
+        if (contactBean.getUnread() == 0) {
+
+            holder.unreadText.setVisibility(View.GONE);
+        } else {
+            holder.unreadText.setVisibility(View.VISIBLE);
+            holder.unreadText.setText(contactBean.getUnread() + "");
+        }
         if (TextUtils.equals(holder.itemView.getContext().getResources().getString(R.string.new_friend), contactBean.getId())) {
             holder.avatar.setImageResource(R.drawable.group_new_friend);
 
@@ -115,7 +121,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     holder.avatar.setImageResource(R.drawable.ic_launcher);
                 }
             } else {
-                GlideEngine.loadCornerImage(holder.avatar,contactBean.getAvatarurl(),null,10);
+                GlideEngine.loadCornerImage(holder.avatar, contactBean.getAvatarurl(), null, 10);
 //                GlideEngine.loadImage(holder.avatar, Uri.parse(contactBean.getAvatarurl()));
             }
         }

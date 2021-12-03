@@ -1,8 +1,10 @@
 package com.weiwu.ql.main.contact;
 
+import com.tencent.common.http.BlackListData;
 import com.tencent.common.http.ContactListData;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.weiwu.ql.base.IBaseCallBack;
+import com.weiwu.ql.data.bean.GroupListData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.request.CreateGroupRequestBody;
 
@@ -27,6 +29,36 @@ public class ContactPresenter implements ContactContract.IContactPresenter {
             @Override
             public void onSuccess(ContactListData data) {
                 mView.contactReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void getBlackList() {
+        mSource.getBlackList((LifecycleProvider) mView, new IBaseCallBack<BlackListData>() {
+            @Override
+            public void onSuccess(BlackListData data) {
+                mView.blackListReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
+    public void getGroupList() {
+        mSource.getGroupList((LifecycleProvider) mView, new IBaseCallBack<GroupListData>() {
+            @Override
+            public void onSuccess(GroupListData data) {
+                mView.groupListReceive(data);
             }
 
             @Override

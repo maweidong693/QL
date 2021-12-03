@@ -9,8 +9,9 @@ import java.util.List;
  * date : 2021/10/28 14:26 
  */
 public class FindData {
+
     private int code;
-    private String message;
+    private String msg;
     private List<DataDTO> data;
 
     public int getCode() {
@@ -21,12 +22,12 @@ public class FindData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public List<DataDTO> getData() {
@@ -38,23 +39,17 @@ public class FindData {
     }
 
     public static class DataDTO {
-        private long id;
-        private String icon;
         private String title;
-        private String address;
-        private int sort;
-        private String createdTime;
-        private int createdBy;
-        private String updatedTime;
-        private int updatedBy;
-        private int del;
+        private String icon;
+        private String url;
+        private String unicode;
 
-        public long getId() {
-            return id;
+        public String getTitle() {
+            return title;
         }
 
-        public void setId(long id) {
-            this.id = id;
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public String getIcon() {
@@ -65,68 +60,20 @@ public class FindData {
             this.icon = icon;
         }
 
-        public String getTitle() {
-            return title;
+        public String getUrl() {
+            return url;
         }
 
-        public void setTitle(String title) {
-            this.title = title;
+        public void setUrl(String url) {
+            this.url = url;
         }
 
-        public String getAddress() {
-            return address;
+        public String getUnicode() {
+            return unicode;
         }
 
-        public void setAddress(String address) {
-            this.address = address;
-        }
-
-        public int getSort() {
-            return sort;
-        }
-
-        public void setSort(int sort) {
-            this.sort = sort;
-        }
-
-        public String getCreatedTime() {
-            return createdTime;
-        }
-
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
-        }
-
-        public int getCreatedBy() {
-            return createdBy;
-        }
-
-        public void setCreatedBy(int createdBy) {
-            this.createdBy = createdBy;
-        }
-
-        public String getUpdatedTime() {
-            return updatedTime;
-        }
-
-        public void setUpdatedTime(String updatedTime) {
-            this.updatedTime = updatedTime;
-        }
-
-        public int getUpdatedBy() {
-            return updatedBy;
-        }
-
-        public void setUpdatedBy(int updatedBy) {
-            this.updatedBy = updatedBy;
-        }
-
-        public int getDel() {
-            return del;
-        }
-
-        public void setDel(int del) {
-            this.del = del;
+        public void setUnicode(String unicode) {
+            this.unicode = unicode;
         }
     }
 }

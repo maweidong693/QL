@@ -13,36 +13,31 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -56,6 +51,10 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.qiniu.android.utils.Json;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.group.info.GroupInfoData;
@@ -64,33 +63,31 @@ import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
-import com.weiwu.ql.data.bean.FunctionData;
 import com.weiwu.ql.data.bean.LoginData;
-import com.weiwu.ql.data.bean.MessageListData;
-import com.weiwu.ql.data.bean.OrderData;
+import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
-import com.weiwu.ql.greendao.db.ChatMessageDao;
-import com.weiwu.ql.greendao.db.DaoMaster;
-import com.weiwu.ql.greendao.db.DaoSession;
-import com.weiwu.ql.greendao.db.MessageListDataDao;
+import com.weiwu.ql.data.request.CollectionRequestBody;
+import com.weiwu.ql.data.request.DelMsgRequestBody;
+import com.weiwu.ql.data.request.GroupInfoRequestBody;
+import com.weiwu.ql.data.request.HistoryMsgRequestBody;
+import com.weiwu.ql.data.request.MessageRequestBody;
+import com.weiwu.ql.data.request.SendGroupMsgRequestBody;
+import com.weiwu.ql.data.request.SendMsgRequestBody;
 import com.weiwu.ql.main.contact.ContactContract;
-import com.weiwu.ql.main.contact.chat.adapter.Adapter_ChatMessage;
 import com.weiwu.ql.main.contact.chat.adapter.ChatMessageAdapter;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClient;
 import com.weiwu.ql.main.contact.chat.im.JWebSocketClientService;
-import com.weiwu.ql.main.contact.chat.modle.ChatMessage;
-import com.weiwu.ql.main.contact.chat.modle.NoticeOrderData;
+import com.weiwu.ql.main.contact.chat.modle.HistoryMessageData;
+import com.weiwu.ql.main.contact.chat.modle.SendMessageData;
 import com.weiwu.ql.main.contact.chat.util.Util;
+import com.weiwu.ql.main.contact.detail.FriendProfileActivity;
 import com.weiwu.ql.main.contact.group.GroupInfoActivity;
-import com.weiwu.ql.main.find.OrderDetailActivity;
 import com.weiwu.ql.utils.AudioRecoderUtils;
 import com.weiwu.ql.utils.GlideEngine;
 import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.utils.SystemFacade;
-import com.weiwu.ql.view.MessageLongPopup;
 import com.weiwu.ql.view.VoicePopup;
 
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -114,7 +111,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private EditText et_content;
     private RecyclerView listView;
     private Button btn_send;
-    private List<ChatMessage> chatMessageList = new ArrayList<>();//消息列表
+    private List<HistoryMessageData.DataDTO.ListDTO> chatMessageList = new ArrayList<>();//消息列表
     private ChatMessageAdapter mAdapter;
     private ChatMessageReceiver chatMessageReceiver;
     private ConstraintLayout mClChatMore;
@@ -139,20 +136,38 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private double mCurPosX;
     private double mCurPosY;
     private TextView mVoiceHint;
-    private ChatMessageDao mChatMessageDao;
-    private QueryBuilder<ChatMessage> qb;
-    private String mReceiverType;
-    private MessageListDataDao messageListDataDao;
+    private int mReceiverType;
     private Button btMute;
     private TextView tv_quote;
-    private ChatMessage mQuoteMessage;
-    private DaoSession daoSession;
+    private HistoryMessageData.DataDTO.ListDTO mQuoteMessage;
     private ImageView bt_face;
+    private int mGroupId;
+    private String mGroup_id;
+    //    private int mIn;
+    private int mChatId;
+    private SmartRefreshLayout mSrlChat;
+    private int start = 1;
+    private int end = 20;
+    private int mIs_add_friend;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 //        jWebSClientService.onDestroy();
+        mPresenter.setChatStatus(new MessageRequestBody(mChatId + "", "0"));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPresenter.setChatStatus(new MessageRequestBody(mChatId + "", "0"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.setChatStatus(new MessageRequestBody(mChatId + "", "0"));
+
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -196,23 +211,20 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra("message");
-            ChatMessage receiveMessage = new Gson().fromJson(message, ChatMessage.class);
-            if (receiveMessage.getType().equals("notice")) {
-                if (mReceiverType.equals("group")) {
-                    mPresenter.getGroupInfo(mFriendInfo.getId());
-                }
-            }
+            mAdapter.clearList();
 
-            if (mReceiverType.equals("member") && mFriendInfo.getId().equals(receiveMessage.getMemberId())) {
-                setChatMessage();
-            } else if (mReceiverType.equals("group") && mFriendInfo.getId().equals(receiveMessage.getReceiverId())) {
-                setChatMessage();
+            if (mReceiverType == 1) {
+                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1"));
+            } else {
+//                if (mIn == 2) {
+//                    mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
+//                } else {
+                mGroup_id = mFriendInfo.getId();
+                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1", "20"));
+//                }
             }
         }
     }
-
-    private static final String TAG = "ChatActivity";
 
     private void setEmojiconFragment(boolean useSystemDefault) {
         getSupportFragmentManager()
@@ -242,23 +254,27 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         Intent intent = getIntent();
         if (intent != null) {
             mFriendInfo = (ContactItemBean) intent.getSerializableExtra(TUIKitConstants.ProfileType.CONTENT);
-            mReceiverType = intent.getStringExtra(AppConstant.CHAT_TYPE);
+            mReceiverType = intent.getIntExtra(AppConstant.CHAT_TYPE, 0);
+//            mIn = intent.getIntExtra(AppConstant.IN, 0);
+            mChatId = intent.getIntExtra(AppConstant.CHAT_ID, 0);
         }
 
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
+        /*DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
         SQLiteDatabase database = helper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(database);
         daoSession = daoMaster.newSession();
-        daoSession.clear();
+        daoSession.clear();*/
 
         mContext = ChatActivity.this;
         setPresenter(new ChatPresenter(ContactRepository.getInstance()));
         findViewById();
         initView();
         setEmojiconFragment(false);
-        if (mReceiverType.equals("group")) {
-            mPresenter.getGroupInfo(mFriendInfo.getId());
-        }
+//        if (mIn == 1) {
+        mGroup_id = mFriendInfo.getId();
+
+//            mPresenter.getGroupInfo(new GroupInfoRequestBody(mFriendInfo.getId()));
+//        }
         //启动服务
 //        startJWebSClientService();
         //绑定服务
@@ -303,7 +319,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     private void findViewById() {
         mTitleBar = findViewById(R.id.chat_titlebar);
-        mTitleBar.setTitle(mFriendInfo.getNickname(), TitleBarLayout.POSITION.LEFT);
+        mSrlChat = findViewById(R.id.srl_chat_load);
+        mTitleBar.setTitle(mFriendInfo.getNickname(), TitleBarLayout.POSITION.MIDDLE);
         mTitleBar.setRightIcon(R.drawable.more);
         mTitleBar.getRightIcon().setImageResource(R.drawable.more);
 
@@ -313,13 +330,13 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 finish();
             }
         });
-        if (mReceiverType.equals("group")) {
+        if (mReceiverType == 2) {
             mTitleBar.getRightGroup().setVisibility(View.VISIBLE);
             mTitleBar.setOnRightClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(ChatActivity.this, GroupInfoActivity.class);
-                    intent.putExtra(TUIKitConstants.Group.GROUP_ID, mFriendInfo.getId());
+                    intent.putExtra(TUIKitConstants.Group.GROUP_ID, mGroupId);
                     startActivityForResult(intent, 1000);
 //                    startActivity(intent);
 //                    finish();
@@ -333,22 +350,54 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         listView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ChatMessageAdapter();
         listView.setAdapter(mAdapter);
+        mAdapter.setFriendClickListener(new ChatMessageAdapter.IFriendClickListener() {
+            @Override
+            public void click(HistoryMessageData.DataDTO.ListDTO mChatMessage) {
+                if (mReceiverType == 1) {
+                    ContactItemBean contact = new ContactItemBean(mChatMessage.getFid(), mChatMessage.getNick_name());
+                    Intent intent = new Intent(ChatActivity.this, FriendProfileActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contact);
+                    intent.putExtra(AppConstant.FRIEND_TYPE, 120);
+                    startActivity(intent);
+                } else {
+                    if (mIs_add_friend == 0) {
+                        showToast("当前群不允许添加好友！");
+                    } else {
+                        ContactItemBean contact = new ContactItemBean(mChatMessage.getFid(), mChatMessage.getNick_name());
+                        Intent intent = new Intent(ChatActivity.this, FriendProfileActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contact);
+                        intent.putExtra(AppConstant.FRIEND_TYPE, 120);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
         mAdapter.setMessageLongClickListener(new ChatMessageAdapter.IMessageLongClickListener() {
             @Override
-            public void mLongClick(ChatMessage message, View view) {
+            public void mLongClick(HistoryMessageData.DataDTO.ListDTO message, View view) {
                 mQuoteMessage = message;
-                if (TextUtils.isEmpty(mQuoteMessage.getMemberNickname())) {
-                    mQuoteMessage.setMemberNickname(SPUtils.getValue(AppConstant.USER, AppConstant.USER_NAME));
+                if (TextUtils.isEmpty(mQuoteMessage.getNick_name())) {
+                    mQuoteMessage.setNick_name(SPUtils.getValue(AppConstant.USER, AppConstant.USER_NAME));
 
                 }
                 PopupMenu popupMenu = new PopupMenu(ChatActivity.this, view);
                 popupMenu.getMenuInflater().inflate(R.menu.menu_message, popupMenu.getMenu());
                 Menu menu = popupMenu.getMenu();
                 MenuItem withdrawMenuItem = menu.getItem(1);
-                if (message.getIsMeSend() == 0) {
-                    withdrawMenuItem.setVisible(false);
+                MenuItem mQuote = menu.getItem(0);
+                if (message.getFid().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
+                    withdrawMenuItem.setVisible(message.getFid().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID)));
                 } else
-                    withdrawMenuItem.setVisible(message.getIsMeSend() == 1 && System.currentTimeMillis() - Long.parseLong(message.getSendTime()) < 20000);
+                    withdrawMenuItem.setVisible(false);
+
+                if (mQuoteMessage.getCate() == 5) {
+                    mQuote.setVisible(false);
+                } else {
+                    mQuote.setVisible(true);
+
+                }
                 popupMenu.show();
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -357,24 +406,32 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                         if (item.getItemId() == R.id.tv_message_quote) {
                             tv_quote.setVisibility(View.VISIBLE);
                             String quoteContent = "";
-                            if (mQuoteMessage.getMsgType().equals("img")) {
+                            if (mQuoteMessage.getCate() == 2) {
                                 quoteContent = "[图片]";
-                            } else if (mQuoteMessage.getMsgType().equals("video")) {
+                            } else if (mQuoteMessage.getCate() == 4) {
                                 quoteContent = "[视频]";
 
                             } else {
-                                quoteContent = SystemFacade.base64ToString(mQuoteMessage.getTextMsg());
+                                quoteContent = mQuoteMessage.getContent();
                             }
-                            tv_quote.setText(mQuoteMessage.getMemberNickname() + ":" + quoteContent);
+                            tv_quote.setText(mQuoteMessage.getNick_name() + ":" + quoteContent);
                             /*chatData.remove(pos);
                             chatAdapter.notifyItemRemoved(pos);*/
                         } else if (item.getItemId() == R.id.tv_message_withdraw) {
-                            FunctionData.FunctionArgDTO functionArgDTO = new FunctionData.FunctionArgDTO(901, "撤回");
+                            /*FunctionData.FunctionArgDTO functionArgDTO = new FunctionData.FunctionArgDTO(901, "撤回");
                             FunctionData function = new FunctionData("function", mReceiverType, mFriendInfo.getId(), message.getMessageId(), functionArgDTO);
                             String s = new Gson().toJson(function);
                             jWebSClientService.sendMsg(s);
-                            mChatMessageDao.deleteByKey(message.getMessageId());
+//                            mChatMessageDao.deleteByKey(message.getMessageId());*/
+                            mPresenter.delMsg(new DelMsgRequestBody(message.getMsg_id() + "", mReceiverType + ""));
+
                             setChatMessage();
+                        } else if (item.getItemId() == R.id.tv_message_collection) {
+                            if (message.getCate() == 1) {
+                                mPresenter.collection(new CollectionRequestBody(message.getNick_name(), message.getContent(), null, null, "1"));
+                            } else {
+                                mPresenter.collection(new CollectionRequestBody(message.getNick_name(), null, message.getContent(), null, message.getCate() + ""));
+                            }
                         }
                         return false;
                     }
@@ -391,17 +448,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
             }
         });*/
-
-        mAdapter.setOrderNoticeClickListener(new ChatMessageAdapter.IOrderNoticeClickListener() {
-            @Override
-            public void mOrderClick(NoticeOrderData data) {
-                OrderData.DataDTO.ListDTO dto = new OrderData.DataDTO.ListDTO();
-                dto.setId(data.getId());
-                Intent intent = new Intent(ChatActivity.this, OrderDetailActivity.class);
-                intent.putExtra(AppConstant.ORDER_INFO, dto);
-                startActivity(intent);
-            }
-        });
 
         btn_send = findViewById(R.id.btn_send);
         et_content = findViewById(R.id.et_content);
@@ -447,7 +493,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onStop(String filePath) {
 //                Toast.makeText(ChatActivity.this, "录音保存在：" + filePath, Toast.LENGTH_SHORT).show();
-                msgType = "voi";
+                msgType = "3";
                 File file = new File(filePath);
                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                 MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
@@ -510,6 +556,50 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         initVoice();
 
 //        setChatMessage();
+        if (mReceiverType == 1) {
+            mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
+        } else {
+//            if (mIn == 2) {
+//                mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
+//            } else {
+            mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + "", end + ""));
+//            }
+//            mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "20"));
+        }
+
+        mSrlChat.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                if (mReceiverType == 1) {
+                    mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
+                } else {
+//                    if (mIn == 2) {
+//                        mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
+//                    } else {
+                    mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + "", end + ""));
+//                    }
+//            mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "20"));
+                }
+            }
+        });
+        mSrlChat.setEnableLoadMore(false);
+
+        /*listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(!hasClick){
+
+                    findViewById(R.id.emojicons).setVisibility(View.GONE);
+
+
+                    mClChatMore.setVisibility(View.GONE);
+                    hasClick = !hasClick;
+                    SystemFacade.hideSoftKeyboard(ChatActivity.this);
+                }
+            }
+        });*/
+
     }
 
     private void initVoice() {
@@ -554,6 +644,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     protected void onResume() {
         super.onResume();
         setChatMessage();
+        mPresenter.setChatStatus(new MessageRequestBody(mChatId + "", "1"));
     }
 
     private boolean hasClick;
@@ -562,8 +653,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.chatmsg_listView:
-                findViewById(R.id.emojicons).setVisibility(View.GONE);
-                hasClick = !hasClick;
+//                findViewById(R.id.emojicons).setVisibility(View.GONE);
+//                hasClick = !hasClick;
                 break;
             case R.id.btn_face: // 表情按钮
                 if (hasClick) {
@@ -589,50 +680,41 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.btn_send:
-                String content = SystemFacade.toBase64(et_content.getText().toString());
+                String content = et_content.getText().toString();
                 if (content.length() <= 0) {
                     Util.showToast(mContext, "消息不能为空哟");
                     return;
                 }
 
-                if (client != null && client.isOpen()) {
-                    if (tv_quote.getVisibility() == View.VISIBLE) {
-                        msgType = "quote";
-                    } else {
-                        msgType = "msg";
-                    }
-
-                    ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), content, "", 0, 0);
-                    if (tv_quote.getVisibility() == View.VISIBLE) {
-                        message.setQuoteMessage(mQuoteMessage);
-                        String s = new Gson().toJson(mQuoteMessage);
-                        message.setQuoteMessageInfo(s);
-                    }
-//                    ChatMessage message = new ChatMessage("message", "member", "msg", mFriendInfo.getId(), content, "");
-                    String s = new Gson().toJson(message);
-                    jWebSClientService.sendMsg(s);
-                    message.setIsMeSend(1);
-                    tv_quote.setVisibility(View.GONE);
-                    chatMessageList.add(message);
-                    initChatMsgListView();
-                    daoSession.getChatMessageDao().insert(message);
-                    et_content.setText("");
-                    MessageListData messageListData;
-                    if (message.getReceiverType().equals("member")) {
-                        messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), message.getTextMsg(), "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
-                    } else {
-                        messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), message.getTextMsg(), "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
-                    }
-//                    messageListQb.where(MessageListDataDao.Properties.MId.eq(messageListData.getMId()));
-                    /*if (qb.buildCount().count() > 0 ? true : false) {
-                        messageListDataDao.update(messageListData);
-                    } else {
-                    }*/
-                    messageListDataDao.insertOrReplace(messageListData);
-
+                if (tv_quote.getVisibility() == View.VISIBLE) {
+                    msgType = "5";
                 } else {
-                    Util.showToast(mContext, "连接已断开，请稍等或重启App哟");
+                    msgType = "1";
                 }
+//
+                if (mReceiverType == 1) {
+                    SendMsgRequestBody dataDTO = new SendMsgRequestBody(content, msgType, mFriendInfo.getId());
+                    if (tv_quote.getVisibility() == View.VISIBLE) {
+                        String q = new Gson().toJson(mQuoteMessage);
+                        dataDTO.setCite(q);
+                        dataDTO.setCate("5");
+                    }
+                    mPresenter.sendMessage(dataDTO);
+                } else {
+                    SendGroupMsgRequestBody body = new SendGroupMsgRequestBody(mGroup_id, content, msgType);
+                    if (tv_quote.getVisibility() == View.VISIBLE) {
+                        String q = new Gson().toJson(mQuoteMessage);
+                        body.setCite(q);
+                        body.setCate("5");
+                    }
+                    mPresenter.sendGroupMessage(body);
+                }
+                tv_quote.setVisibility(View.GONE);
+
+//                initChatMsgListView();
+//                    daoSession.getChatMessageDao().insert(message);
+                et_content.setText("");
+
                 break;
 
             case R.id.btn_multimedia:
@@ -665,7 +747,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     public void setChatMessage() {
-        mChatMessageDao = daoSession.getChatMessageDao();
+        /*mChatMessageDao = daoSession.getChatMessageDao();
         messageListDataDao = daoSession.getMessageListDataDao();
 //        messageListQb = messageListDataDao.queryBuilder();
         qb = mChatMessageDao.queryBuilder();
@@ -674,26 +756,28 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 //        qb.orderAsc(ChatMessageDao.Properties.SendTime).offset(1).limit(15);
         chatMessageList = qb.list();
         Log.d(TAG, "setChatMessage: " + chatMessageList.size());
-        initChatMsgListView();
+        initChatMsgListView();*/
 
     }
 
     private void initChatMsgListView() {
 
+        if (start == 1) {
+            mAdapter.clearList();
+        }
+
         mAdapter.setList(chatMessageList);
 //        mAdapter = new Adapter_ChatMessage(mContext, chatMessageList);
         listView.smoothScrollToPosition(chatMessageList.size());
-        mAdapter.setVideoClickListener(new Adapter_ChatMessage.IVideoClickListener() {
+        mAdapter.setVideoClickListener(new ChatMessageAdapter.IVideoClickListener() {
             @Override
-            public void mVideClick(ChatMessage message) {
-                String msgType = message.getMsgType();
-                if (msgType.equals("img") || msgType.equals("video")) {
+            public void mVideClick(HistoryMessageData.DataDTO.ListDTO message) {
+                int msgType = message.getCate();
+                if (msgType == 2 || msgType == 4) {
                     Intent imgOrVideoIntent = new Intent(ChatActivity.this, ImgOrVideoActivity.class);
-                    imgOrVideoIntent.putExtra(AppConstant.VIDEO_URL, message.getUrl());
+                    imgOrVideoIntent.putExtra(AppConstant.VIDEO_URL, message.getContent());
                     imgOrVideoIntent.putExtra(AppConstant.IMG_OR_VIDEO, msgType);
                     startActivity(imgOrVideoIntent);
-                } else if (msgType.equals("voi")) {
-
                 }
             }
         });
@@ -845,28 +929,64 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 .forResult(AppConstant.BANK_CARD_PIC_REQUEST);
     }
 
+    private static final String TAG = "ChatActivity";
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == AppConstant.BANK_CARD_PIC_REQUEST) {
             media = PictureSelector.obtainMultipleResult(data);
 
+
+//            List<HistoryMessageData.DataDTO.ListDTO> list = mAdapter.getList();
+
             for (int i = 0; i < media.size(); i++) {
-                mProgressDialog.setMessage("正在提交中，请稍后");
-                mProgressDialog.show();
+                String mPicPath = "";
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    mPicPath = media.get(i).getAndroidQToPath();
+                } else {
+                    mPicPath = media.get(i).getPath();
+                }
                 String mimeType = media.get(i).getMimeType();
                 if (mimeType.contains("image")) {
-                    msgType = "img";
+                    msgType = "2";
                 } else if (mimeType.contains("video")) {
-                    msgType = "video";
+                    msgType = "4";
                 }
-                String mBankPicPath = "";
+                HistoryMessageData.DataDTO.ListDTO listDTO = new HistoryMessageData.DataDTO.ListDTO(
+                        SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID),
+                        SPUtils.getValue(AppConstant.USER, AppConstant.USER_NAME),
+                        SPUtils.getValue(AppConstant.USER, AppConstant.USER_AVATAR),
+                        mPicPath, Integer.parseInt(msgType), 0, 1, "0000-00-00 00:00:00");
+                listDTO.setSending(1);
+                Log.d(TAG, "onActivityResult: vvv==" + mPicPath);
+
+                chatMessageList.add(listDTO);
+            }
+
+            mAdapter.clearList();
+//            Log.d(TAG, "onActivityResult: vvv==" + list.size());
+            listView.smoothScrollToPosition(chatMessageList.size());
+
+            mAdapter.setList(chatMessageList);
+            mAdapter.notifyDataSetChanged();
+            for (int i = 0; i < media.size(); i++) {
+//                mProgressDialog.setMessage("正在提交中，请稍后");
+//                mProgressDialog.show();
+                String mimeType = media.get(i).getMimeType();
+                if (mimeType.contains("image")) {
+                    msgType = "2";
+                } else if (mimeType.contains("video")) {
+                    msgType = "4";
+                }
+                String mPicPath = "";
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    mBankPicPath = media.get(i).getAndroidQToPath();
+                    mPicPath = media.get(i).getAndroidQToPath();
                 } else {
-                    mBankPicPath = media.get(i).getPath();
+                    mPicPath = media.get(i).getPath();
                 }
-                File file = new File(mBankPicPath);
+
+                File file = new File(mPicPath);
                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                 MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
                 mPresenter.uploadPic(body);
@@ -875,56 +995,101 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         }
         if (resultCode == 1002) {
 
-            messageListDataDao.deleteByKey(mFriendInfo.getId());
-            mChatMessageDao.deleteByKey(mFriendInfo.getId());
+//            messageListDataDao.deleteByKey(mFriendInfo.getId());
+//            mChatMessageDao.deleteByKey(mFriendInfo.getId());
             finish();
+        }
+    }
+
+    @Override
+    public void delMsgSuccess(HttpResult data) {
+        if (mReceiverType == 1) {
+            mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
+        } else {
+//            if (mIn == 2) {
+//                mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
+//            } else {
+            mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "100"));
+//            }
+//                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "20"));
+        }
+    }
+
+    @Override
+    public void chatHistoryResult(HistoryMessageData data) {
+        if (mReceiverType != 1) {
+
+            mPresenter.getGroupInfo(new GroupInfoRequestBody(data.getData().getGroupInfo().getId()));
+        }
+
+        if (data != null && data.getData().getList().size() > 0) {
+            if (mReceiverType == 2) {
+                mGroupId = data.getData().getGroupInfo().getId();
+            }
+            if (data.getData() != null) {
+                chatMessageList = data.getData().getList();
+                initChatMsgListView();
+            } else {
+                start = start - 1;
+            }
+        } else {
+            start = start - 1;
+        }
+        mSrlChat.finishRefresh();
+    }
+
+    @Override
+    public void sendResult(SendMessageData data) {
+        if (data != null) {
+            start = 1;
+            mAdapter.clearList();
+            if (mReceiverType == 1) {
+                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1"));
+            } else {
+//                if (mIn == 2) {
+//                    mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
+//                } else {
+                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1", "20"));
+//                }
+//                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "20"));
+            }
         }
     }
 
     @Override
     public void uploadPicResult(LoginData data) {
         if (data != null) {
-            if (client != null && client.isOpen()) {
-                ChatMessage message = new ChatMessage(System.currentTimeMillis() + "", System.currentTimeMillis() + "", "message", mReceiverType, msgType, mFriendInfo.getId(), "", data.getData(), 0, 0);
-                String s = new Gson().toJson(message);
-                jWebSClientService.sendMsg(s);
-                message.setIsMeSend(1);
-                chatMessageList.add(message);
-                initChatMsgListView();
-                daoSession.getChatMessageDao().insert(message);
+            if (mReceiverType == 1) {
 
-                MessageListData messageListData;
-                String content = "";
-                if (msgType.equals("img")) {
-                    content = "[图片]";
-                } else if (msgType.equals("video")) {
-                    content = "[视频]";
-                } else if (msgType.equals("voi")) {
-                    content = "[语音]";
-                }
-                if (message.getReceiverType().equals("member")) {
-                    messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), content, "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
-                } else {
-                    messageListData = new MessageListData(message.getReceiverId(), mFriendInfo.getNickname(), content, "", String.valueOf(System.currentTimeMillis()), message.getReceiverType());
-                }
-                messageListDataDao.insertOrReplace(messageListData);
-                mProgressDialog.dismiss();
+                SendMsgRequestBody dataDTO = new SendMsgRequestBody(data.getData().getSrc(), msgType, mFriendInfo.getId());
+                mPresenter.sendMessage(dataDTO);
             } else {
-                Util.showToast(mContext, "连接已断开，请稍等或重启App哟");
+
+                SendGroupMsgRequestBody dataDTO = new SendGroupMsgRequestBody(mGroup_id, data.getData().getSrc(), msgType);
+                mPresenter.sendGroupMessage(dataDTO);
             }
+
+//            mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId()));
+
+//            initChatMsgListView();
+//                daoSession.getChatMessageDao().insert(message);
+            mProgressDialog.dismiss();
         }
     }
 
     @Override
     public void groupInfoReceive(GroupInfoData data) {
         if (data != null) {
-            int isForbidden = data.getData().getIsForbidden();
-            mTitleBar.setTitle(data.getData().getName(), TitleBarLayout.POSITION.LEFT);
+            mGroup_id = data.getData().getGroup_id();
+            mIs_add_friend = data.getData().getIs_add_friend();
+            int isForbidden = data.getData().getIs_ban_say();
+//            mTitleBar.setTitle(data.getData().getGroup_name(), TitleBarLayout.POSITION.LEFT);
             if (isForbidden == 1) {
                 btMute.setVisibility(View.VISIBLE);
             } else {
                 btMute.setVisibility(View.GONE);
             }
+//            mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(data.getData().getGroup_id(), "0", "100"));
         }
     }
 
@@ -935,6 +1100,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         if (code == 10001) {
             MyApplication.loginAgain();
         }
+    }
+
+    @Override
+    public void onSuccess(HttpResult data) {
+//        showToast(data.getMsg());
     }
 
     @Override

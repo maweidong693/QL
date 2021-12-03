@@ -19,12 +19,21 @@ public class ContactItemBean extends BaseIndexPinyinBean {
     private String remark;
     private String nickname;
     private String avatarurl;
+    private int unread;
     private Map<String, byte[]> customInfo = new HashMap<>(); //群自定义字段 mute 1禁言  0取消禁言
     private long silenceSeconds;
     private boolean isGroup;
     private boolean isFriend = true;
     private boolean isEnable = true;
     private int isForbidden;
+
+    public int getUnread() {
+        return unread;
+    }
+
+    public void setUnread(int unread) {
+        this.unread = unread;
+    }
 
     public int getIsForbidden() {
         return isForbidden;
@@ -58,8 +67,9 @@ public class ContactItemBean extends BaseIndexPinyinBean {
     public ContactItemBean() {
     }
 
-    public ContactItemBean(String id) {
+    public ContactItemBean(String id, int unread) {
         this.id = id;
+        this.unread = unread;
     }
 
     public String getId() {
@@ -137,10 +147,11 @@ public class ContactItemBean extends BaseIndexPinyinBean {
         if (friendInfo == null) {
             return this;
         }
-        setId(friendInfo.getId());
+        setId(friendInfo.getIm_id());
         setRemark(friendInfo.getRemark());
-        setNickname(friendInfo.getNickName());
-        setAvatarurl(friendInfo.getAvator());
+        setNickname(friendInfo.getNick_name());
+        setAvatarurl(friendInfo.getFace_url());
+        setUnread(friendInfo.getUnread());
         return this;
     }
 
@@ -181,7 +192,7 @@ public class ContactItemBean extends BaseIndexPinyinBean {
             return this;
         }
         setNickname(group.getName());
-        setId(group.getId());
+        setId(group.getId() + "");
         setRemark(group.getName());
         setAvatarurl("");
         setGroup(true);

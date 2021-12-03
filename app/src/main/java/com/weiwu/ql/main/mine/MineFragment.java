@@ -16,13 +16,16 @@ import com.bumptech.glide.Glide;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.component.dialog.TUIKitDialog;
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.bean.MessageEvent;
 import com.weiwu.ql.data.bean.MineInfoData;
+import com.weiwu.ql.data.bean.NewMsgData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.MineRepository;
+import com.weiwu.ql.main.mine.collection.MyFavoritesActivity;
 import com.weiwu.ql.main.mine.friends.FriendsActivity;
 import com.weiwu.ql.main.mine.detail.PersonalInformationActivity;
 import com.weiwu.ql.main.mine.setting.AboutUsActivity;
@@ -30,8 +33,8 @@ import com.weiwu.ql.main.mine.setting.AnQuanActivity;
 import com.weiwu.ql.main.mine.setting.ClearCacheActicity;
 import com.weiwu.ql.main.mine.setting.GeneralSettingActivity;
 import com.weiwu.ql.main.mine.setting.PrivacySettingActivity;
-import com.weiwu.ql.main.mine.wallet.WalletActivity;
 import com.weiwu.ql.utils.IntentUtil;
+import com.weiwu.ql.utils.SPUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -96,12 +99,6 @@ public class MineFragment extends BaseFragment implements MineContract.IMineView
         mItemHeadView = view.findViewById(R.id.item_head);
         mclearCacheView = view.findViewById(R.id.clear_cache);
         mAboutIM = view.findViewById(R.id.about_im);
-        mWallet = view.findViewById(R.id.view_wallet);
-        mWallet.setOnClickListener(v -> {
-
-            IntentUtil.redirectToNextActivity(getActivity(), WalletActivity.class);
-
-        });
         mGeneralSettingView.setOnClickListener(v -> {
 
             IntentUtil.redirectToNextActivity(getActivity(), GeneralSettingActivity.class);
@@ -120,16 +117,17 @@ public class MineFragment extends BaseFragment implements MineContract.IMineView
 //            IntentUtil.redirectToNextActivity(getActivity(), PersonalInformationActicity.class);
             Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
             startActivity(intent);
-
+//            getActivity().finish();
         });
         mGeneralAnQuanView.setOnClickListener(v -> {
             IntentUtil.redirectToNextActivity(getActivity(), AnQuanActivity.class);
+//            getActivity().finish();
 
         });
-        /*mFavoritesView.setOnClickListener(v -> {
+        mFavoritesView.setOnClickListener(v -> {
             IntentUtil.redirectToNextActivity(getActivity(), MyFavoritesActivity.class);
 
-        });*/
+        });
         mclearCacheView.setOnClickListener(v -> {
             IntentUtil.redirectToNextActivity(getActivity(), ClearCacheActicity.class);
         });
@@ -173,16 +171,30 @@ public class MineFragment extends BaseFragment implements MineContract.IMineView
     public void mineInfoReceive(MineInfoData data) {
         if (data != null) {
             MineInfoData.DataDTO dto = data.getData();
-            if (!TextUtils.isEmpty(dto.getAvator())) {
-                Glide.with(getContext()).load(dto.getAvator()).into(mUserIcon);
+            if (!TextUtils.isEmpty(dto.getFace_url())) {
+                Glide.with(getActivity()).load(dto.getFace_url()).into(mUserIcon);
             }
-            mAccountView.setText("洽聊号：" + dto.getId());
-            mPhoneView.setText(dto.getNickName());
+            mAccountView.setText("洽聊号：" + dto.getIm_id());
+            mPhoneView.setText(dto.getNick_name());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getIm_id());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNick_name());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_PHONE, dto.getMobile());
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_COUNTRY, dto.getNation_code() + "");
         }
     }
 
     @Override
+    public void newMsgCountResult(NewMsgData data) {
+
+    }
+
+    @Override
     public void addFriendReceive(HttpResult data) {
+
+    }
+
+    @Override
+    public void onSuccess(HttpResult data) {
 
     }
 

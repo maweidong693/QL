@@ -128,11 +128,11 @@ public class GroupMuteMemberListView extends LinearLayout {
                 loadGroupListData();
                 break;
             case DataSource.CONTACT_LIST:
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend))
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend),0)
                         .setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group)).
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group),0).
                         setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.blacklist)).
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.blacklist),0).
                         setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
                 loadFriendListDataAsync();
                 break;

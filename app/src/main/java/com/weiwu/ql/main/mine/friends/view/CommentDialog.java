@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.R;
 import com.weiwu.ql.data.bean.FriendsData;
-import com.weiwu.ql.main.mine.friends.data.CommentItem;
 import com.weiwu.ql.utils.SPUtils;
 
 
@@ -29,11 +28,11 @@ public class CommentDialog extends Dialog implements
 
     private Context mContext;
     //	private CirclePresenter mPresenter;
-    private FriendsData.DataDTO.CommentAndReplyListDTO mCommentItem;
+    private FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO mCommentItem;
     private int mCirclePosition;
 
     public CommentDialog(Context context/*, CirclePresenter presenter*/,
-                         FriendsData.DataDTO.CommentAndReplyListDTO commentItem, int circlePosition) {
+                         FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO commentItem, int circlePosition) {
         super(context, R.style.comment_dialog);
         mContext = context;
 //		this.mPresenter = presenter;
@@ -66,9 +65,8 @@ public class CommentDialog extends Dialog implements
         TextView copyTv = (TextView) findViewById(R.id.copyTv);
         copyTv.setOnClickListener(this);
         TextView deleteTv = (TextView) findViewById(R.id.deleteTv);
-        if (mCommentItem != null
-                && SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(
-                mCommentItem.getFromMemberInfo().getId())) {
+        if (mCommentItem != null &&
+                SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(mCommentItem.getIm_id())||SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID).equals(mCommentItem.getReplyImId())) {
             deleteTv.setVisibility(View.VISIBLE);
         } else {
             deleteTv.setVisibility(View.GONE);
@@ -112,7 +110,7 @@ public class CommentDialog extends Dialog implements
     }
 
     public interface IDeleteCommentListener {
-        void mDeleteComment(FriendsData.DataDTO.CommentAndReplyListDTO data);
+        void mDeleteComment(FriendsData.DataDTO.MessageDTO.CommentAndRepliesDTO data);
     }
 
 }

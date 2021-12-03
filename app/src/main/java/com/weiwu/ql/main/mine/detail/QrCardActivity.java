@@ -264,7 +264,7 @@ public class QrCardActivity extends BaseActivity implements MineContract.IInvite
         if (data.getData() == null) {
             return;
         }
-        String url = data.getData();
+        String url = data.getData().getUrl();
         if (!TextUtils.isEmpty(url)) {
             DialogMaker.showProgressDialog(QrCardActivity.this, "正在生成二维码...");
             RxQRCode.builder(url).

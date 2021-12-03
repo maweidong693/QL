@@ -14,11 +14,8 @@ import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
-import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.data.repositories.GroupRepository;
 import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
-import com.weiwu.ql.main.contact.ContactContract;
-import com.weiwu.ql.main.contact.ContactPresenter;
 import com.weiwu.ql.main.contact.group.GroupContract;
 
 import java.util.List;
@@ -67,12 +64,20 @@ public class GroupMemberInviteFragment extends BaseFragment implements GroupCont
             @Override
             public void select(List<String> list) {
                 if (list != null && list.size() > 0) {
-                    mPresenter.addMembers(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
-                }else {
+                    mPresenter.addMembers(new InviteOrDeleteRequestBody(mGroupInfo.getGroupId(), listToString(list, ',')));
+                } else {
                     showToast("请选择要邀请的成员！");
                 }
             }
         });
+    }
+
+    public String listToString(List list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return list.isEmpty() ? "" : sb.toString().substring(0, sb.toString().length() - 1);
     }
 
     @Override
@@ -82,7 +87,7 @@ public class GroupMemberInviteFragment extends BaseFragment implements GroupCont
 
     @Override
     public void inviteFriendsReceive(HttpResult data) {
-        showToast(data.getMessage());
+        showToast(data.getMsg());
         getActivity().finish();
     }
 

@@ -7,19 +7,25 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.tencent.common.http.BlackListData;
 import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactListView;
 import com.tencent.qcloud.tim.uikit.utils.TUIKitConstants;
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
+import com.weiwu.ql.data.bean.GroupListData;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.ContactRepository;
 import com.weiwu.ql.main.contact.ContactContract;
 import com.weiwu.ql.main.contact.ContactPresenter;
 import com.weiwu.ql.main.contact.detail.FriendProfileActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlackListActivity extends BaseActivity implements ContactContract.IContactView {
 
@@ -52,19 +58,18 @@ public class BlackListActivity extends BaseActivity implements ContactContract.I
             public void onItemClick(int position, ContactItemBean contact) {
                 Intent intent = new Intent(BlackListActivity.this, FriendProfileActivity.class);
                 intent.putExtra(TUIKitConstants.ProfileType.CONTENT, contact);
+                intent.putExtra(AppConstant.FRIEND_TYPE, 121);
                 startActivity(intent);
             }
         });
+
+        mPresenter.getBlackList();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDataSource();
-    }
-
-    public void loadDataSource() {
-        mListView.loadDataSource(ContactListView.DataSource.BLACK_LIST, null);
+        mPresenter.getBlackList();
     }
 
     @Override
@@ -75,6 +80,24 @@ public class BlackListActivity extends BaseActivity implements ContactContract.I
     @Override
     public void contactReceive(ContactListData data) {
 
+    }
+
+    @Override
+    public void groupListReceive(GroupListData data) {
+
+    }
+
+    @Override
+    public void blackListReceive(BlackListData data) {
+        ContactListData.DataDTO dataDTO = new ContactListData.DataDTO();
+        List<ContactListData.DataDTO.FriendsDTO> list = new ArrayList<>();
+        for (int i = 0; i < data.getData().size(); i++) {
+            ContactListData.DataDTO.FriendsDTO friendsDTO = new ContactListData.DataDTO.FriendsDTO();
+            ContactListData.DataDTO.FriendsDTO friend = friendsDTO.covertTIMFriend(data.getData().get(i));
+            list.add(friend);
+        }
+        dataDTO.setBlockFriends(list);
+        mListView.loadDataSource(ContactListView.DataSource.BLACK_LIST, dataDTO);
     }
 
     @Override

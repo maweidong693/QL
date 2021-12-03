@@ -178,16 +178,6 @@
                     app:src="@drawable/ic_mine_collect" />
 
                 <com.tencent.qcloud.tim.uikit.component.LineControllerView
-                    android:id="@+id/view_wallet"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_10"
-                    app:canNav="true"
-                    app:isBottom="true"
-                    app:name="@string/view_wallet"
-                    app:src="@drawable/ic_mine_wallet" />
-
-                <com.tencent.qcloud.tim.uikit.component.LineControllerView
                     android:id="@+id/view_privacy_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

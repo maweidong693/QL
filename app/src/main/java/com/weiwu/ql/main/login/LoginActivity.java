@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,22 +19,31 @@ import android.widget.TextView;
 import com.gyf.immersionbar.BarHide;
 import com.gyf.immersionbar.ImmersionBar;
 import com.qiniu.android.utils.StringUtils;
+import com.tencent.common.Constant;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MainActivity;
-import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
-import com.weiwu.ql.data.bean.LoginData;
 import com.weiwu.ql.data.bean.LoginReceive;
 import com.weiwu.ql.data.bean.SocketDataBean;
+import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.MineRepository;
 import com.weiwu.ql.data.request.LoginRequestBody;
-import com.weiwu.ql.greendao.db.DaoMaster;
+import com.weiwu.ql.data.request.RegisterRequestBody;
+import com.weiwu.ql.data.request.SendPhoneMsgRequestBody;
+import com.weiwu.ql.data.request.VerifyCodeRequestBody;
+import com.weiwu.ql.main.login.country.ChoiceCountryActivity;
+import com.weiwu.ql.main.login.country.CountryEntity;
 import com.weiwu.ql.main.mine.MineContract;
+import com.weiwu.ql.utils.IntentUtil;
 import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.utils.TimeCountUtil;
 import com.weiwu.ql.utils.ToastHelper;
 import com.weiwu.ql.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener, MineContract.ILoginView {
 
@@ -71,9 +79,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_login);
         ImmersionBar.with(this).transparentNavigationBar().hideBar(BarHide.FLAG_HIDE_STATUS_BAR).init();
         setPresenter(new LoginPresenter(MineRepository.getInstance()));
-//        startMain();
+        startMain();
         initView();
         Utils.checkPermission(this);
+        EventBus.getDefault().register(this);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+
+        }
     }
 
     public void startMain() {
@@ -123,7 +142,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     etCode.setVisibility(View.VISIBLE);
                     tvUpCode.setVisibility(View.VISIBLE);
                     etPassword.setVisibility(View.GONE);
-//                    llVerify.setVisibility(View.VISIBLE);
+                    llVerify.setVisibility(View.VISIBLE);
                     v2.setVisibility(View.GONE);
                     etCode.setText("");
                 }
@@ -166,10 +185,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 break;
             case R.id.lin_code:
                 //区号选择
-//                IntentUtil.redirectToNextActivity(this, ChoiceCountryActivity.class);
+                IntentUtil.redirectToNextActivity(this, ChoiceCountryActivity.class);
                 break;
             case R.id.tv_upCode:
-                /*//获取验证码
+//                获取验证码
                 if (TextUtils.isEmpty(etMobile.getText().toString())) {
                     ToastHelper.showToast(this, getString(R.string.input_mobile));
                     return;
@@ -180,18 +199,51 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     //tvMobileCode.getText().toString()+"-"+
                     sb.append(tvMobileCode.getText().toString()).append("-");
                 }
-                sb.append(etMobile.getText().toString());*/
-//                HttpRequestParams params = new HttpRequestParams(Constant.GET_MSG_CODE + sb.toString());
+                sb.append(etMobile.getText().toString());
+                mPresenter.sendPhone(new SendPhoneMsgRequestBody(etMobile.getText().toString(), tvMobileCode.getText().toString()));
+//                HttpRequestParams params = new HttpRequestParams(Constant.GET_MSG_CODE + sb.toString());*/
                 break;
             case R.id.splash_btn_go:
                 //登录或者注册
-                boolean register = splashBtnGo.getText().equals("注册");
+                boolean isRegister = mRegisteredOrLogin.getText().equals("注册");
 
-                if (TextUtils.isEmpty(etMobile.getText().toString())) {
-                    ToastHelper.showToast(this, getString(R.string.input_mobile));
-                    return;
-                }
-                if (!cbPasswordLogin.isChecked()) {
+                if (isRegister) {
+                    if (TextUtils.isEmpty(etMobile.getText().toString())) {
+                        ToastHelper.showToast(this, getString(R.string.input_mobile));
+                        return;
+                    }
+                    if (!cbPasswordLogin.isChecked()) {
+                        if (TextUtils.isEmpty(etPassword.getText().toString())) {
+                            ToastHelper.showToast(this, getString(R.string.input_password));
+                            return;
+                        }
+                        String regex = "^[a-zA-Z0-9]{6,12}$";
+                        if (!etPassword.getText().toString().matches(regex)) {
+                            ToastHelper.showToast(this, "请输入6-12位密码");
+                            return;
+                        }
+                    } else {
+                        if (TextUtils.isEmpty(etCode.getText().toString())) {
+                            ToastHelper.showToast(this, getString(R.string.input_code));
+                            return;
+                        }
+                    }
+                    if (TextUtils.isEmpty(choice)) {
+                        ToastHelper.showToast(this, getString(R.string.input_yhxy));
+                        return;
+                    }
+                    if (!cbPasswordLogin.isChecked()) {
+                        mPresenter.login(new LoginRequestBody(etMobile.getText().toString(), etPassword.getText().toString(), null, "1"));
+                    } else {
+                        mPresenter.login(new LoginRequestBody(etMobile.getText().toString(), null, etCode.getText().toString(), "2"));
+
+                    }
+
+                } else {
+                    if (TextUtils.isEmpty(etMobile.getText().toString())) {
+                        ToastHelper.showToast(this, getString(R.string.input_mobile));
+                        return;
+                    }
                     if (TextUtils.isEmpty(etPassword.getText().toString())) {
                         ToastHelper.showToast(this, getString(R.string.input_password));
                         return;
@@ -201,25 +253,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         ToastHelper.showToast(this, "请输入6-12位密码");
                         return;
                     }
-                } else {
                     if (TextUtils.isEmpty(etCode.getText().toString())) {
                         ToastHelper.showToast(this, getString(R.string.input_code));
                         return;
                     }
-                }
-                if (TextUtils.isEmpty(choice)) {
-                    ToastHelper.showToast(this, getString(R.string.input_yhxy));
-                    return;
-                }
-                if (!tvMobileCode.getText().toString().equals("+86") && register && TextUtils.isEmpty(invite_code.getText().toString())) {
-                    //国外手机注册
-                    ToastHelper.showToast(this, "请输入邀请码");
-                    return;
-                }
-                if (register) {
-                    mPresenter.register(new LoginRequestBody(etMobile.getText().toString(), null, etPassword.getText().toString(), 1));
-                } else {
-                    mPresenter.login(new LoginRequestBody(etMobile.getText().toString(), etPassword.getText().toString()));
+                    if (TextUtils.isEmpty(choice)) {
+                        ToastHelper.showToast(this, getString(R.string.input_yhxy));
+                        return;
+                    }
+                    if (!tvMobileCode.getText().toString().equals("+86") && isRegister && TextUtils.isEmpty(invite_code.getText().toString())) {
+                        //国外手机注册
+                        ToastHelper.showToast(this, "请输入邀请码");
+                        return;
+                    }
+//                    mPresenter.register(new RegisterRequestBody(etMobile.getText().toString(), etPassword.getText().toString(), tvMobileCode.getText().toString(), invite_code.getText().toString()));
+
+                    mPresenter.verify(new VerifyCodeRequestBody(etMobile.getText().toString(), etCode.getText().toString()));
+
                 }
 
                 break;
@@ -235,9 +285,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 break;
 
             case R.id.tv_forget_password:
-                /*Intent intent = new Intent(this, ForgetPasswrodActivity.class);
+                Intent intent = new Intent(this, ForgetPasswordActivity.class);
                 intent.putExtra(Constant.PASSWORD_TYPE, 2);
-                startActivity(intent);*/
+                startActivity(intent);
                 break;
         }
     }
@@ -251,7 +301,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             tvForgetPassword.setVisibility(View.GONE);
             cbPasswordLogin.setVisibility(View.GONE);
             etPassword.setVisibility(View.VISIBLE);
-//            llVerify.setVisibility(View.VISIBLE);
+            llVerify.setVisibility(View.VISIBLE);
             etCode.setVisibility(View.VISIBLE);
             v2.setVisibility(View.VISIBLE);
             tvUpCode.setVisibility(View.VISIBLE);
@@ -263,7 +313,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 v3.setVisibility(View.GONE);
             }
         } else {
+
             invite_code.setVisibility(View.GONE);
+            cbPasswordLogin.setChecked(false);
             v3.setVisibility(View.GONE);
             tvForgetPassword.setVisibility(View.VISIBLE);
             cbPasswordLogin.setVisibility(View.VISIBLE);
@@ -274,6 +326,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             tvUpCode.setVisibility(View.GONE);
         }
         splashBtnGo.setText(b ? "注册" : "登录");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(CountryEntity countryEntity) {
+        if (countryEntity != null) {
+            tvMobileCode.setText("+" + countryEntity.getCode());
+            tvMobileArea.setText(countryEntity.getCountry());
+            invite_code.setText("");
+            registeredOrLogin(!mRegisteredOrLogin.getText().equals("注册"));
+//            if (countryEntity.getCode().equals("86")) {
+//                invite_code.setVisibility(View.GONE);
+//            } else {
+//                invite_code.setVisibility(View.VISIBLE);
+//            }
+        }
     }
 
     /**
@@ -297,6 +364,35 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
+    public void updateSuccess(HttpResult data) {
+
+    }
+
+    @Override
+    public void verifySuccess(HttpResult data) {
+        if (data != null) {
+            if (data.getCode() == 200) {
+                mPresenter.register(new RegisterRequestBody(etMobile.getText().toString(), etPassword.getText().toString(), tvMobileCode.getText().toString()));
+            } else {
+                showToast(data.getMsg());
+            }
+        }
+    }
+
+    @Override
+    public void registerSuccess(HttpResult data) {
+        if (data != null) {
+            if (data.getCode() == 200) {
+                showToast(data.getMsg());
+                registeredOrLogin(mRegisteredOrLogin.getText().equals("注册"));
+            } else {
+                showToast(data.getMsg());
+            }
+
+        }
+    }
+
+    @Override
     public void loginResult(LoginReceive data) {
         if (data.getData() != null) {
             showToast(data.getMsg());
@@ -306,27 +402,25 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             SQLiteDatabase database = helper.getWritableDatabase();
             DaoMaster daoMaster = new DaoMaster(database);
             MyApplication.getInstance().setDaoSession(daoMaster.newSession());*/
-//            startActivity(new Intent(this, MainActivity.class));
-//            finish();
+            /*startActivity(new Intent(this, MainActivity.class));
+            finish();*/
             mPresenter.getSocketUrl();
+
         }
     }
 
     @Override
     public void socketUrl(SocketDataBean dataBean) {
         if (dataBean != null && dataBean.getCode() == 200) {
-
+            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_URL, dataBean.getData().getUrl());
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
     }
 
     @Override
-    public void registerResult(LoginData data) {
-        if (data != null) {
-            showToast(data.getMessage());
-//            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TOKEN, data.getData());
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        }
+    public void onSuccess(HttpResult data) {
+        showToast(data.getMsg());
     }
 
     @Override

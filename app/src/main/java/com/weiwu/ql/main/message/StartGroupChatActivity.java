@@ -6,8 +6,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.tencent.common.http.BlackListData;
 import com.tencent.common.http.ContactListData;
 import com.tencent.qcloud.tim.uikit.component.LineControllerView;
+import com.weiwu.ql.data.bean.GroupListData;
 import com.weiwu.ql.main.contact.group.info.SelectionActivity;
 import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.tencent.qcloud.tim.uikit.modules.contact.ContactItemBean;
@@ -180,7 +182,7 @@ public class StartGroupChatActivity extends BaseActivity implements ContactContr
         for (int i = 0; i < mMembers.size(); i++) {
             membersId.add(mMembers.get(i).getAccount());
         }
-        mPresenter.createGroup(new CreateGroupRequestBody(groupName, membersId));
+        mPresenter.createGroup(new CreateGroupRequestBody( listToString(membersId,',')));
         /*GroupChatManagerKit.createGroupChat(groupInfo, new IUIKitCallBack() {
             @Override
             public void onSuccess(Object data) {
@@ -203,12 +205,30 @@ public class StartGroupChatActivity extends BaseActivity implements ContactContr
         });*/
     }
 
+    public String listToString(List list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return list.isEmpty()?"":sb.toString().substring(0, sb.toString().length() - 1);
+    }
+
     @Override
     public void contactReceive(ContactListData data) {
         if (data.getData() != null) {
             friends = data.getData();
             mContactListView.loadDataSource(ContactListView.DataSource.FRIEND_LIST, friends);
         }
+    }
+
+    @Override
+    public void groupListReceive(GroupListData data) {
+
+    }
+
+    @Override
+    public void blackListReceive(BlackListData data) {
+
     }
 
     @Override

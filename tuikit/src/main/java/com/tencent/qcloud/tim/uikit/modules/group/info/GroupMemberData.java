@@ -10,8 +10,9 @@ import java.util.List;
  */
 public class GroupMemberData {
 
+
     private int code;
-    private String message;
+    private String msg;
     private List<DataDTO> data;
 
     public int getCode() {
@@ -22,12 +23,12 @@ public class GroupMemberData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public List<DataDTO> getData() {
@@ -39,113 +40,50 @@ public class GroupMemberData {
     }
 
     public static class DataDTO {
-        private String id;
-        private String nickName;
-        private String avator;
-        private String mobile;
-        private String lastLoginTime;
-        private String createdTime;
-        private String updatedTime;
-        private int sex;
-        private String roleName;
-        private int role;
-        private int isForbidden;
-        private String personalSignature;
+        private String member_id;
+        private String face_url;
+        private String nick_name;
+        private int group_role;
+        private int is_ban_say;
 
-        public String getId() {
-            return id;
+        public String getMember_id() {
+            return member_id;
         }
 
-        public void setId(String id) {
-            this.id = id;
+        public void setMember_id(String member_id) {
+            this.member_id = member_id;
         }
 
-        public String getNickName() {
-            return nickName;
+        public String getFace_url() {
+            return face_url;
         }
 
-        public void setNickName(String nickName) {
-            this.nickName = nickName;
+        public void setFace_url(String face_url) {
+            this.face_url = face_url;
         }
 
-        public String getAvator() {
-            return avator;
+        public String getNick_name() {
+            return nick_name;
         }
 
-        public void setAvator(String avator) {
-            this.avator = avator;
+        public void setNick_name(String nick_name) {
+            this.nick_name = nick_name;
         }
 
-        public String getMobile() {
-            return mobile;
+        public int getGroup_role() {
+            return group_role;
         }
 
-        public void setMobile(String mobile) {
-            this.mobile = mobile;
+        public void setGroup_role(int group_role) {
+            this.group_role = group_role;
         }
 
-        public String getLastLoginTime() {
-            return lastLoginTime;
+        public int getIs_ban_say() {
+            return is_ban_say;
         }
 
-        public void setLastLoginTime(String lastLoginTime) {
-            this.lastLoginTime = lastLoginTime;
-        }
-
-        public String getCreatedTime() {
-            return createdTime;
-        }
-
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
-        }
-
-        public String getUpdatedTime() {
-            return updatedTime;
-        }
-
-        public void setUpdatedTime(String updatedTime) {
-            this.updatedTime = updatedTime;
-        }
-
-        public int getSex() {
-            return sex;
-        }
-
-        public void setSex(int sex) {
-            this.sex = sex;
-        }
-
-        public String getRoleName() {
-            return roleName;
-        }
-
-        public void setRoleName(String roleName) {
-            this.roleName = roleName;
-        }
-
-        public int getRole() {
-            return role;
-        }
-
-        public void setRole(int role) {
-            this.role = role;
-        }
-
-        public int getIsForbidden() {
-            return isForbidden;
-        }
-
-        public void setIsForbidden(int isForbidden) {
-            this.isForbidden = isForbidden;
-        }
-
-        public String getPersonalSignature() {
-            return personalSignature;
-        }
-
-        public void setPersonalSignature(String personalSignature) {
-            this.personalSignature = personalSignature;
+        public void setIs_ban_say(int is_ban_say) {
+            this.is_ban_say = is_ban_say;
         }
     }
 }

@@ -9,8 +9,26 @@ public class CircleHeadUser {
 
     private String id;
     private String name = "";
-    private String headUrl= "";
+    private String headUrl = "";
     private String circleBgUrl = "";
+    private String friendHead = "";
+    private int msgCount = 0;
+
+    public String getFriendHead() {
+        return friendHead;
+    }
+
+    public void setFriendHead(String friendHead) {
+        this.friendHead = friendHead;
+    }
+
+    public int getMsgCount() {
+        return msgCount;
+    }
+
+    public void setMsgCount(int msgCount) {
+        this.msgCount = msgCount;
+    }
 
     public String getId() {
         return id;

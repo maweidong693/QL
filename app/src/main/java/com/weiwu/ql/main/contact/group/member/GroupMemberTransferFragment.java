@@ -2,7 +2,6 @@ package com.weiwu.ql.main.contact.group.member;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.tencent.qcloud.tim.uikit.R;
@@ -13,7 +12,6 @@ import com.weiwu.ql.MyApplication;
 import com.weiwu.ql.base.BaseFragment;
 import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
-import com.weiwu.ql.data.request.GroupOwnerRequestBody;
 import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
 
@@ -72,20 +70,28 @@ public class GroupMemberTransferFragment extends BaseFragment implements GroupCo
             public void select(List<String> list) {
                 if (type == 1) {
                     if (list != null && list.size() > 0) {
-                        mPresenter.changGroupOwner(mGroupInfo.getId(), list.get(0));
+                        mPresenter.changGroupOwner(new InviteOrDeleteRequestBody(mGroupInfo.getGroupId(), list.get(0)));
                     }else {
                         showToast("请选择成员！");
                     }
                 } else if (type == 2) {
-                    mPresenter.changeGroupManger(new InviteOrDeleteRequestBody(mGroupInfo.getId(), list));
+                    mPresenter.changeGroupManger(new InviteOrDeleteRequestBody(mGroupInfo.getGroupId(), listToString(list,',')));
                 }
             }
         });
     }
 
+    public String listToString(List list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return list.isEmpty() ? "" : sb.toString().substring(0, sb.toString().length() - 1);
+    }
+
     @Override
     public void onSuccess(HttpResult data) {
-        showToast(data.getMessage());
+        showToast(data.getMsg());
         getActivity().finish();
     }
 

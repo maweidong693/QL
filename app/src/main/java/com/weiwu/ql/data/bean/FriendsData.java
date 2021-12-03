@@ -2,7 +2,7 @@ package com.weiwu.ql.data.bean;
 
 import android.text.TextUtils;
 
-import com.weiwu.ql.main.mine.friends.data.FavortItem;
+import com.chad.library.adapter.base.entity.MultiItemEntity;
 
 import java.util.List;
 
@@ -14,9 +14,10 @@ import java.util.List;
  */
 public class FriendsData {
 
+
     private int code;
-    private String message;
-    private List<DataDTO> data;
+    private String msg;
+    private DataDTO data;
 
     public int getCode() {
         return code;
@@ -26,555 +27,445 @@ public class FriendsData {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
-    public List<DataDTO> getData() {
+    public DataDTO getData() {
         return data;
     }
 
-    public void setData(List<DataDTO> data) {
+    public void setData(DataDTO data) {
         this.data = data;
     }
 
     public static class DataDTO {
-        private String id;
-        private String imgUrlJson;
-        private List<String> imgUrl;
-        private String videoUrl;
-        private String article;
-        private String memberId;
-        private MemberInfoResultVODTO memberInfoResultVO;
-        private String createdTime;
-        private String updatedTime;
-        private String createdBy;
-        private String updatedBy;
-        private int type;
-        private List<ThumbListDTO> thumbList;
-        private List<CommentAndReplyListDTO> commentAndReplyList;
-        private boolean isExpand;
+        private String create_time;
+        private int show_range;
+        private String backgroundImg;
+        private String ownerName;
+        private String ownerFaceUrl;
+        private List<MessageDTO> message;
 
-        public int getType() {
-            return type;
+        public String getCreate_time() {
+            return create_time;
         }
 
-        public void setType(int type) {
-            this.type = type;
+        public void setCreate_time(String create_time) {
+            this.create_time = create_time;
         }
 
-        public String getVideoUrl() {
-            return videoUrl;
+        public int getShow_range() {
+            return show_range;
         }
 
-        public void setVideoUrl(String videoUrl) {
-            this.videoUrl = videoUrl;
+        public void setShow_range(int show_range) {
+            this.show_range = show_range;
         }
 
-        public String getCurUserFavortId(String curUserId) {
-            String favortid = "";
-            if (!TextUtils.isEmpty(curUserId) && hasFavort()) {
-                for (ThumbListDTO item : thumbList) {
-                    if (curUserId.equals(item.getFromMemberInfo().getId())) {
-                        favortid = item.getId();
-                        return favortid;
+        public String getBackgroundImg() {
+            return backgroundImg;
+        }
+
+        public void setBackgroundImg(String backgroundImg) {
+            this.backgroundImg = backgroundImg;
+        }
+
+        public String getOwnerName() {
+            return ownerName;
+        }
+
+        public void setOwnerName(String ownerName) {
+            this.ownerName = ownerName;
+        }
+
+        public String getOwnerFaceUrl() {
+            return ownerFaceUrl;
+        }
+
+        public void setOwnerFaceUrl(String ownerFaceUrl) {
+            this.ownerFaceUrl = ownerFaceUrl;
+        }
+
+        public List<MessageDTO> getMessage() {
+            return message;
+        }
+
+        public void setMessage(List<MessageDTO> message) {
+            this.message = message;
+        }
+
+        public static class MessageDTO implements MultiItemEntity {
+            public final static int TYPE_CIRCLE_TEXT = 1;
+            public final static int TYPE_CIRCLE_IMG = 2;
+            public final static int TYPE_CIRCLE_VIDEO =3;
+
+            private int id;
+            private String im_id;
+            private String nick_name;
+            private int create_id;
+            private String face_url;
+            private String create_time;
+            private String location;
+            private String text_content;
+            private String mediaPreview;
+            private String mediaUrl;
+            private List<String> pics;
+            private boolean like;
+            private List<LikesDTO> likes;
+            private List<CommentAndRepliesDTO> commentAndReplies;
+
+            private boolean isExpand;
+
+            public boolean isExpand() {
+                return isExpand;
+            }
+
+            public void setExpand(boolean expand) {
+                isExpand = expand;
+            }
+
+            public boolean hasFavort() {
+                if (likes != null && likes.size() > 0) {
+                    return true;
+                }
+                return false;
+            }
+
+            public boolean hasComment() {
+                if (commentAndReplies != null && commentAndReplies.size() > 0) {
+                    return true;
+                }
+                return false;
+            }
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getIm_id() {
+                return im_id;
+            }
+
+            public void setIm_id(String im_id) {
+                this.im_id = im_id;
+            }
+
+            public String getNick_name() {
+                return nick_name;
+            }
+
+            public void setNick_name(String nick_name) {
+                this.nick_name = nick_name;
+            }
+
+            public int getCreate_id() {
+                return create_id;
+            }
+
+            public void setCreate_id(int create_id) {
+                this.create_id = create_id;
+            }
+
+            public String getFace_url() {
+                return face_url;
+            }
+
+            public void setFace_url(String face_url) {
+                this.face_url = face_url;
+            }
+
+            public String getCreate_time() {
+                return create_time;
+            }
+
+            public void setCreate_time(String create_time) {
+                this.create_time = create_time;
+            }
+
+            public String getLocation() {
+                return location;
+            }
+
+            public void setLocation(String location) {
+                this.location = location;
+            }
+
+            public String getText_content() {
+                return text_content;
+            }
+
+            public void setText_content(String text_content) {
+                this.text_content = text_content;
+            }
+
+            public String getMediaPreview() {
+                return mediaPreview;
+            }
+
+            public void setMediaPreview(String mediaPreview) {
+                this.mediaPreview = mediaPreview;
+            }
+
+            public String getMediaUrl() {
+                return mediaUrl;
+            }
+
+            public void setMediaUrl(String mediaUrl) {
+                this.mediaUrl = mediaUrl;
+            }
+
+            public List<String> getPics() {
+                return pics;
+            }
+
+            public void setPics(List<String> pics) {
+                this.pics = pics;
+            }
+
+            public boolean isLike() {
+                return like;
+            }
+
+            public void setLike(boolean like) {
+                this.like = like;
+            }
+
+            public List<LikesDTO> getLikes() {
+                return likes;
+            }
+
+            public void setLikes(List<LikesDTO> likes) {
+                this.likes = likes;
+            }
+
+            public List<CommentAndRepliesDTO> getCommentAndReplies() {
+                return commentAndReplies;
+            }
+
+            public void setCommentAndReplies(List<CommentAndRepliesDTO> commentAndReplies) {
+                this.commentAndReplies = commentAndReplies;
+            }
+
+            public int getCurUserFavortId(String curUserId) {
+                int favortid = 0;
+                if (!TextUtils.isEmpty(curUserId) && hasFavort()) {
+                    for (LikesDTO item : likes) {
+                        if (curUserId.equals(item.getIm_id())) {
+                            favortid = item.getLikerId();
+                            return favortid;
+                        }
                     }
                 }
-            }
-            return favortid;
-        }
-
-        public boolean hasFavort() {
-            if (thumbList != null && thumbList.size() > 0) {
-                return true;
-            }
-            return false;
-        }
-
-        public boolean hasComment() {
-            if (commentAndReplyList != null && commentAndReplyList.size() > 0) {
-                return true;
-            }
-            return false;
-        }
-
-        public boolean isExpand() {
-            return isExpand;
-        }
-
-        public void setExpand(boolean expand) {
-            isExpand = expand;
-        }
-
-        public String getArticle() {
-            return article;
-        }
-
-        public void setArticle(String article) {
-            this.article = article;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getImgUrlJson() {
-            return imgUrlJson;
-        }
-
-        public void setImgUrlJson(String imgUrlJson) {
-            this.imgUrlJson = imgUrlJson;
-        }
-
-        public List<String> getImgUrl() {
-            return imgUrl;
-        }
-
-        public void setImgUrl(List<String> imgUrl) {
-            this.imgUrl = imgUrl;
-        }
-
-        public String getMemberId() {
-            return memberId;
-        }
-
-        public void setMemberId(String memberId) {
-            this.memberId = memberId;
-        }
-
-        public MemberInfoResultVODTO getMemberInfoResultVO() {
-            return memberInfoResultVO;
-        }
-
-        public void setMemberInfoResultVO(MemberInfoResultVODTO memberInfoResultVO) {
-            this.memberInfoResultVO = memberInfoResultVO;
-        }
-
-        public String getCreatedTime() {
-            return createdTime;
-        }
-
-        public void setCreatedTime(String createdTime) {
-            this.createdTime = createdTime;
-        }
-
-        public String getUpdatedTime() {
-            return updatedTime;
-        }
-
-        public void setUpdatedTime(String updatedTime) {
-            this.updatedTime = updatedTime;
-        }
-
-        public String getCreatedBy() {
-            return createdBy;
-        }
-
-        public void setCreatedBy(String createdBy) {
-            this.createdBy = createdBy;
-        }
-
-        public String getUpdatedBy() {
-            return updatedBy;
-        }
-
-        public void setUpdatedBy(String updatedBy) {
-            this.updatedBy = updatedBy;
-        }
-
-        public List<ThumbListDTO> getThumbList() {
-            return thumbList;
-        }
-
-        public void setThumbList(List<ThumbListDTO> thumbList) {
-            this.thumbList = thumbList;
-        }
-
-        public List<CommentAndReplyListDTO> getCommentAndReplyList() {
-            return commentAndReplyList;
-        }
-
-        public void setCommentAndReplyList(List<CommentAndReplyListDTO> commentAndReplyList) {
-            this.commentAndReplyList = commentAndReplyList;
-        }
-
-        public static class MemberInfoResultVODTO {
-            private String id;
-            private String nickName;
-            private String mobile;
-            private String lastLoginTime;
-            private String createdTime;
-            private String updatedTime;
-            private String avator;
-            private int sex;
-
-            public String getAvator() {
-                return avator;
+                return favortid;
             }
 
-            public void setAvator(String avator) {
-                this.avator = avator;
+            @Override
+            public int getItemType() {
+                return 0;
             }
 
-            public String getId() {
-                return id;
+            public static class LikesDTO {
+                private String im_id;
+                private int likerId;
+                private String likernick_name;
+
+                public String getIm_id() {
+                    return im_id;
+                }
+
+                public void setIm_id(String im_id) {
+                    this.im_id = im_id;
+                }
+
+                public int getLikerId() {
+                    return likerId;
+                }
+
+                public void setLikerId(int likerId) {
+                    this.likerId = likerId;
+                }
+
+                public String getLikernick_name() {
+                    return likernick_name;
+                }
+
+                public void setLikernick_name(String likernick_name) {
+                    this.likernick_name = likernick_name;
+                }
             }
 
-            public void setId(String id) {
-                this.id = id;
-            }
+            public static class CommentAndRepliesDTO {
+                private int id;
+                private String im_id;
+                private String commentatornick_name;
+                private int commentatorId;
+                private String content;
+                private String commentatorIcon;
+                private int commentId;
+                private int type;
+                private String replyImId;
+                private String replyAlias;
+                private String replyIcon;
+                private String replyId;
+                private String replyName;
+                private String replyToImId;
+                private String replyToAlias;
+                private String replyToIcon;
+                private String replyToId;
+                private String replyToName;
 
-            public String getNickName() {
-                return nickName;
-            }
-
-            public void setNickName(String nickName) {
-                this.nickName = nickName;
-            }
-
-            public String getMobile() {
-                return mobile;
-            }
-
-            public void setMobile(String mobile) {
-                this.mobile = mobile;
-            }
-
-            public String getLastLoginTime() {
-                return lastLoginTime;
-            }
-
-            public void setLastLoginTime(String lastLoginTime) {
-                this.lastLoginTime = lastLoginTime;
-            }
-
-            public String getCreatedTime() {
-                return createdTime;
-            }
-
-            public void setCreatedTime(String createdTime) {
-                this.createdTime = createdTime;
-            }
-
-            public String getUpdatedTime() {
-                return updatedTime;
-            }
-
-            public void setUpdatedTime(String updatedTime) {
-                this.updatedTime = updatedTime;
-            }
-
-            public int getSex() {
-                return sex;
-            }
-
-            public void setSex(int sex) {
-                this.sex = sex;
-            }
-        }
-
-        public static class ThumbListDTO {
-            private String id;
-            private String momentsId;
-            private String memberId;
-            private FromMemberInfoDTO fromMemberInfo;
-            private int type;
-            private String createdTime;
-            private String createdBy;
-            private String updatedTime;
-            private String updatedBy;
-            private int del;
-
-            public String getId() {
-                return id;
-            }
-
-            public void setId(String id) {
-                this.id = id;
-            }
-
-            public String getMomentsId() {
-                return momentsId;
-            }
-
-            public void setMomentsId(String momentsId) {
-                this.momentsId = momentsId;
-            }
-
-            public String getMemberId() {
-                return memberId;
-            }
-
-            public void setMemberId(String memberId) {
-                this.memberId = memberId;
-            }
-
-            public FromMemberInfoDTO getFromMemberInfo() {
-                return fromMemberInfo;
-            }
-
-            public void setFromMemberInfo(FromMemberInfoDTO fromMemberInfo) {
-                this.fromMemberInfo = fromMemberInfo;
-            }
-
-            public int getType() {
-                return type;
-            }
-
-            public void setType(int type) {
-                this.type = type;
-            }
-
-            public String getCreatedTime() {
-                return createdTime;
-            }
-
-            public void setCreatedTime(String createdTime) {
-                this.createdTime = createdTime;
-            }
-
-            public String getCreatedBy() {
-                return createdBy;
-            }
-
-            public void setCreatedBy(String createdBy) {
-                this.createdBy = createdBy;
-            }
-
-            public String getUpdatedTime() {
-                return updatedTime;
-            }
-
-            public void setUpdatedTime(String updatedTime) {
-                this.updatedTime = updatedTime;
-            }
-
-            public String getUpdatedBy() {
-                return updatedBy;
-            }
-
-            public void setUpdatedBy(String updatedBy) {
-                this.updatedBy = updatedBy;
-            }
-
-            public int getDel() {
-                return del;
-            }
-
-            public void setDel(int del) {
-                this.del = del;
-            }
-
-            public static class FromMemberInfoDTO {
-                private String id;
-                private String nickName;
-                private String avator;
-                private String mobile;
-                private String momentImg;
-                private String personalSignature;
-                private String lastLoginTime;
-                private String createdTime;
-                private String updatedTime;
-                private int sex;
-
-                public String getId() {
+                public int getId() {
                     return id;
                 }
 
-                public void setId(String id) {
+                public void setId(int id) {
                     this.id = id;
                 }
 
-                public String getNickName() {
-                    return nickName;
+                public String getIm_id() {
+                    return im_id;
                 }
 
-                public void setNickName(String nickName) {
-                    this.nickName = nickName;
+                public void setIm_id(String im_id) {
+                    this.im_id = im_id;
                 }
 
-                public String getAvator() {
-                    return avator;
+                public String getCommentatornick_name() {
+                    return commentatornick_name;
                 }
 
-                public void setAvator(String avator) {
-                    this.avator = avator;
+                public void setCommentatornick_name(String commentatornick_name) {
+                    this.commentatornick_name = commentatornick_name;
                 }
 
-                public String getMobile() {
-                    return mobile;
+                public int getCommentatorId() {
+                    return commentatorId;
                 }
 
-                public void setMobile(String mobile) {
-                    this.mobile = mobile;
+                public void setCommentatorId(int commentatorId) {
+                    this.commentatorId = commentatorId;
                 }
 
-                public String getMomentImg() {
-                    return momentImg;
+                public String getContent() {
+                    return content;
                 }
 
-                public void setMomentImg(String momentImg) {
-                    this.momentImg = momentImg;
+                public void setContent(String content) {
+                    this.content = content;
                 }
 
-                public String getPersonalSignature() {
-                    return personalSignature;
+                public String getCommentatorIcon() {
+                    return commentatorIcon;
                 }
 
-                public void setPersonalSignature(String personalSignature) {
-                    this.personalSignature = personalSignature;
+                public void setCommentatorIcon(String commentatorIcon) {
+                    this.commentatorIcon = commentatorIcon;
                 }
 
-                public String getLastLoginTime() {
-                    return lastLoginTime;
+                public int getCommentId() {
+                    return commentId;
                 }
 
-                public void setLastLoginTime(String lastLoginTime) {
-                    this.lastLoginTime = lastLoginTime;
+                public void setCommentId(int commentId) {
+                    this.commentId = commentId;
                 }
 
-                public String getCreatedTime() {
-                    return createdTime;
+                public int getType() {
+                    return type;
                 }
 
-                public void setCreatedTime(String createdTime) {
-                    this.createdTime = createdTime;
+                public void setType(int type) {
+                    this.type = type;
                 }
 
-                public String getUpdatedTime() {
-                    return updatedTime;
+                public String getReplyImId() {
+                    return replyImId;
                 }
 
-                public void setUpdatedTime(String updatedTime) {
-                    this.updatedTime = updatedTime;
+                public void setReplyImId(String replyImId) {
+                    this.replyImId = replyImId;
                 }
 
-                public int getSex() {
-                    return sex;
+                public String getReplyAlias() {
+                    return replyAlias;
                 }
 
-                public void setSex(int sex) {
-                    this.sex = sex;
+                public void setReplyAlias(String replyAlias) {
+                    this.replyAlias = replyAlias;
                 }
-            }
-        }
 
-        public static class CommentAndReplyListDTO {
-            private String id;
-            private String momentsId;
-            private String memberId;
-            private ThumbListDTO.FromMemberInfoDTO fromMemberInfo;
-            private ThumbListDTO.FromMemberInfoDTO toMemberInfo;
-            private int type;
-            private String content;
-            private String createdTime;
-            private String createdBy;
-            private String updatedTime;
-            private String updatedBy;
-            private int del;
+                public String getReplyIcon() {
+                    return replyIcon;
+                }
 
-            public ThumbListDTO.FromMemberInfoDTO getToMemberInfo() {
-                return toMemberInfo;
-            }
+                public void setReplyIcon(String replyIcon) {
+                    this.replyIcon = replyIcon;
+                }
 
-            public void setToMemberInfo(ThumbListDTO.FromMemberInfoDTO toMemberInfo) {
-                this.toMemberInfo = toMemberInfo;
-            }
+                public String getReplyId() {
+                    return replyId;
+                }
 
-            public String getId() {
-                return id;
-            }
+                public void setReplyId(String replyId) {
+                    this.replyId = replyId;
+                }
 
-            public void setId(String id) {
-                this.id = id;
-            }
+                public String getReplyName() {
+                    return replyName;
+                }
 
-            public String getMomentsId() {
-                return momentsId;
-            }
+                public void setReplyName(String replyName) {
+                    this.replyName = replyName;
+                }
 
-            public void setMomentsId(String momentsId) {
-                this.momentsId = momentsId;
-            }
+                public String getReplyToImId() {
+                    return replyToImId;
+                }
 
-            public String getMemberId() {
-                return memberId;
-            }
+                public void setReplyToImId(String replyToImId) {
+                    this.replyToImId = replyToImId;
+                }
 
-            public void setMemberId(String memberId) {
-                this.memberId = memberId;
-            }
+                public String getReplyToAlias() {
+                    return replyToAlias;
+                }
 
-            public ThumbListDTO.FromMemberInfoDTO getFromMemberInfo() {
-                return fromMemberInfo;
-            }
+                public void setReplyToAlias(String replyToAlias) {
+                    this.replyToAlias = replyToAlias;
+                }
 
-            public void setFromMemberInfo(ThumbListDTO.FromMemberInfoDTO fromMemberInfo) {
-                this.fromMemberInfo = fromMemberInfo;
-            }
+                public String getReplyToIcon() {
+                    return replyToIcon;
+                }
 
-            public int getType() {
-                return type;
-            }
+                public void setReplyToIcon(String replyToIcon) {
+                    this.replyToIcon = replyToIcon;
+                }
 
-            public void setType(int type) {
-                this.type = type;
-            }
+                public String getReplyToId() {
+                    return replyToId;
+                }
 
-            public String getContent() {
-                return content;
-            }
+                public void setReplyToId(String replyToId) {
+                    this.replyToId = replyToId;
+                }
 
-            public void setContent(String content) {
-                this.content = content;
-            }
+                public String getReplyToName() {
+                    return replyToName;
+                }
 
-            public String getCreatedTime() {
-                return createdTime;
-            }
-
-            public void setCreatedTime(String createdTime) {
-                this.createdTime = createdTime;
-            }
-
-            public String getCreatedBy() {
-                return createdBy;
-            }
-
-            public void setCreatedBy(String createdBy) {
-                this.createdBy = createdBy;
-            }
-
-            public String getUpdatedTime() {
-                return updatedTime;
-            }
-
-            public void setUpdatedTime(String updatedTime) {
-                this.updatedTime = updatedTime;
-            }
-
-            public String getUpdatedBy() {
-                return updatedBy;
-            }
-
-            public void setUpdatedBy(String updatedBy) {
-                this.updatedBy = updatedBy;
-            }
-
-            public int getDel() {
-                return del;
-            }
-
-            public void setDel(int del) {
-                this.del = del;
+                public void setReplyToName(String replyToName) {
+                    this.replyToName = replyToName;
+                }
             }
         }
     }
