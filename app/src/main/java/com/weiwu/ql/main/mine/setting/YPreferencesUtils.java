@@ -3,6 +3,7 @@ package com.weiwu.ql.main.mine.setting;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.MyApplication;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,7 @@ public class YPreferencesUtils {
     /**
      * 保存在手机里面的文件名
      */
-    public static final String FILE_NAME = "x_config";
+    public static final String FILE_NAME = "sp_config";
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
@@ -29,7 +30,7 @@ public class YPreferencesUtils {
      */
     public static void put(String key, Object object) {
 
-        SharedPreferences sp = MyApplication.getInstance().getSharedPreferences(FILE_NAME,
+        SharedPreferences sp = MyApplication.mApplicationContext.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
 
@@ -58,7 +59,7 @@ public class YPreferencesUtils {
      * @return
      */
     public static Object get(String key, Object defaultObject) {
-        SharedPreferences sp = MyApplication.getInstance().getSharedPreferences(FILE_NAME,
+        SharedPreferences sp = MyApplication.mApplicationContext.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         if (defaultObject instanceof String) {
             return sp.getString(key, (String) defaultObject);
@@ -80,7 +81,7 @@ public class YPreferencesUtils {
      * @param key
      */
     public static void remove(String key) {
-        SharedPreferences sp = MyApplication.getInstance().getSharedPreferences(FILE_NAME,
+        SharedPreferences sp = MyApplication.mApplicationContext.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
@@ -91,7 +92,7 @@ public class YPreferencesUtils {
      * 清除所有数据
      */
     public static void clearAll() {
-        SharedPreferences sp = MyApplication.getInstance().getSharedPreferences(FILE_NAME,
+        SharedPreferences sp = MyApplication.mApplicationContext.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
@@ -105,7 +106,7 @@ public class YPreferencesUtils {
      * @return
      */
     public static boolean contains(String key) {
-        SharedPreferences sp = MyApplication.getInstance().getSharedPreferences(FILE_NAME,
+        SharedPreferences sp = MyApplication.mApplicationContext.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         return sp.contains(key);
     }
@@ -116,7 +117,7 @@ public class YPreferencesUtils {
      * @return
      */
     public static Map<String, ?> getAll() {
-        SharedPreferences sp = MyApplication.getInstance().getSharedPreferences(FILE_NAME,
+        SharedPreferences sp = MyApplication.mApplicationContext.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         return sp.getAll();
     }

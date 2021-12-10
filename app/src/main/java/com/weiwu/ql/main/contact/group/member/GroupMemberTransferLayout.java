@@ -187,7 +187,7 @@ public class GroupMemberTransferLayout extends LinearLayout implements IGroupMem
         if (infoData != null) {
             String title = infoData.getTitle();
             mType = infoData.getType();
-            mContactListView.setSingleSelectMode(mType != 2);
+            mContactListView.setSingleSelectMode(true);
             mContactListView.setType(mType);
             mTitleBar.setTitle(title, TitleBarLayout.POSITION.MIDDLE);
         }

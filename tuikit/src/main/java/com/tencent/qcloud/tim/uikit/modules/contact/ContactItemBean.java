@@ -26,6 +26,15 @@ public class ContactItemBean extends BaseIndexPinyinBean {
     private boolean isFriend = true;
     private boolean isEnable = true;
     private int isForbidden;
+    private int isManger;
+
+    public int getIsManger() {
+        return isManger;
+    }
+
+    public void setIsManger(int isManger) {
+        this.isManger = isManger;
+    }
 
     public int getUnread() {
         return unread;
@@ -216,6 +225,7 @@ public class ContactItemBean extends BaseIndexPinyinBean {
         setAvatarurl(member.getIconUrl());
         setGroup(true);
         setIsForbidden(member.getIsForbidden());
+        setIsManger(member.getMemberType());
         return this;
     }
 }

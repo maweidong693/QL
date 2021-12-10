@@ -2,6 +2,7 @@ package com.tencent.qcloud.tim.uikit.modules.contact;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -75,7 +76,7 @@ public class GroupMuteMemberListView extends LinearLayout {
         mManager = new CustomLinearLayoutManager(getContext());
         mRv.setLayoutManager(mManager);
 
-        mAdapter = new MuteMemberAdapter(mData);
+        mAdapter = new MuteMemberAdapter(mData, type);
         mRv.setAdapter(mAdapter);
         mRv.addItemDecoration(mDecoration = new SuspensionDecoration(getContext(), mData));
         mTvSideBarHint = findViewById(R.id.contact_tvSideBarHint);
@@ -93,7 +94,7 @@ public class GroupMuteMemberListView extends LinearLayout {
     public void setDataSource(List<ContactItemBean> data) {
         mContactLoadingBar.setVisibility(GONE);
         this.mData = data;
-        mAdapter.setDataSource(mData);
+        mAdapter.setDataSource(mData,type);
         mIndexBar.setSourceDatas(mData).invalidate();
         mDecoration.setDatas(mData);
     }
@@ -128,11 +129,11 @@ public class GroupMuteMemberListView extends LinearLayout {
                 loadGroupListData();
                 break;
             case DataSource.CONTACT_LIST:
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend),0)
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.new_friend), 0)
                         .setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group),0).
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.group), 0).
                         setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
-                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.blacklist),0).
+                mData.add((ContactItemBean) new ContactItemBean(getResources().getString(R.string.blacklist), 0).
                         setTop(true).setBaseIndexTag(ContactItemBean.INDEX_STRING_TOP));
                 loadFriendListDataAsync();
                 break;
@@ -145,8 +146,9 @@ public class GroupMuteMemberListView extends LinearLayout {
         mAdapter.notifyDataSetChanged();
     }
 
-    public void setGroupInfo(GroupInfo groupInfo) {
+    public void setGroupInfo(GroupInfo groupInfo, int type) {
         mGroupInfo = groupInfo;
+        this.type = type;
     }
 
     private void updateStatus(List<ContactItemBean> beanList) {

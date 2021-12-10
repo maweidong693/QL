@@ -366,6 +366,11 @@ public class GroupInfoLayout extends LinearLayout implements IGroupMemberLayout,
             mGroupInfo.setMemberDetails(groupMemberInfos);
             mMemberAdapter.setDataSource(mGroupInfo);
         }
+        if (info.getUnReadInvite() == 0) {
+            mGroupInvitation.setUnreadclear();
+        } else {
+            mGroupInvitation.setUnreadCount(info.getUnReadInvite() + "");
+        }
         mGroupNameView.setContent(info.getGroupName());
         mGroupIDView.setContent(info.getId());
         mGroupNotice.setContent(info.getNotice());

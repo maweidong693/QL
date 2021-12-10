@@ -102,12 +102,13 @@ public class ForgetPasswordActivity extends BaseActivity implements View.OnClick
         if (mIntExtra == 1) {
             forgetPasswordTitleBar.setTitle(getResources().getString(R.string.updatePassword), TitleBarLayout.POSITION.MIDDLE);
             String tel = SPUtils.getValue(AppConstant.USER, AppConstant.USER_PHONE);
-            String nativeCode = SPUtils.getValue(AppConstant.USER, AppConstant.USER_COUNTRY);
+            String nativeCode = SPUtils.getValue(AppConstant.USER, AppConstant.USER_COUNTRY_CODE);
+            String country = SPUtils.getValue(AppConstant.USER, AppConstant.USER_COUNTRY);
             if (!TextUtils.isEmpty(tel)) {
                 etForgetPasswordMobile.setFocusable(false);
                 etForgetPasswordMobile.setFocusableInTouchMode(false);
                 etForgetPasswordMobile.setText(tel);
-                tvForgetPasswordMobileArea.setText("地区码");
+                tvForgetPasswordMobileArea.setText(country);
                 tvForgetPasswordMobileCode.setText(nativeCode);
             }
         } else {
@@ -227,7 +228,7 @@ public class ForgetPasswordActivity extends BaseActivity implements View.OnClick
                     }
                     if (mIntExtra == 1) {
                         mPresenter.updatePassword(new RegisterRequestBody(etForgetPasswordConfirm.getText().toString()));
-                    }else {
+                    } else {
                         mPresenter.forgetPassword(new RegisterRequestBody(etForgetPasswordMobile.getText().toString(), etForgetPasswordConfirm.getText().toString()));
 
                     }
@@ -273,7 +274,7 @@ public class ForgetPasswordActivity extends BaseActivity implements View.OnClick
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(CountryEntity countryEntity) {
         if (countryEntity != null) {
-            tvForgetPasswordMobileCode.setText("+" + countryEntity.getCode());
+            tvForgetPasswordMobileCode.setText(countryEntity.getCode());
             tvForgetPasswordMobileArea.setText(countryEntity.getCountry());
         }
     }

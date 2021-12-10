@@ -212,16 +212,13 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onReceive(Context context, Intent intent) {
             mAdapter.clearList();
+            start = 1;
 
             if (mReceiverType == 1) {
-                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1"));
+                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
             } else {
-//                if (mIn == 2) {
-//                    mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
-//                } else {
                 mGroup_id = mFriendInfo.getId();
-                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1", "20"));
-//                }
+                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + "", "20"));
             }
         }
     }
@@ -346,6 +343,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             mTitleBar.getRightGroup().setVisibility(View.GONE);
         }
         listView = findViewById(R.id.chatmsg_listView);
+
         listView.setOnClickListener(this);
         listView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ChatMessageAdapter();
@@ -387,8 +385,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 Menu menu = popupMenu.getMenu();
                 MenuItem withdrawMenuItem = menu.getItem(1);
                 MenuItem mQuote = menu.getItem(0);
+                MenuItem mDelete = menu.getItem(3);
+                mDelete.setVisible(false);
                 if (message.getFid().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))) {
-                    withdrawMenuItem.setVisible(message.getFid().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID)));
+                    withdrawMenuItem.setVisible(message.getFid().equals(SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID))
+                            && System.currentTimeMillis() - SystemFacade.parseServerTime(message.getSend_time(), null) < 120000);
                 } else
                     withdrawMenuItem.setVisible(false);
 
@@ -766,7 +767,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             mAdapter.clearList();
         }
 
-        mAdapter.setList(chatMessageList);
+        mAdapter.setList(chatMessageList, mReceiverType);
 //        mAdapter = new Adapter_ChatMessage(mContext, chatMessageList);
         listView.smoothScrollToPosition(chatMessageList.size());
         mAdapter.setVideoClickListener(new ChatMessageAdapter.IVideoClickListener() {
@@ -968,7 +969,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 //            Log.d(TAG, "onActivityResult: vvv==" + list.size());
             listView.smoothScrollToPosition(chatMessageList.size());
 
-            mAdapter.setList(chatMessageList);
+            mAdapter.setList(chatMessageList, mReceiverType);
             mAdapter.notifyDataSetChanged();
             for (int i = 0; i < media.size(); i++) {
 //                mProgressDialog.setMessage("正在提交中，请稍后");
@@ -1003,7 +1004,21 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void delMsgSuccess(HttpResult data) {
-        if (mReceiverType == 1) {
+        if (data.getCode() == 200) {
+
+            if (mReceiverType == 1) {
+                mAdapter.clearList();
+                start = 1;
+                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
+            } else {
+//                if (mIn == 2) {
+//                    mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
+//                } else {
+//                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + "", "20"));
+//                }
+            }
+        }
+        /*if (mReceiverType == 1) {
             mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
         } else {
 //            if (mIn == 2) {
@@ -1012,7 +1027,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "100"));
 //            }
 //                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "20"));
-        }
+        }*/
     }
 
     @Override
@@ -1020,12 +1035,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         if (mReceiverType != 1) {
 
             mPresenter.getGroupInfo(new GroupInfoRequestBody(data.getData().getGroupInfo().getId()));
+            mGroupId = data.getData().getGroupInfo().getId();
         }
-
         if (data != null && data.getData().getList().size() > 0) {
-            if (mReceiverType == 2) {
-                mGroupId = data.getData().getGroupInfo().getId();
-            }
             if (data.getData() != null) {
                 chatMessageList = data.getData().getList();
                 initChatMsgListView();
@@ -1041,18 +1053,13 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void sendResult(SendMessageData data) {
         if (data != null) {
-            start = 1;
-            mAdapter.clearList();
             if (mReceiverType == 1) {
-                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1"));
-            } else {
-//                if (mIn == 2) {
-//                    mPresenter.getGroupInfo(new GroupInfoRequestBody(Integer.parseInt(mFriendInfo.getId())));
-//                } else {
-                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "1", "20"));
-//                }
-//                mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), "0", "20"));
+
+                start = 1;
+                mAdapter.clearList();
+                mPresenter.getHistoryMsg(new HistoryMsgRequestBody(mFriendInfo.getId(), start++ + ""));
             }
+
         }
     }
 
@@ -1083,12 +1090,23 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             mGroup_id = data.getData().getGroup_id();
             mIs_add_friend = data.getData().getIs_add_friend();
             int isForbidden = data.getData().getIs_ban_say();
-//            mTitleBar.setTitle(data.getData().getGroup_name(), TitleBarLayout.POSITION.LEFT);
-            if (isForbidden == 1) {
-                btMute.setVisibility(View.VISIBLE);
+            int isMeForbidden = data.getData().getMy_is_ban_say();
+            int role = data.getData().getGroup_role();
+            if (role == 0) {
+                if (isForbidden == 1) {
+                    btMute.setVisibility(View.VISIBLE);
+                } else {
+                    if (isMeForbidden == 1) {
+                        btMute.setVisibility(View.VISIBLE);
+                    } else {
+                        btMute.setVisibility(View.GONE);
+                    }
+                }
             } else {
                 btMute.setVisibility(View.GONE);
+
             }
+//            mTitleBar.setTitle(data.getData().getGroup_name(), TitleBarLayout.POSITION.LEFT);
 //            mPresenter.getGroupHistoryMsg(new HistoryMsgRequestBody(data.getData().getGroup_id(), "0", "100"));
         }
     }
@@ -1105,6 +1123,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onSuccess(HttpResult data) {
 //        showToast(data.getMsg());
+
     }
 
     @Override

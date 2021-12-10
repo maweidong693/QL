@@ -52,8 +52,26 @@ public class GroupInfoData {
         private int is_add_friend;
         private int is_join_check;
         private int is_ban_say;
+        private int my_is_ban_say;
         private int is_top;
+        private int new_user_count;
         private List<GroupUserDTO> groupUser;
+
+        public int getNew_user_count() {
+            return new_user_count;
+        }
+
+        public void setNew_user_count(int new_user_count) {
+            this.new_user_count = new_user_count;
+        }
+
+        public int getMy_is_ban_say() {
+            return my_is_ban_say;
+        }
+
+        public void setMy_is_ban_say(int my_is_ban_say) {
+            this.my_is_ban_say = my_is_ban_say;
+        }
 
         public String getId() {
             return id;

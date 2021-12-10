@@ -2,6 +2,7 @@ package com.weiwu.ql.main.contact.group.member;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.tencent.qcloud.tim.uikit.R;
@@ -19,6 +20,7 @@ import com.weiwu.ql.data.network.HttpResult;
 import com.weiwu.ql.data.repositories.GroupRepository;
 import com.weiwu.ql.data.request.ForbiddenRequestBody;
 import com.weiwu.ql.data.request.GroupInfoRequestBody;
+import com.weiwu.ql.data.request.InviteOrDeleteRequestBody;
 import com.weiwu.ql.main.contact.group.GroupContract;
 import com.weiwu.ql.utils.SPUtils;
 
@@ -33,6 +35,8 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
     private GroupMemberMuteLayout mInviteLayout;
     private GroupContract.IGroupForbiddenPresenter mPresenter;
     private GroupInfo mGroupInfo;
+    private InfoData mInfoData;
+    private int mType;
 
     /*@Nullable
     @Override
@@ -53,6 +57,8 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
     public void onViewCreated(View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mGroupInfo = (GroupInfo) getArguments().getSerializable(TUIKitConstants.Group.GROUP_INFO);
+        mInfoData = (InfoData) getArguments().getSerializable("info");
+        mType = mInfoData.getType();
         setPresenter(new GroupForbiddenPresenter(GroupRepository.getInstance()));
         mInviteLayout = view.findViewById(R.id.group_member_invite_layout);
         mInviteLayout.setParentLayout(this);
@@ -68,7 +74,7 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
             }
         }
         mGroupInfo.setMemberDetails(members);
-        mInviteLayout.setDataSource(mGroupInfo);
+        mInviteLayout.setDataSource(mGroupInfo, mType);
         mInviteLayout.getTitleBar().setOnLeftClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,14 +87,24 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
                 List<String> list = new ArrayList<>();
                 list.add(contact.getId());
                 if (selected) {
-                    mPresenter.forbiddenMember(new ForbiddenRequestBody(mGroupInfo.getGroupId(), listToString(list, ','), "1"));
+                    if (mType == 3) {
+                        mPresenter.forbiddenMember(new ForbiddenRequestBody(mGroupInfo.getGroupId(), listToString(list, ','), "1"));
+                    } else {
+                        mPresenter.setGroupManger(new InviteOrDeleteRequestBody(mGroupInfo.getGroupId(), list.get(0), "1"));
+                    }
                 } else {
-                    mPresenter.cancelForbiddenMember(new ForbiddenRequestBody(mGroupInfo.getGroupId(), listToString(list, ','), "0"));
+                    if (mType == 3) {
+                        mPresenter.cancelForbiddenMember(new ForbiddenRequestBody(mGroupInfo.getGroupId(), listToString(list, ','), "0"));
+
+                    } else {
+                        mPresenter.setGroupManger(new InviteOrDeleteRequestBody(mGroupInfo.getGroupId(), list.get(0), "0"));
+                    }
                 }
             }
         });
     }
 
+    private static final String TAG = "ccc";
     public String listToString(List list, char separator) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
@@ -110,7 +126,7 @@ public class GroupMemberMuteFragment extends BaseFragment implements GroupContra
                 }
             }
             mGroupInfo.setMemberDetails(members);
-            mInviteLayout.setDataSource(mGroupInfo);
+            mInviteLayout.setDataSource(mGroupInfo,mType);
         }
     }
 

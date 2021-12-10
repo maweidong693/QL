@@ -174,7 +174,7 @@ public class MessageFragment extends BaseFragment implements ContactContract.IMe
 
         mConversationTitle.setTitle(getResources().getString(com.tencent.qcloud.tim.uikit.R.string.conversation_title), TitleBarLayout.POSITION.MIDDLE);
         mConversationTitle.getLeftGroup().setVisibility(View.GONE);
-        mConversationTitle.setRightIcon(com.tencent.qcloud.tim.uikit.R.drawable.conversation_more);
+        mConversationTitle.setRightIcon(R.drawable.conversation_more);
         mMenu = new Menu(getActivity(), mConversationTitle, Menu.MENU_TYPE_CONVERSATION);
 
         mRvMessageList.setLayoutManager(new LinearLayoutManager(getContext()));

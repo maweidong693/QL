@@ -183,6 +183,8 @@ public class MainActivity extends BaseActivity implements MineContract.IMineView
         SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getIm_id());
         SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNick_name());
         SPUtils.commitValue(AppConstant.USER, AppConstant.USER_AVATAR, dto.getFace_url());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_COUNTRY, dto.getCountry());
+        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_COUNTRY_CODE, dto.getNation_code());
 //        SPUtils.commitValue(AppConstant.USER, AppConstant.USER_TYPE, String.valueOf(dto.getRole()));
 //        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, SPUtils.getValue(AppConstant.USER, AppConstant.USER_ID) + ".db");
 //        SQLiteDatabase database = helper.getWritableDatabase();

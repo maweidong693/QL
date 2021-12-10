@@ -102,6 +102,7 @@ public class MineFragment extends BaseFragment implements MineContract.IMineView
         mGeneralSettingView.setOnClickListener(v -> {
 
             IntentUtil.redirectToNextActivity(getActivity(), GeneralSettingActivity.class);
+//            getActivity().finish();
 
         });
         mPrivacySettingView.setOnClickListener(v -> {
@@ -179,7 +180,6 @@ public class MineFragment extends BaseFragment implements MineContract.IMineView
             SPUtils.commitValue(AppConstant.USER, AppConstant.USER_ID, dto.getIm_id());
             SPUtils.commitValue(AppConstant.USER, AppConstant.USER_NAME, dto.getNick_name());
             SPUtils.commitValue(AppConstant.USER, AppConstant.USER_PHONE, dto.getMobile());
-            SPUtils.commitValue(AppConstant.USER, AppConstant.USER_COUNTRY, dto.getNation_code() + "");
         }
     }
 

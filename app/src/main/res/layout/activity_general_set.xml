@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         app:canNav="true"
+        android:visibility="gone"
         app:name="@string/set_chat_background" />
 
 

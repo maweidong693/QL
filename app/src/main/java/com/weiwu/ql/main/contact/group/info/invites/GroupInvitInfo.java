@@ -123,17 +123,12 @@ class GroupInvitInfo {
 
     public GroupInvitInfo covertGroupInvites(CheckInvitesData.DataDTO data) {
 
-        setAuditor_im_id(data.getInviteMemberId());
-        setCreate_time(data.getCreatedTime());
-        setFace_url(data.getInviteMemberInfo().getAvator());
-        setForm_im_id(data.getFromMemberId());
-        setForm_nick(data.getFromMemberInfo().getNickName());
-        setGroup_id(data.getGroupId());
-        setId(data.getId());
+        setCreate_time(data.getInv_time());
+        setFace_url(data.getFace_url());
+
+        setId(data.getId()+"");
         setStatus(0);
-        setTo_im_id(data.getInviteMemberId());
-        setTo_nick(data.getInviteMemberInfo().getNickName());
-        setUpdate_time(data.getCreatedTime());
+        setTo_nick(data.getNick_name());
 
         return this;
     }

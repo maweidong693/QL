@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cunoraz.gifview.library.GifView;
 import com.google.gson.Gson;
+import com.tencent.common.Constant;
 import com.weiwu.ql.AppConstant;
 import com.weiwu.ql.R;
 import com.weiwu.ql.main.contact.chat.modle.HistoryMessageData;
 import com.weiwu.ql.main.contact.chat.modle.NoticeOrderData;
 import com.weiwu.ql.main.mine.friends.utils.GlideCircleTransform;
+import com.weiwu.ql.main.mine.setting.YPreferencesUtils;
+import com.weiwu.ql.utils.DensityUtils;
 import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.utils.SystemFacade;
 
@@ -43,14 +47,17 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final String TAG = "ChatMessageAdapter";
 
+    private int type;
+
     private List<HistoryMessageData.DataDTO.ListDTO> mList = new ArrayList<>();
 
     public List<HistoryMessageData.DataDTO.ListDTO> getList() {
         return mList;
     }
 
-    public void setList(List<HistoryMessageData.DataDTO.ListDTO> list) {
+    public void setList(List<HistoryMessageData.DataDTO.ListDTO> list, int type) {
         mList.addAll(0, list);
+        this.type = type;
         notifyDataSetChanged();
     }
 
@@ -87,6 +94,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Context context = holder.itemView.getContext();
         if (holder instanceof ReceiveMessageViewHolder) {
             ReceiveMessageViewHolder receiveHolder = (ReceiveMessageViewHolder) holder;
+            receiveHolder.setIsRecyclable(false);
             if (mChatMessage.getLast_time().equals("0000-00-00 00:00:00")) {
                 receiveHolder.mReceiveTime.setVisibility(View.GONE);
             } else {
@@ -104,6 +112,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         }
                     }
                 });
+                if (type == 1) {
+                    receiveHolder.mReceiveNickName.setVisibility(View.GONE);
+                } else {
+                    receiveHolder.mReceiveNickName.setVisibility(View.VISIBLE);
+
+                }
                 if (!TextUtils.isEmpty(mChatMessage.getFace_url())) {
                     Glide.with(context)
                             .load(mChatMessage.getFace_url())
@@ -152,6 +166,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     receiveHolder.mReceiveVideoPlay.setVisibility(View.GONE);
                     receiveHolder.mReceiveVoice.setVisibility(View.GONE);
                     receiveHolder.mReceiveMsg.setText(content);
+                    int dimension = receiveHolder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.sp_stander);
+                    float scale = (float) YPreferencesUtils.get(Constant.SP_FontScale, 0.0f);
+                    if(scale!=0.0){
+                        double v = scale * (int) DensityUtils.px2sp(receiveHolder.itemView.getContext(), dimension);
+                        receiveHolder.mReceiveMsg.setTextSize((int) v);
+                    }
                     receiveHolder.mReceiveQuote.setVisibility(View.GONE);
                     receiveHolder.mReceiveIv.setOnClickListener(null);
 
@@ -332,6 +352,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     sendHolder.mSendVideoPlay.setVisibility(View.GONE);
                     sendHolder.mSendVoice.setVisibility(View.GONE);
                     sendHolder.mSendMsg.setText(content);
+                    int dimension = sendHolder.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.sp_stander);
+                    float scale = (float) YPreferencesUtils.get(Constant.SP_FontScale, 0.0f);
+                    if(scale!=0.0) {
+                        double v = scale * (int) DensityUtils.px2sp(sendHolder.itemView.getContext(), dimension);
+                        sendHolder.mSendMsg.setTextSize((int) v);
+                    }
                     sendHolder.mSendIv.setOnClickListener(null);
                     sendHolder.mSendQuote.setVisibility(View.GONE);
 

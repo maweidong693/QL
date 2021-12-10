@@ -16,12 +16,21 @@ public class GroupInfo extends ChatInfo {
     private String groupIntroduction;
     private List<GroupMemberInfo> memberDetails;
     private int joinType;
+    private int unReadInvite;
     private String owner;
     private boolean isManger;
     private boolean isOwner;
     private int isExamine;
     private int isAllForbidden;
     private int isAddFriend;
+
+    public int getUnReadInvite() {
+        return unReadInvite;
+    }
+
+    public void setUnReadInvite(int unReadInvite) {
+        this.unReadInvite = unReadInvite;
+    }
 
     public String getOwner() {
         return owner;
@@ -245,6 +254,7 @@ public class GroupInfo extends ChatInfo {
         setChatName(data.getGroup_name());
         setGroupName(data.getGroup_name());
         setId(data.getId());
+        setUnReadInvite(data.getNew_user_count());
         setGroupId(data.getGroup_id());
         setNotice(data.getNotification());
         setGroupIntroduction(data.getIntroduction());

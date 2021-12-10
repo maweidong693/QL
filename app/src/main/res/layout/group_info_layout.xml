@@ -193,6 +193,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/page_margin"
                 app:isSwitch="true"
+                android:visibility="gone"
                 app:name="@string/chat_to_top" />
 
             <Button

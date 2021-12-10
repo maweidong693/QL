@@ -105,6 +105,8 @@ public interface GroupContract {
     interface IGroupForbiddenPresenter extends IBasePresenter<IGroupForbiddenView> {
         void getGroupMember(GroupInfoRequestBody body);
 
+        void setGroupManger(InviteOrDeleteRequestBody body);
+
         void forbiddenMember(ForbiddenRequestBody body);
 
         void cancelForbiddenMember(ForbiddenRequestBody body);

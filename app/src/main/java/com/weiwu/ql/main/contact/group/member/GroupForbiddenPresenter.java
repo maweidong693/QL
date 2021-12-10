@@ -41,6 +41,21 @@ public class GroupForbiddenPresenter implements GroupContract.IGroupForbiddenPre
     }
 
     @Override
+    public void setGroupManger(InviteOrDeleteRequestBody body) {
+        mSource.changeGroupManger((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
+            @Override
+            public void onSuccess(HttpResult data) {
+                mView.forbiddenReceive(data);
+            }
+
+            @Override
+            public void onFail(String msg, int statusCode) {
+                mView.onFail(msg, statusCode);
+            }
+        });
+    }
+
+    @Override
     public void forbiddenMember(ForbiddenRequestBody body) {
         mSource.forbiddenMember((LifecycleProvider) mView, body, new IBaseCallBack<HttpResult>() {
             @Override

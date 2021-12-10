@@ -42,7 +42,8 @@ public class GeneralSettingActivity extends BaseActivity {
             IntentUtil.redirectToNextActivity(this, SetChatbackGroundActivity.class);
         });
 
-        viewFontSize.setOnClickListener(view -> IntentUtil.redirectToNextActivity(this,FontSizeActivity.class));
+        viewFontSize.setOnClickListener(view ->
+                IntentUtil.redirectToNextActivity(this,FontSizeActivity.class));
     }
 
 

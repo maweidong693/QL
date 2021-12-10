@@ -120,12 +120,18 @@ public class GroupInfoFragment extends BaseFragment implements GroupContract.IGr
 
             @Override
             public void forwardGroupManager(GroupInfo info) {
-                GroupMemberTransferFragment fragment = new GroupMemberTransferFragment();
+                GroupMemberMuteFragment fragment = new GroupMemberMuteFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(TUIKitConstants.Group.GROUP_INFO, info);
+                bundle.putSerializable("info", new InfoData("群管理员", 1));
+                fragment.setArguments(bundle);
+                forward(fragment, false);
+                /*GroupMemberTransferFragment fragment = new GroupMemberTransferFragment();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(TUIKitConstants.Group.GROUP_INFO, info);
                 bundle.putSerializable("info", new InfoData("群管理员", 2));
                 fragment.setArguments(bundle);
-                forward(fragment, false);
+                forward(fragment, false);*/
 
             }
 

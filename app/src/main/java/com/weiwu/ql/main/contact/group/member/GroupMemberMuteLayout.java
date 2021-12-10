@@ -3,6 +3,7 @@ package com.weiwu.ql.main.contact.group.member;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -124,8 +125,9 @@ public class GroupMemberMuteLayout extends LinearLayout implements IGroupMemberL
         void mute(ContactItemBean contact, boolean selected);
     }
 
-    public void setDataSource(GroupInfo groupInfo) {
+    public void setDataSource(GroupInfo groupInfo, int type) {
         mGroupInfo = groupInfo;
+        this.mType = type;
         if (mType == 2) {
             String introduction = mGroupInfo.getGroupIntroduction();
             HashMap<String, Object> hashMap = CustomInfo.InfoStrToMap(introduction);
@@ -135,7 +137,8 @@ public class GroupMemberMuteLayout extends LinearLayout implements IGroupMemberL
             }
         }
         if (mContactListView != null) {
-            mContactListView.setGroupInfo(mGroupInfo);
+            mContactListView.setGroupInfo(mGroupInfo, mType);
+            mContactListView.setType(mType);
             mContactListView.loadDataSource(GroupMemberListView.DataSource.GROUP_MEMBER_LIST);
         }
     }

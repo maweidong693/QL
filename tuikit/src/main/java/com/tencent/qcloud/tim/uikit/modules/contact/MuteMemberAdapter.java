@@ -1,6 +1,7 @@
 package com.tencent.qcloud.tim.uikit.modules.contact;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.ViewHolder> {
 
     protected List<ContactItemBean> mData;
+    protected int mType;
     protected LayoutInflater mInflater;
     private GroupMuteMemberListView.OnSelectChangedListener mOnSelectChangedListener;
     private GroupMuteMemberListView.OnItemClickListener mOnClickListener;
@@ -35,8 +37,9 @@ public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.Vi
     private int mPreSelectedPosition;
     private boolean isSingleSelectMode;
 
-    public MuteMemberAdapter(List<ContactItemBean> data) {
+    public MuteMemberAdapter(List<ContactItemBean> data, int type) {
         this.mData = data;
+        this.mType = type;
         mInflater = LayoutInflater.from(TUIKit.getAppContext());
     }
 
@@ -45,10 +48,12 @@ public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.Vi
         return new MuteMemberAdapter.ViewHolder(mInflater.inflate(R.layout.mute_adapter_item, parent, false));
     }
 
+    private static final String TAG = "MuteMemberAdapter";
+
     @Override
     public void onBindViewHolder(final MuteMemberAdapter.ViewHolder holder, final int position) {
         final ContactItemBean contactBean = mData.get(position);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)holder.line.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.line.getLayoutParams();
         if (position < mData.size() - 1) {
             String tag1 = contactBean.getSuspensionTag();
             String tag2 = mData.get(position + 1).getSuspensionTag();
@@ -69,17 +74,26 @@ public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.Vi
         } else {
             holder.tvName.setText(contactBean.getId());
         }
-            holder.ccSelect.setVisibility(View.GONE);
+        holder.ccSelect.setVisibility(View.GONE);
 
-        if (isSingleSelectMode&&contactBean.isSelected()){
+        if (isSingleSelectMode && contactBean.isSelected()) {
             mPreSelectedPosition = position;
         }
         int isForbidden = contactBean.getIsForbidden();
+        int isManger = contactBean.getIsManger();
 //        byte[] mutes = customInfo.get("mute");
-        if (isForbidden==1){
-            holder.mBtnSwitch.setChecked(true);
-        }else {
-            holder.mBtnSwitch.setChecked(false);
+        if (mType == 3) {
+            if (isForbidden == 1) {
+                holder.mBtnSwitch.setChecked(true);
+            } else {
+                holder.mBtnSwitch.setChecked(false);
+            }
+        } else {
+            if (isManger == 1) {
+                holder.mBtnSwitch.setChecked(true);
+            } else {
+                holder.mBtnSwitch.setChecked(false);
+            }
         }
         holder.mBtnSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -127,7 +141,7 @@ public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.Vi
                     holder.avatar.setImageResource(R.drawable.default_head);
                 }
             } else {
-                GlideEngine.loadCornerImage(holder.avatar,contactBean.getAvatarurl(),null,10);
+                GlideEngine.loadCornerImage(holder.avatar, contactBean.getAvatarurl(), null, 10);
 //                GlideEngine.loadImage(holder.avatar, Uri.parse(contactBean.getAvatarurl()));
             }
         }
@@ -156,15 +170,17 @@ public class MuteMemberAdapter extends RecyclerView.Adapter<MuteMemberAdapter.Vi
         return mData != null ? mData.size() : 0;
     }
 
-    public void setDataSource(List<ContactItemBean> datas) {
+    public void setDataSource(List<ContactItemBean> datas, int type) {
         this.mData = datas;
+        this.mType = type;
         notifyDataSetChanged();
     }
 
     public void setSingleSelectMode(boolean mode) {
         isSingleSelectMode = mode;
     }
-    public boolean getSingleSelectMode(){
+
+    public boolean getSingleSelectMode() {
         return isSingleSelectMode;
     }
 

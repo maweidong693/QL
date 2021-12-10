@@ -23,6 +23,15 @@ public class GroupMemberInfo extends BaseIndexPinyinBean implements Serializable
     private long tinyId;
     private int memberType;
     private int isForbidden;
+    private int role;
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
 
     @Override
     public String toString() {
@@ -173,6 +182,7 @@ public class GroupMemberInfo extends BaseIndexPinyinBean implements Serializable
         setNickname(info.getNick_name());
         setIconUrl(info.getFace_url());
         setIsForbidden(info.getIs_ban_say());
+        setRole(info.getGroup_role());
         return this;
     }
 

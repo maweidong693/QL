@@ -2,6 +2,7 @@ package com.weiwu.ql.main.contact.group.info.invites;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -67,7 +68,8 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
                 // 0 待审核 1拒绝 2通过
                 holder.setText(R.id.group_apply_member_name, item.getTo_nick())
                         .setText(R.id.group_apply_reason, item.getStatus() == 0 ? item.getCreate_time() : item.getUpdate_time());
-                GlideEngine.loadImage(holder.getView(R.id.group_apply_member_icon), item.getFace_url(), null);
+
+                GlideEngine.loadProfileImage(holder.getView(R.id.group_apply_member_icon), item.getFace_url(), null);
 
                 if (item.getStatus() == 0) {
                     holder.getView(R.id.group_apply_accept).setVisibility(View.VISIBLE);
@@ -77,6 +79,7 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
                         @Override
                         public void onClick(View view) {
                             acceptOrRefuse(item, 1);
+                            mAdapter.remove(item);
                         }
                     });
                     holder.getView(R.id.group_apply_refuse).setVisibility(View.VISIBLE);
@@ -86,6 +89,8 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
                         @Override
                         public void onClick(View view) {
                             acceptOrRefuse(item, 2);
+                            mAdapter.remove(item);
+
                         }
                     });
                 } else if (item.getStatus() == 2) {
@@ -113,6 +118,7 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
         DialogMaker.showProgressDialog(getActivity(), "请稍后…");
 
         mPresenter.checkInvites(new GroupInfoRequestBody(Integer.parseInt(info.getId()), String.valueOf(status)));
+
         /*Map map = new HashMap();
         map.put("id", info.getId());
         map.put("status", status);
@@ -159,10 +165,11 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
 
     }
 
+    private static final String TAG = "UNNN";
 
     @Override
     public void onInvitesReceive(CheckInvitesData data) {
-        if (data.getData() == null) {
+        if (data.getData().size() == 0) {
             return;
         }
         List<CheckInvitesData.DataDTO> list = data.getData();
@@ -173,11 +180,12 @@ public class GroupInvitationFragment extends BaseFragment implements GroupContra
             invites.add(inviteInfo);
         }
 //                mAdapter.setNewInstance(data);
-        if (invites != null && !invites.isEmpty()) {
+        if (invites.size() > 0) {
             mAdapter.setList(invites);
         } else {
             mAdapter.setEmptyView(R.layout.adapter_item_empty);
         }
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

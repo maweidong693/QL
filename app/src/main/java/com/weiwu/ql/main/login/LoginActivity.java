@@ -305,7 +305,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             etCode.setVisibility(View.VISIBLE);
             v2.setVisibility(View.VISIBLE);
             tvUpCode.setVisibility(View.VISIBLE);
-            if (!tvMobileCode.getText().toString().equals("+86")) {
+            if (!tvMobileCode.getText().toString().equals("86")) {
                 invite_code.setVisibility(View.VISIBLE);
                 v3.setVisibility(View.VISIBLE);
             } else {
@@ -331,7 +331,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(CountryEntity countryEntity) {
         if (countryEntity != null) {
-            tvMobileCode.setText("+" + countryEntity.getCode());
+            tvMobileCode.setText(countryEntity.getCode());
             tvMobileArea.setText(countryEntity.getCountry());
             invite_code.setText("");
             registeredOrLogin(!mRegisteredOrLogin.getText().equals("注册"));

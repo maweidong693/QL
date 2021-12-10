@@ -110,12 +110,12 @@ public class Menu {
 
         PopMenuAction action = new PopMenuAction();
 
-        if (menuType == MENU_TYPE_CONVERSATION) {
+        /*if (menuType == MENU_TYPE_CONVERSATION) {
             action.setActionName(mActivity.getResources().getString(R.string.start_conversation));
             action.setActionClickListener(popActionClickListener);
             action.setIconResId(R.drawable.create_c2c);
             menuActions.add(action);
-        }
+        }*/
 
         if (menuType == MENU_TYPE_CONTACT) {
             action = new PopMenuAction();

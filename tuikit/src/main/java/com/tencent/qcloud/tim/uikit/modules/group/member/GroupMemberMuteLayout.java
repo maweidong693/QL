@@ -3,6 +3,7 @@ package com.tencent.qcloud.tim.uikit.modules.group.member;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -122,7 +123,7 @@ public class GroupMemberMuteLayout extends LinearLayout implements IGroupMemberL
             }
         }
         if (mContactListView != null) {
-            mContactListView.setGroupInfo(mGroupInfo);
+            mContactListView.setGroupInfo(mGroupInfo,mType);
             mContactListView.loadDataSource(GroupMemberListView.DataSource.GROUP_MEMBER_LIST);
         }
     }

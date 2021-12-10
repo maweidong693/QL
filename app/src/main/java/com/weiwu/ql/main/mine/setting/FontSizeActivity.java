@@ -15,6 +15,7 @@ import com.tencent.qcloud.tim.uikit.component.TitleBarLayout;
 import com.weiwu.ql.R;
 import com.weiwu.ql.base.BaseActivity;
 import com.weiwu.ql.utils.DensityUtils;
+import com.weiwu.ql.utils.SPUtils;
 import com.weiwu.ql.view.FontSizeView;
 
 
@@ -76,6 +77,7 @@ public class FontSizeActivity extends BaseActivity {
         });
 
         float  scale = (float) YPreferencesUtils.get(Constant.SP_FontScale,0.0f);
+//        SPUtils
         if (scale > 0.5) {
             defaultPos = (int) ((scale - 0.875) / 0.125);
         } else {

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.qcloud.tim.uikit.base.IUIKitCallBack;
 import com.tencent.qcloud.tim.uikit.component.picture.imageEngine.impl.GlideEngine;
@@ -58,13 +59,14 @@ public class GroupMemberManagerAdapter extends BaseAdapter {
             holder.memberIcon = view.findViewById(R.id.group_member_icon);
             holder.memberName = view.findViewById(R.id.group_member_name);
             holder.avatarMaskView = view.findViewById(R.id.avatar_mask_view);
+            holder.role = view.findViewById(R.id.iv_role);
             view.setTag(holder);
         } else {
             holder = (MyViewHolder) view.getTag();
         }
         final GroupMemberInfo info = getItem(i);
         if (!TextUtils.isEmpty(info.getIconUrl()))
-            GlideEngine.loadImage(holder.memberIcon, info.getIconUrl(), null);
+            GlideEngine.loadProfileImage(holder.memberIcon, info.getIconUrl(), null);
 //        String online_status = info.getOnline_status();
         /*if (TextUtils.equals(online_status,"Login")){
             //在线
@@ -86,6 +88,23 @@ public class GroupMemberManagerAdapter extends BaseAdapter {
         } else {
             holder.memberName.setText(info.getAccount());
         }
+        switch (info.getRole()) {
+            case 0:
+                holder.role.setVisibility(View.GONE);
+
+                break;
+            case 1:
+                holder.role.setVisibility(View.VISIBLE);
+                Glide.with(TUIKit.getAppContext()).load(R.mipmap.ic_manger).into(holder.role);
+                break;
+
+            case 2:
+                holder.role.setVisibility(View.VISIBLE);
+                Glide.with(TUIKit.getAppContext()).load(R.mipmap.ic_onwer).into(holder.role);
+
+                break;
+        }
+
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -144,7 +163,7 @@ public class GroupMemberManagerAdapter extends BaseAdapter {
     }
 
     private class MyViewHolder {
-        private ImageView memberIcon;
+        private ImageView memberIcon, role;
         private TextView memberName;
         private View avatarMaskView;
     }

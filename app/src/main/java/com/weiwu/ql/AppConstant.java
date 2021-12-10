@@ -37,4 +37,5 @@ public interface AppConstant {
     String USER_PHONE = "userPhone";
     String USER_COUNTRY = "userCountry";
     String USER_AVATAR = "userAvatar";
+    String USER_COUNTRY_CODE = "userCountryCode";
 }

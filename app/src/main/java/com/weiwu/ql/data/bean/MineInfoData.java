@@ -39,8 +39,9 @@ public class MineInfoData {
 
     public static class DataDTO {
         private int id;
-        private Object pid;
+        private String pid;
         private String nation_code;
+        private String country;
         private String mobile;
         private String im_id;
         private int is_check_friend;
@@ -51,9 +52,17 @@ public class MineInfoData {
         private String face_url;
         private int sex;
         private int status;
-        private Object master_code;
+        private String master_code;
         private String my_code;
         private String reg_time;
+
+        public String getCountry() {
+            return country;
+        }
+
+        public void setCountry(String country) {
+            this.country = country;
+        }
 
         public int getId() {
             return id;
@@ -63,11 +72,11 @@ public class MineInfoData {
             this.id = id;
         }
 
-        public Object getPid() {
+        public String getPid() {
             return pid;
         }
 
-        public void setPid(Object pid) {
+        public void setPid(String pid) {
             this.pid = pid;
         }
 
@@ -159,11 +168,11 @@ public class MineInfoData {
             this.status = status;
         }
 
-        public Object getMaster_code() {
+        public String getMaster_code() {
             return master_code;
         }
 
-        public void setMaster_code(Object master_code) {
+        public void setMaster_code(String master_code) {
             this.master_code = master_code;
         }
 

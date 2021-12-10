@@ -132,11 +132,20 @@ public class HistoryMessageData {
             private String nick_name;
             private String face_url;
             private String last_time;
+            private String send_time;
             private String content;
             private String cite;
             private int cate;
             private int type;
             private int sending;
+
+            public String getSend_time() {
+                return send_time;
+            }
+
+            public void setSend_time(String send_time) {
+                this.send_time = send_time;
+            }
 
             public int getSending() {
                 return sending;
